@@ -1,0 +1,3381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velorex Design — Premium Art & Services</title>
+  <meta name="description"
+    content="Velorex Design — Premium handcrafted wood items, resin arts, and graphic design services.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* =============================================
+           VELOREX DESIGN - Single File SPA Styles
+           ============================================= */
+    :root {
+      --primary: #1a0a2e;
+      --secondary: #ff6b35;
+      --accent: #ffd700;
+      --bg: #0d0d0d;
+      --surface: #1a1a2e;
+      --surface2: #16213e;
+      --card-bg: rgba(30, 30, 58, 0.7);
+      --text: #f0eaf8;
+      --text-muted: #9890b0;
+      --border: #2e2e5e;
+      --success: #00d4aa;
+      --danger: #ff4757;
+      --gold-gradient: linear-gradient(135deg, #ffd700, #ff8c00);
+      --orange-gradient: linear-gradient(135deg, #ff6b35, #ff3a00);
+      --glass: rgba(26, 10, 46, 0.85);
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-top: 80px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+      border-radius: var(--radius);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+    }
+
+    /* Typography */
+    h1,
+    h2,
+    h3 {
+      font-family: var(--font-display);
+      line-height: 1.2;
+    }
+
+    .text-gradient {
+      background: var(--orange-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .text-gold {
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--orange-gradient);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--secondary), var(--accent), var(--secondary), transparent);
+      background-size: 200% 100%;
+      animation: navbar-line-move 4s linear infinite;
+    }
+
+    @keyframes navbar-line-move {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-brand i {
+      color: var(--secondary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 0.5rem;
+      position: relative;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--text);
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--secondary);
+      border-radius: 2px;
+    }
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% - 10px);
+      left: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.5rem;
+      min-width: 220px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: var(--transition);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+    }
+
+    .dropdown-menu.dropdown-right {
+      left: auto;
+      right: 0;
+    }
+
+    .nav-dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(10px);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1rem;
+      color: var(--text-muted);
+      transition: var(--transition);
+      border-radius: 8px;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--secondary);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .cart-icon {
+      position: relative;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--secondary);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.5rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    /* View Container */
+    .view {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Sections */
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Hero */
+    /* Hero */
+    .hero {
+      height: 100vh;
+      margin-top: -80px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)), url('hero.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-content {
+      max-width: 650px;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 5vw, 5rem);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-desc {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    /* Cards Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    /* Category Card */
+    .cat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cat-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--secondary);
+      box-shadow: 0 10px 30px rgba(255, 107, 53, 0.1);
+    }
+
+    .cat-icon {
+      font-size: 3rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
+
+    /* Product Card */
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 107, 53, 0.5);
+    }
+
+    .product-img {
+      height: 250px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .product-card:hover .product-img img {
+      transform: scale(1.1);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--secondary);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .product-info {
+      padding: 1.5rem;
+    }
+
+    .product-cat {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .product-title:hover {
+      color: var(--secondary);
+    }
+
+    .product-price {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    /* Services List */
+    .service-card {
+      display: flex;
+      gap: 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      align-items: flex-start;
+    }
+
+    .service-icon {
+      font-size: 2.5rem;
+      color: var(--secondary);
+      padding: 1rem;
+      background: rgba(255, 107, 53, 0.1);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+
+    /* Interactive Service Type Cards */
+    .service-type-card {
+      cursor: pointer;
+      border: 2px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .service-type-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--orange-gradient);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .service-type-card:hover {
+      border-color: rgba(255, 107, 53, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(255, 107, 53, 0.12);
+    }
+    .service-type-card.active {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.25), 0 8px 30px rgba(255, 107, 53, 0.18);
+    }
+    .service-type-card.active::after { transform: scaleX(1); }
+    .service-type-card .select-hint {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+      font-size: 0.82rem;
+      color: var(--secondary);
+      font-weight: 600;
+    }
+    .service-type-card.active .select-hint { display: none; }
+
+    /* Service Detail Panel */
+    .service-detail-panel { animation: slideDown 0.35s ease; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Package Cards */
+    .pkg-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .pkg-card:hover { border-color: rgba(255,107,53,0.4); transform: translateY(-4px); }
+    .pkg-card.selected {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 1px rgba(255,107,53,0.3), 0 12px 40px rgba(255,107,53,0.18);
+    }
+    .pkg-badge {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--orange-gradient);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 14px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .pkg-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      margin-bottom: 0.4rem;
+    }
+    .pkg-price {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 1.4rem;
+    }
+    .pkg-features { list-style: none; flex: 1; margin-bottom: 1.4rem; }
+    .pkg-features li {
+      padding: 0.38rem 0;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .pkg-features li i { color: var(--success); font-size: 0.72rem; flex-shrink: 0; }
+    .pkg-select-btn {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .pkg-select-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+    .pkg-card.selected .pkg-select-btn {
+      background: var(--orange-gradient);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    /* Proceed Bar */
+    .proceed-bar {
+      margin-top: 2rem;
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(255,60,0,0.04));
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      animation: slideDown 0.3s ease;
+    }
+
+    /* Product Detail */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .detail-img img {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+
+    .detail-info h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-price {
+      font-size: 2rem;
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-desc {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    /* Cart */
+    .cart-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+    }
+
+    .cart-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: var(--radius);
+      align-items: center;
+    }
+
+    .cart-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-item-price {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .qty-btn {
+      color: var(--text);
+      font-size: 1.2rem;
+    }
+
+    .cart-remove {
+      color: var(--danger);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .cart-remove:hover {
+      opacity: 0.8;
+    }
+
+    .cart-summary {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    /* Checkout Form */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 1rem;
+      border-radius: var(--radius);
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+    }
+
+    /* Profile Section */
+    .profile-container {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-sidebar {
+      flex: 1;
+      min-width: 250px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      height: fit-content;
+    }
+
+    .profile-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .profile-menu-item {
+      padding: 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile-menu-item:hover,
+    .profile-menu-item.active {
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--secondary);
+      font-weight: bold;
+    }
+
+    .profile-content {
+      flex: 3;
+      min-width: 300px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+    }
+
+    .profile-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .profile-section.active {
+      display: block;
+    }
+
+    .order-card {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Notification banners */
+    .notif-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      border: 1px solid;
+      animation: slideDown 0.3s ease;
+      font-size: 0.9rem;
+    }
+    .notif-banner.unread { background: rgba(255,107,53,0.07); border-color: rgba(255,107,53,0.3); }
+    .notif-banner.read   { background: rgba(255,255,255,0.02); border-color: var(--border); opacity: 0.7; }
+    .notif-banner .notif-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .notif-banner.unread .notif-icon { color: var(--secondary); }
+    .notif-banner.read   .notif-icon { color: var(--text-muted); }
+    .notif-dot { width: 8px; height: 8px; background: var(--secondary); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .order-status-pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .pill-pending    { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .pill-processing { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+    .pill-shipped    { background: rgba(59,130,246,0.12);  color: #3b82f6; }
+    .pill-delivered  { background: rgba(16,185,129,0.12);  color: #10b981; }
+    .pill-cancelled  { background: rgba(239,68,68,0.12);   color: #ef4444; }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .order-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Order Tracking Timeline */
+    .order-tracking {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 2rem 0 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    .order-tracking::before {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: 10%;
+      right: 10%;
+      height: 4px;
+      background: var(--border);
+      z-index: 1;
+      border-radius: 2px;
+    }
+
+    .tracking-step {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      color: var(--text-muted);
+    }
+
+    .tracking-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 3px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .tracking-step.completed .tracking-icon {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: white;
+    }
+
+    .tracking-step.completed {
+      color: var(--text);
+    }
+
+    .tracking-progress {
+      position: absolute;
+      top: 32px;
+      left: 10%;
+      height: 4px;
+      background: var(--orange-gradient);
+      z-index: 1;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    /* Addresses */
+    .address-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .address-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: var(--radius);
+      position: relative;
+    }
+
+    .address-card.default {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 1px var(--secondary);
+    }
+
+    .address-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--secondary);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .address-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+    }
+
+    .address-btn {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .address-btn:hover {
+      color: var(--secondary);
+    }
+
+    #addressFormContainer {
+      background: var(--bg);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 5rem 0 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links h4 {
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .footer-links ul {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--secondary);
+      padding-left: 5px;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--secondary);
+      padding: 1.5rem 2.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      color: var(--text);
+      animation: centerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(20px);
+      min-width: 300px;
+      text-align: center;
+      pointer-events: auto;
+    }
+
+    @keyframes centerPop {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* FAQ Accordion */
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .faq-question {
+      padding: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .faq-answer {
+      padding: 0 1.5rem 1.5rem;
+      color: var(--text-muted);
+      display: none;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+    }
+
+    .faq-item.active {
+      border-color: var(--secondary);
+    }
+
+    /* Prose text */
+    .prose h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .prose p {
+      margin-bottom: 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .prose ul {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+      list-style: disc;
+      color: var(--text-muted);
+    }
+
+    /* External Links Styling */
+    .external-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      margin-left: auto;
+    }
+
+    /* Dropdown Menu */
+    .nav-item {
+      position: relative;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-width: 200px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: var(--transition);
+      z-index: 1000;
+      padding: 0.5rem 0;
+    }
+
+    .nav-item:hover .dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-link {
+      display: block;
+      padding: 0.8rem 1.5rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .dropdown-link:hover {
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--secondary);
+      padding-left: 1.8rem;
+    }
+
+    /* ---- Light Mode Overrides ---- */
+    :root[data-theme="light"] {
+      --primary: #ffffff;
+      --secondary: #ff4d00;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface2: #f1f5f9;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --glass: rgba(255, 255, 255, 0.85);
+      --gold-gradient: linear-gradient(135deg, #f59e0b, #ff4d00);
+    }
+
+    /* ---- Back to Top ---- */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: var(--orange-gradient);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+    }
+
+    /* ---- Breadcrumbs ---- */
+    .breadcrumbs {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .breadcrumb-item:not(:last-child)::after {
+      content: '\f105';
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      margin-left: 0.5rem;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    .breadcrumb-item a {
+      transition: var(--transition);
+    }
+
+    .breadcrumb-item a:hover {
+      color: var(--secondary);
+    }
+
+    .breadcrumb-item.active {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Social Icons */
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .social-icon:hover {
+      background: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        flex-direction: column;
+        padding: 2rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .detail-grid,
+      .cart-grid,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="nav-brand"><i class="fas fa-gem"></i> <span class="text-gold">Velorex Design</span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="nav-link">Home</a></li>
+        <li class="nav-dropdown">
+          <a href="#products" class="nav-link">Catalog <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i></a>
+          <div class="dropdown-menu">
+            <a href="#products" class="dropdown-item"><i class="fas fa-th-large text-gradient"></i> All Products</a>
+            <a href="#products?cat=wood" class="dropdown-item"><i class="fas fa-tree text-gradient"></i> Wood Items</a>
+            <a href="#products?cat=resin" class="dropdown-item"><i class="fas fa-tint text-gradient"></i> Resin Arts</a>
+            <a href="#products?cat=raw_material" class="dropdown-item"><i class="fas fa-box text-gradient"></i> Raw
+              Materials</a>
+            <a href="#products?cat=soap" class="dropdown-item"><i class="fas fa-soap text-gradient"></i> Handmade
+              Soaps</a>
+            <a href="#products?cat=candle" class="dropdown-item"><i class="fas fa-fire-alt text-gradient"></i> Handmade
+              Candles</a>
+          </div>
+        </li>
+        <li><a href="#services" class="nav-link">Graphic Design</a></li>
+        <li class="nav-dropdown">
+          <a href="#" class="nav-link">Our Stores <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a>
+          <div class="dropdown-menu dropdown-right">
+            <a href="https://velorexmusic.com" target="_blank" class="dropdown-item">
+              <i class="fas fa-music text-gradient"></i> Velorex Music <span class="external-badge">Store</span>
+            </a>
+            <a href="#" target="_blank" class="dropdown-item">
+              <i class="fas fa-tshirt text-gradient"></i> Velorex Fashion <span class="external-badge">Store</span>
+            </a>
+          </div>
+        </li>
+      </ul>
+      <div class="nav-actions">
+        <div id="notifBell" onclick="app.navigate('profile')"
+          style="cursor:pointer; font-size:1.2rem; color:var(--text); padding:0.5rem; position:relative; display:none;">
+          <i class="fas fa-bell"></i>
+          <span id="notifCount" style="position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:0.6rem; font-weight:700; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; line-height:1; display:none;">0</span>
+        </div>
+        <div class="profile-icon" onclick="app.navigate('profile')"
+          style="cursor: pointer; font-size: 1.2rem; color: var(--text); padding: 0.5rem;">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="theme-toggle" onclick="app.toggleTheme()"
+          style="cursor: pointer; font-size: 1.2rem; color: var(--text); padding: 0.5rem;">
+          <i class="fas fa-moon" id="themeIcon"></i>
+        </div>
+        <div class="cart-icon" onclick="app.navigate('cart')">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge" id="cartCount">0</span>
+        </div>
+        <div class="menu-toggle" onclick="document.getElementById('navLinks').classList.toggle('show')">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- APP ROOT (Views rendered here) -->
+  <main id="app"></main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3 class="text-gold"><i class="fas fa-gem"></i> Velorex Design</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Premium handcrafted art pieces and professional
+            graphic design services. Crafted with passion, designed with soul.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="#products">All Products</a></li>
+            <li><a href="#products?cat=wood">Wood Items</a></li>
+            <li><a href="#products?cat=resin">Resin Arts</a></li>
+            <li><a href="#products?cat=raw_material">Raw Materials</a></li>
+            <li><a href="#services">Design Services</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#process">Our Process</a></li>
+            <li><a href="admin.html" target="_blank" style="opacity: 0.3; font-size: 0.8rem;">Admin Portal</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Support & Legal</h4>
+          <ul>
+            <li><a href="#shipping">Shipping & Delivery</a></li>
+            <li><a href="#returns">Returns & Refunds</a></li>
+            <li><a href="#terms">Terms & Conditions</a></li>
+            <li><a href="#privacy">Privacy Policy</a></li>
+            <li style="margin-top: 0.5rem;"><a href="https://velorexmusic.com" target="_blank"><i
+                  class="fas fa-external-link-alt" style="font-size: 0.8em; margin-right: 5px;"></i>Music Store</a></li>
+            <li><a href="#" target="_blank"><i class="fas fa-external-link-alt"
+                  style="font-size: 0.8em; margin-right: 5px;"></i>Fashion Store</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; <span id="year"></span> Velorex Design. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- BACK TO TOP -->
+  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <!-- ==========================================
+         VIEW TEMPLATES
+         ========================================== -->
+  <div id="templates" style="display: none;">
+
+    <!-- HOME VIEW -->
+    <div id="tpl-home">
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+          <div class="hero-content">
+            <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art & Design</span></h1>
+            <p class="hero-desc">Discover unique handcrafted wood items, stunning resin art pieces, and professional
+              graphic design services — all from the Velorex family.</p>
+            <div class="hero-buttons">
+              <button class="btn btn-primary" onclick="app.navigate('products')">Explore Shop</button>
+              <button class="btn btn-secondary" onclick="app.navigate('services')">Our Services</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">Shop by <span class="text-gold">Category</span></h2>
+            <p class="section-subtitle">Curated collections for your home and brand</p>
+          </div>
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="category-card" onclick="app.navigate('products', {cat: 'wood'})">
+              <img src="cat-wood.png" alt="Wood Items" style="width: 100%; height: 200px; object-fit: cover;">
+              <div class="category-overlay">
+                <h3>Wood</h3>
+              </div>
+            </div>
+            <div class="category-card" onclick="app.navigate('products', {cat: 'resin'})">
+              <img src="cat-resin.png" alt="Resin Arts" style="width: 100%; height: 200px; object-fit: cover;">
+              <div class="category-overlay">
+                <h3>Resin</h3>
+              </div>
+            </div>
+            <div class="category-card" onclick="app.navigate('products', {cat: 'raw_material'})">
+              <img src="cat-raw.png" alt="Raw Materials" style="width: 100%; height: 200px; object-fit: cover;">
+              <div class="category-overlay">
+                <h3>Materials</h3>
+              </div>
+            </div>
+            <div class="category-card" onclick="app.navigate('products', {cat: 'soap'})">
+              <img src="https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80"
+                alt="Handmade Soaps" style="width: 100%; height: 200px; object-fit: cover;">
+              <div class="category-overlay">
+                <h3>Soaps</h3>
+              </div>
+            </div>
+            <div class="category-card" onclick="app.navigate('products', {cat: 'candle'})">
+              <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80"
+                alt="Handmade Candles" style="width: 100%; height: 200px; object-fit: cover;">
+              <div class="category-overlay">
+                <h3>Candles</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" style="background: var(--surface);">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">Featured <span class="text-gradient">Creations</span></h2>
+            <p class="section-subtitle">Our most popular handcrafted pieces</p>
+          </div>
+          <div class="grid" id="homeFeaturedGrid"></div>
+          <div style="text-align: center; margin-top: 3rem;">
+            <button class="btn btn-secondary" onclick="app.navigate('products')">View Full Catalog</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEWSLETTER -->
+      <section class="section" style="background: var(--orange-gradient);">
+        <div class="container" style="text-align: center;">
+          <h2 style="color: white; margin-bottom: 1rem;">Join the Creative Circle</h2>
+          <p
+            style="color: rgba(255,255,255,0.9); margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Subscribe to get early access to new collections and exclusive design tips.</p>
+          <form onsubmit="event.preventDefault(); app.showToast('Subscribed successfully!', 'success');"
+            style="max-width: 500px; margin: 0 auto; display: flex; gap: 0.5rem;">
+            <input type="email" class="form-control" placeholder="Your Email Address"
+              style="background: white; color: black; border: none;" required>
+            <button type="submit" class="btn btn-secondary"
+              style="background: #000; color: #fff; border: none;">Subscribe</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TRUST FEATURES -->
+      <section class="section" style="border-top: 1px solid var(--border); background: var(--bg);">
+        <div class="container">
+          <div class="grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; text-align: center;">
+            <div class="feature-item">
+              <i class="fas fa-hand-sparkles text-gold" style="font-size: 2.5rem; margin-bottom: 1.5rem;"></i>
+              <h4 style="margin-bottom: 0.5rem;">100% Handcrafted</h4>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Every piece is unique and made with love.</p>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-leaf text-gold" style="font-size: 2.5rem; margin-bottom: 1.5rem;"></i>
+              <h4 style="margin-bottom: 0.5rem;">Eco Friendly</h4>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Sustainably sourced wood and materials.</p>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-truck-fast text-gold" style="font-size: 2.5rem; margin-bottom: 1.5rem;"></i>
+              <h4 style="margin-bottom: 0.5rem;">India Wide Shipping</h4>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Safe delivery to your doorstep.</p>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-shield-halved text-gold" style="font-size: 2.5rem; margin-bottom: 1.5rem;"></i>
+              <h4 style="margin-bottom: 0.5rem;">Secure Orders</h4>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Order via WhatsApp for personal care.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PRODUCTS VIEW -->
+    <div id="tpl-products">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs" id="bc-products"></ul>
+          <div class="section-header"
+            style="text-align: left; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 class="section-title" id="catalogTitle">Our <span class="text-gradient">Catalog</span></h2>
+              <p class="section-subtitle">Browse our handcrafted items</p>
+            </div>
+            <div>
+              <select id="catFilter" class="form-control" onchange="app.filterProducts()"
+                style="width: 200px; padding: 0.5rem;">
+                <!-- populated dynamically by renderProducts() -->
+              </select>
+            </div>
+          </div>
+          <div class="grid" id="productsGrid"></div>
+          <div id="noProducts" style="display:none; text-align: center; padding: 3rem; color: var(--text-muted);">
+            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+            <h3>No products found in this category.</h3>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PRODUCT DETAIL VIEW -->
+    <div id="tpl-product-detail">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs" id="bc-detail"></ul>
+          <button class="btn btn-secondary" onclick="app.navigate('products')" style="margin-bottom: 2rem;"><i
+              class="fas fa-arrow-left"></i> Back to Catalog</button>
+          <div class="detail-grid" id="productDetailContent">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SERVICES VIEW -->
+    <div id="tpl-services">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Graphic Design Services</li>
+          </ul>
+          <div class="section-header">
+            <h2 class="section-title">Graphic Design <span class="text-gold">Services</span></h2>
+            <p class="section-subtitle">Click a service below to explore packages &amp; pricing</p>
+          </div>
+
+          <!-- Service type selector cards — rendered by JS -->
+          <div id="servicesTypeGrid" class="grid" style="grid-template-columns: 1fr 1fr;"></div>
+
+          <!-- Package detail panel — shown after service card click -->
+          <div id="serviceDetailPanel" style="display:none; margin-top: 2.5rem;"></div>
+
+          <!-- Proceed bar — shown after package selection -->
+          <div id="servicesProceedBar" style="display:none;"></div>
+
+          <div
+            style="margin-top: 5rem; background: var(--surface); padding: 4rem; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--border);">
+            <h3 style="font-size: 2rem; margin-bottom: 1rem;">Have a custom requirement?</h3>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Contact us on WhatsApp to discuss your
+              requirements and get a custom quote.</p>
+            <a id="servicesWaLink" href="#" target="_blank" class="btn btn-primary"><i class="fab fa-whatsapp"></i> Message on WhatsApp</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CART VIEW -->
+    <div id="tpl-cart">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Shopping Cart</li>
+          </ul>
+          <h2 class="section-title">Your <span class="text-gradient">Shopping Cart</span></h2>
+          <div class="cart-grid" id="cartContent">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PROFILE VIEW -->
+    <div id="tpl-profile">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs" id="bc-profile">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">My Account</li>
+          </ul>
+          <h2 class="section-title">My <span class="text-gradient">Account</span></h2>
+
+          <div class="profile-container">
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+              <div class="profile-menu">
+                <div class="profile-menu-item active" onclick="app.switchProfileTab('settings')">
+                  <i class="fas fa-user-cog"></i> Account Settings
+                </div>
+                <div class="profile-menu-item" onclick="app.switchProfileTab('orders')">
+                  <i class="fas fa-box-open"></i> Order History
+                </div>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="profile-content">
+              <!-- Settings Tab -->
+              <div id="tab-settings" class="profile-section active">
+                <h3 style="margin-bottom: 1.5rem;">Personal Information</h3>
+                <form onsubmit="event.preventDefault(); app.saveProfile();">
+                  <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="form-group">
+                      <label>Full Name</label>
+                      <input type="text" id="profName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Email Address</label>
+                      <input type="email" id="profEmail" class="form-control" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="profPhone" class="form-control" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Save Personal Info</button>
+                </form>
+
+                <div class="form-group"
+                  style="margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <label style="margin:0; font-size: 1.1rem; font-weight: bold; color: var(--text);">Saved
+                      Addresses</label>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="app.showAddressForm()">+ Add
+                      New</button>
+                  </div>
+
+                  <div class="address-grid" id="addressListContainer">
+                    <!-- Injected via JS -->
+                  </div>
+
+                  <div id="addressFormContainer">
+                    <h4 id="addrFormTitle" style="margin-bottom: 1rem;">Add New Address</h4>
+                    <input type="hidden" id="addrId">
+                    <div class="form-group"><input type="text" id="addrTitle" class="form-control"
+                        placeholder="Title (e.g. Home, Office)"></div>
+                    <div class="form-group"><textarea id="addrStreet" class="form-control" placeholder="Street Address"
+                        rows="2"></textarea></div>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem; gap: 1rem;">
+                      <input type="text" id="addrCity" class="form-control" placeholder="City">
+                      <input type="text" id="addrZip" class="form-control" placeholder="Zip / Postal Code">
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                      <button type="button" class="btn btn-primary" style="padding: 0.5rem 1rem;"
+                        onclick="app.saveAddress()">Save Address</button>
+                      <button type="button" class="btn btn-secondary" style="padding: 0.5rem 1rem;"
+                        onclick="app.hideAddressForm()">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Orders Tab -->
+              <div id="tab-orders" class="profile-section">
+                <h3 style="margin-bottom: 1.5rem;">Order History</h3>
+                <div id="orderHistoryContent">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ABOUT VIEW -->
+    <div id="tpl-about">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">About Us</li>
+          </ul>
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+            <div>
+              <h2 class="section-title">Our <span class="text-gradient">Story</span></h2>
+              <div class="prose">
+                <p>Welcome to Velorex Design, the creative wing of the Velorex family. Born out of a passion for
+                  intricate craftsmanship and bold aesthetics, we specialize in high-quality handcrafted wood items,
+                  mesmerizing resin arts, and professional graphic design services.</p>
+                <p>Every physical piece in our store is painstakingly handcrafted by skilled artisans who pour their
+                  heart and soul into the work. Our digital design team brings the same level of meticulous attention to
+                  detail to elevate your brand's identity.</p>
+                <h3 class="text-gold">Our Mission</h3>
+                <p>To blend traditional craftsmanship with modern design principles, delivering products and services
+                  that inspire creativity and bring joy to our customers' lives.</p>
+              </div>
+            </div>
+            <div
+              style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem; text-align: center;">
+              <i class="fas fa-gem text-gold" style="font-size: 4rem; margin-bottom: 2rem;"></i>
+              <h3>The Velorex Family</h3>
+              <p style="color: var(--text-muted); margin-top: 1rem;">We are proud to be part of a larger family of
+                premium brands, including Velorex Music and Velorex Garments. Excellence is in our DNA.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CONTACT VIEW -->
+    <div id="tpl-contact">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Contact Us</li>
+          </ul>
+          <div class="section-header">
+            <h2 class="section-title">Get in <span class="text-gold">Touch</span></h2>
+            <p class="section-subtitle">We'd love to hear from you. Send us a message!</p>
+          </div>
+          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 4rem;">
+            <div
+              style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem;">
+              <form onsubmit="event.preventDefault(); app.submitContact();">
+                <div class="form-group">
+                  <label>Your Name</label>
+                  <input type="text" id="contactName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label>Email Address</label>
+                  <input type="email" id="contactEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label>Subject</label>
+                  <select class="form-control" id="contactSubject">
+                    <option>General Inquiry</option>
+                    <option>Custom Order Request</option>
+                    <option>Graphic Design Services</option>
+                    <option>Order Support</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Message</label>
+                  <textarea id="contactMessage" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+              </form>
+            </div>
+            <div>
+              <h3 style="margin-bottom: 2rem;">Contact Information</h3>
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 2rem;">
+                <i class="fas fa-map-marker-alt text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
+                <div>
+                  <h4 style="margin-bottom: 0.5rem;">Our Studio</h4>
+                  <p id="contactAddress" style="color: var(--text-muted);">123 Artisan Valley,<br>Design District, Mumbai 400001<br>India
+                  </p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 2rem;">
+                <i class="fas fa-phone-alt text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
+                <div>
+                  <h4 style="margin-bottom: 0.5rem;">Phone / WhatsApp</h4>
+                  <p id="contactPhone" style="color: var(--text-muted);">+91 98765 43210<br>(Mon-Sat, 10am - 6pm IST)</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                <i class="fas fa-envelope text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
+                <div>
+                  <h4 style="margin-bottom: 0.5rem;">Email</h4>
+                  <p id="contactEmail" style="color: var(--text-muted);">hello@velorexdesign.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TERMS VIEW -->
+    <div id="tpl-terms">
+      <section class="section">
+        <div class="container" style="max-width: 800px;">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Terms & Conditions</li>
+          </ul>
+          <h2 class="section-title">Terms & <span class="text-gradient">Conditions</span></h2>
+          <div class="prose"
+            style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem;">
+            <h3>1. Introduction</h3>
+            <p>Welcome to Velorex Design. By accessing this website and purchasing our products or services, you agree
+              to comply with and be bound by the following terms and conditions.</p>
+
+            <h3>2. Handcrafted Variations</h3>
+            <p>Our wood items and resin arts are 100% handcrafted. As a result, slight variations in color, texture,
+              wood grain, and resin flow are natural and expected. These are not defects but rather proof of the item's
+              uniqueness.</p>
+
+            <h3>3. Graphic Design Services</h3>
+            <ul>
+              <li>All design services require a 50% upfront deposit before work begins.</li>
+              <li>Standard packages include up to 3 revisions. Additional revisions may incur extra charges.</li>
+              <li>Final source files will be delivered only upon full payment.</li>
+            </ul>
+
+            <h3>4. Shipping and Returns</h3>
+            <p>We ship across India. Processing time for custom orders is typically 5-7 business days. Due to the custom
+              nature of handcrafted items and design services, we do not accept returns unless the item arrived damaged.
+              In such cases, please contact us within 48 hours of delivery.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PRIVACY VIEW -->
+    <div id="tpl-privacy">
+      <section class="section">
+        <div class="container" style="max-width: 800px;">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Privacy Policy</li>
+          </ul>
+          <h2 class="section-title">Privacy <span class="text-gradient">Policy</span></h2>
+          <div class="prose"
+            style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem;">
+            <h3>1. Information We Collect</h3>
+            <p>We only collect information necessary to fulfill your orders and provide a personalized shopping
+              experience. This includes your name, email address, phone number, and shipping address when you create a
+              profile or place an order.</p>
+
+            <h3>2. Local Storage</h3>
+            <p>For your privacy and convenience, your shopping cart, personal profile, and order history are saved
+              locally in your browser's LocalStorage. This means your data stays on your device and is not continuously
+              uploaded to our servers unless required for checkout.</p>
+
+            <h3>3. Third-Party Services</h3>
+            <p>We may use third-party services such as WhatsApp for order processing and communication. Please refer to
+              their respective privacy policies regarding data handled on their platforms.</p>
+
+            <h3>4. Data Security</h3>
+            <p>We implement standard security measures to maintain the safety of your personal information when you
+              place an order or enter, submit, or access your personal information.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- FAQ VIEW -->
+    <div id="tpl-faq">
+      <section class="section">
+        <div class="container" style="max-width: 800px;">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">FAQ</li>
+          </ul>
+          <div class="section-header">
+            <h2 class="section-title">Frequently Asked <span class="text-gradient">Questions</span></h2>
+            <p class="section-subtitle">Everything you need to know about Velorex Design</p>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+              <div class="faq-question">How do I care for my wood products? <i class="fas fa-chevron-down"></i></div>
+              <div class="faq-answer">Hand wash with mild soap and water. Do not soak. Periodically apply food-safe
+                mineral oil or beeswax to maintain the finish and prevent cracking.</div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+              <div class="faq-question">Is the resin food safe? <i class="fas fa-chevron-down"></i></div>
+              <div class="faq-answer">Yes, we use high-quality, non-toxic, and FDA-compliant epoxy resin for all our
+                serving boards and trays. However, we recommend avoiding direct cutting on the resin surface.</div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+              <div class="faq-question">Do you take custom commissions? <i class="fas fa-chevron-down"></i></div>
+              <div class="faq-answer">Absolutely! We love creating bespoke pieces. Whether it's a custom-sized table, a
+                specific resin color palette, or a unique brand identity, reach out to us via WhatsApp.</div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+              <div class="faq-question">How long does shipping take? <i class="fas fa-chevron-down"></i></div>
+              <div class="faq-answer">Standard items are shipped within 2-3 business days. Custom handcrafted pieces may
+                take 7-14 business days to prepare before shipping.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SHIPPING VIEW -->
+    <div id="tpl-shipping">
+      <section class="section">
+        <div class="container" style="max-width: 800px;">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Shipping & Delivery</li>
+          </ul>
+          <h2 class="section-title">Shipping & <span class="text-gradient">Delivery</span></h2>
+          <div class="prose"
+            style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem;">
+            <h3>Shipping Locations</h3>
+            <p>We currently provide pan-India shipping. International shipping is available upon request for specific
+              items; please contact us for a quote.</p>
+
+            <h3>Shipping Rates</h3>
+            <ul>
+              <li><strong>Standard Shipping:</strong> ₹99 on orders below ₹1000.</li>
+              <li><strong>Free Shipping:</strong> On all orders above ₹1000.</li>
+            </ul>
+
+            <h3>Estimated Delivery Times</h3>
+            <p>Once dispatched, orders typically reach their destination within 4-7 business days depending on the
+              location.</p>
+
+            <h3>Order Tracking</h3>
+            <p>You can track your order status directly in your <a href="#profile">Profile section</a>. Once the item is
+              shipped, we will also provide a tracking ID via WhatsApp.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RETURNS VIEW -->
+    <div id="tpl-returns">
+      <section class="section">
+        <div class="container" style="max-width: 800px;">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Returns & Refunds</li>
+          </ul>
+          <h2 class="section-title">Returns & <span class="text-gradient">Refunds</span></h2>
+          <div class="prose"
+            style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem;">
+            <h3>Our Policy</h3>
+            <p>Due to the handcrafted and customized nature of our products, we generally do not accept returns or
+              exchanges unless the product is delivered in a damaged condition.</p>
+
+            <h3>Damaged Items</h3>
+            <p>If you receive a damaged product, please take a photo/video and contact us within 48 hours of delivery.
+              We will arrange a replacement or a full refund after verifying the damage.</p>
+
+            <h3>Cancellations</h3>
+            <p>Orders can be cancelled within 12 hours of placement. For custom design services, cancellations are not
+              possible once the design work has commenced.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PROCESS VIEW -->
+    <div id="tpl-process">
+      <section class="section">
+        <div class="container">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Our Process</li>
+          </ul>
+          <div class="section-header">
+            <h2 class="section-title">Our Creative <span class="text-gradient">Process</span></h2>
+            <p class="section-subtitle">How we bring your visions to life</p>
+          </div>
+
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="service-card" style="flex-direction: column; text-align: center;">
+              <div style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 1rem;">01</div>
+              <h3>Selection</h3>
+              <p style="color: var(--text-muted);">We hand-select the finest sustainably sourced teak, walnut, and oak
+                wood.</p>
+            </div>
+            <div class="service-card" style="flex-direction: column; text-align: center;">
+              <div style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 1rem;">02</div>
+              <h3>Crafting</h3>
+              <p style="color: var(--text-muted);">Skilled artisans shape and carve each piece using traditional
+                techniques.</p>
+            </div>
+            <div class="service-card" style="flex-direction: column; text-align: center;">
+              <div style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 1rem;">03</div>
+              <h3>Artistry</h3>
+              <p style="color: var(--text-muted);">For resin pieces, we carefully pour and swirl pigments to create
+                unique art.</p>
+            </div>
+            <div class="service-card" style="flex-direction: column; text-align: center;">
+              <div style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 1rem;">04</div>
+              <h3>Finishing</h3>
+              <p style="color: var(--text-muted);">Each item is sanded and polished with natural oils for a premium
+                feel.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- AUTH VIEW -->
+    <div id="tpl-auth">
+      <section class="section">
+        <div class="container" style="max-width: 500px;">
+          <div class="profile-container"
+            style="display: block; padding: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; backdrop-filter: blur(20px);">
+            <div id="loginForm">
+              <h2 class="section-title" style="font-size: 1.8rem; margin-bottom: 1rem;">Welcome <span
+                  class="text-gradient">Back</span></h2>
+              <p style="color: var(--text-muted); margin-bottom: 2rem;">Sign in to your account to continue</p>
+              <form onsubmit="app.handleLogin(event)">
+                <div style="margin-bottom: 1.2rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Email Address</label>
+                  <input type="email" id="loginEmail" class="form-control" placeholder="example@mail.com" required
+                    style="background: rgba(255,255,255,0.05); color: #fff;">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Password</label>
+                  <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required
+                    style="background: rgba(255,255,255,0.05); color: #fff;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Login Now</button>
+              </form>
+              <div style="margin-top: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+                Don't have an account? <a href="javascript:void(0)"
+                  onclick="document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block';"
+                  style="color: var(--secondary);">Join Velorex Design</a>
+              </div>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+              <h2 class="section-title" style="font-size: 1.8rem; margin-bottom: 1rem;">Join <span
+                  class="text-gradient">Velorex</span></h2>
+              <p style="color: var(--text-muted); margin-bottom: 2rem;">Create your account for a personalized
+                experience</p>
+              <form onsubmit="app.handleRegister(event)">
+                <div style="margin-bottom: 1.2rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Full Name</label>
+                  <input type="text" id="regName" class="form-control" placeholder="John Doe" required
+                    style="background: rgba(255,255,255,0.05); color: #fff;">
+                </div>
+                <div style="margin-bottom: 1.2rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Email Address</label>
+                  <input type="email" id="regEmail" class="form-control" placeholder="example@mail.com" required
+                    style="background: rgba(255,255,255,0.05); color: #fff;">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Password</label>
+                  <input type="password" id="regPass" class="form-control" placeholder="••••••••" required
+                    style="background: rgba(255,255,255,0.05); color: #fff;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Create
+                  Account</button>
+              </form>
+              <div style="margin-top: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+                Already a member? <a href="javascript:void(0)"
+                  onclick="document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block';"
+                  style="color: var(--secondary);">Sign In Here</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==========================================
+         APPLICATION LOGIC (JS)
+         ========================================== -->
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // --- DATA ---
+      // Products are managed by the admin panel and fetched from the server.
+      let PRODUCTS = [];
+
+      // Categories: defaults + any custom ones added by admin
+      const DEFAULT_CATS = [
+        { id: 'wood',         name: 'Wood Items'    },
+        { id: 'resin',        name: 'Resin Art'     },
+        { id: 'soap',         name: 'Handmade Soap' },
+        { id: 'candle',       name: 'Candles'       },
+        { id: 'raw_material', name: 'Raw Materials' }
+      ];
+      const customCats = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
+      const CATEGORIES = [...DEFAULT_CATS, ...customCats.filter(c => !c.isDefault)];
+      function getCatName(id) {
+        const c = CATEGORIES.find(x => x.id === id);
+        return c ? c.name : id;
+      }
+
+      async function loadProducts() {
+        try {
+          const response = await fetch('api/get-products.php');
+          const json = await response.json();
+          PRODUCTS = (json.products || []).map(p => {
+            const imagesArr = Array.isArray(p.images) ? p.images : [];
+            const cover = imagesArr[0] || p.image_url || p.img || '';
+            return {
+              id: p.id,
+              name: p.name,
+              price: parseFloat(p.price) || 0,
+              img: cover,
+              images: imagesArr.length ? imagesArr : (cover ? [cover] : []),
+              cat: p.category,
+              desc: p.description || '',
+              stock: parseInt(p.stock, 10) || 0,
+              featured: p.featured === '1' || p.featured === 1 || p.featured === true
+            };
+          });
+
+          const currentHash = window.location.hash || '#home';
+          if (currentHash.startsWith('#products')) {
+            const query = currentHash.split('?')[1] || '';
+            const cat = new URLSearchParams(query).get('cat');
+            app.renderProducts(cat);
+          } else if (currentHash.startsWith('#product-detail')) {
+            const query = currentHash.split('?')[1] || '';
+            const id = new URLSearchParams(query).get('id');
+            app.renderProductDetail(id);
+          }
+        } catch (error) {
+          console.error('Failed to load products:', error);
+        }
+      }
+
+      const SERVICES_DATA = [
+        {
+          id: 'branding', name: 'Logo & Branding', icon: 'fas fa-vector-square',
+          desc: 'Custom logo design, brand guidelines, and complete identity packages tailored to your vision.',
+          startingAt: 2999,
+          packages: [
+            { name: 'Basic',    price: 2999,  badge: null,          features: ['1 Logo Concept', '2 Revisions', 'PNG & JPG Files', '48h Delivery'] },
+            { name: 'Standard', price: 5999,  badge: 'Most Popular', features: ['3 Logo Concepts', '5 Revisions', 'All Formats (AI, SVG, PNG)', 'Brand Color Palette', '3 Day Delivery'] },
+            { name: 'Premium',  price: 9999,  badge: null,          features: ['5 Logo Concepts', 'Unlimited Revisions', 'Complete Brand Guidelines', 'Business Card Design', 'Social Media Kit', '5 Day Delivery'] }
+          ]
+        },
+        {
+          id: 'uiux', name: 'UI/UX Design', icon: 'fas fa-laptop-code',
+          desc: 'Modern, responsive website and mobile app interface designs with full Figma source handoff.',
+          startingAt: 5999,
+          packages: [
+            { name: 'Landing Page', price: 5999,  badge: null,          features: ['1 Page Design', 'Mobile Responsive', '2 Revisions', 'Figma File', '5 Day Delivery'] },
+            { name: 'Website',      price: 12999, badge: 'Most Popular', features: ['Up to 5 Pages', 'Mobile Responsive', '5 Revisions', 'Figma Source File', 'Prototype Included', '7 Day Delivery'] },
+            { name: 'Full App UI',  price: 24999, badge: null,          features: ['Complete App Flow', 'iOS & Android Screens', 'Unlimited Revisions', 'Design System', 'Developer Handoff', '14 Day Delivery'] }
+          ]
+        },
+        {
+          id: 'social', name: 'Social Media Kits', icon: 'fas fa-share-alt',
+          desc: 'Engaging post templates, story banners, and ad creatives for Instagram, Facebook, and more.',
+          startingAt: 1499,
+          packages: [
+            { name: 'Starter Kit', price: 1499, badge: null,         features: ['10 Post Templates', 'Instagram & Facebook', '2 Revisions', 'Editable PSD Files', '3 Day Delivery'] },
+            { name: 'Growth Kit',  price: 2999, badge: 'Best Value', features: ['25 Post Templates', 'Story Templates Included', '4 Revisions', 'Brand-Matched Design', 'Canva & PSD Files', '5 Day Delivery'] },
+            { name: 'Pro Kit',     price: 5499, badge: null,         features: ['50 Post Templates', 'All Platforms', 'Unlimited Revisions', 'Monthly Content Calendar', 'Reel Thumbnails', '7 Day Delivery'] }
+          ]
+        },
+        {
+          id: 'packaging', name: 'Packaging Design', icon: 'fas fa-box-open',
+          desc: 'Eye-catching product packaging and label designs ready for print, with full dieline files.',
+          startingAt: 3499,
+          packages: [
+            { name: 'Label Design',    price: 3499,  badge: null,          features: ['1 Label Design', 'Print-Ready Files', '2 Revisions', '48h Delivery'] },
+            { name: 'Box Design',      price: 6999,  badge: 'Most Popular', features: ['1 Box/Package Design', 'Dieline Included', '4 Revisions', 'Print-Ready Files', '3 Day Delivery'] },
+            { name: 'Full Packaging',  price: 12999, badge: null,          features: ['Complete Packaging Suite', 'Labels + Box + Insert', 'Unlimited Revisions', '3D Mockup Preview', 'Print-Ready Files', '7 Day Delivery'] }
+          ]
+        }
+      ];
+
+      // --- APP STATE & LOGIC ---
+      const app = {
+        cart: JSON.parse(localStorage.getItem('velorex_design_cart')) || [],
+        userProfile: JSON.parse(localStorage.getItem('velorex_design_profile')) || { name: '', email: '', phone: '', addresses: [] },
+        currentUser: JSON.parse(localStorage.getItem('velorex_design_user')) || null,
+        users: JSON.parse(localStorage.getItem('velorex_design_registered_users')) || [],
+
+        init() {
+          this.updateCartBadge();
+          this.updateAuthNav();  // also calls loadNotifications()
+          loadProducts();
+          this.handleRoute();
+          window.addEventListener('hashchange', () => this.handleRoute());
+
+          // Active Nav State
+          window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.split('?')[0] || '#home';
+            document.querySelectorAll('.nav-link').forEach(link => {
+              link.classList.remove('active');
+              if (link.getAttribute('href') === hash) link.classList.add('active');
+            });
+          });
+
+          // Theme Init
+          const savedTheme = localStorage.getItem('velorex_design_theme') || 'dark';
+          if (savedTheme === 'light') this.setTheme('light');
+
+          // Apply store settings to contact info and links
+          this.applyStoreSettings();
+
+          // Scroll Listener for Back to Top
+          window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (btn) {
+              if (window.scrollY > 300) btn.classList.add('visible');
+              else btn.classList.remove('visible');
+            }
+          });
+        },
+
+        toggleTheme() {
+          const current = document.documentElement.getAttribute('data-theme');
+          this.setTheme(current === 'light' ? 'dark' : 'light');
+        },
+
+        setTheme(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem('velorex_design_theme', theme);
+          const icon = document.getElementById('themeIcon');
+          if (icon) {
+            icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+          }
+        },
+
+        applyStoreSettings() {
+          const s = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
+          const addr = document.getElementById('contactAddress');
+          const phone = document.getElementById('contactPhone');
+          const email = document.getElementById('contactEmail');
+          const waLink = document.getElementById('servicesWaLink');
+          if (addr && s.address) addr.innerHTML = s.address.replace(/\n/g, '<br>');
+          if (phone && s.phone) phone.innerHTML = s.phone + '<br>(Mon-Sat, 10am - 6pm IST)';
+          if (email && s.email) email.textContent = s.email;
+          if (waLink && s.whatsapp) {
+            waLink.href = `https://wa.me/${s.whatsapp}?text=Hi%20Velorex%20Design,%20I%20am%20interested%20in%20your%20graphic%20design%20services.`;
+          }
+        },
+
+        // Navigation
+        navigate(view, params = {}) {
+          let hash = '#' + view;
+          if (Object.keys(params).length > 0) {
+            const qs = new URLSearchParams(params).toString();
+            hash += '?' + qs;
+          }
+          window.location.hash = hash;
+        },
+
+        handleRoute() {
+          const fullHash = window.location.hash || '#home';
+          const [hashStr, qs] = fullHash.split('?');
+          const view = hashStr.replace('#', '');
+          const params = new URLSearchParams(qs);
+
+          const appRoot = document.getElementById('app');
+          const template = document.getElementById('tpl-' + view);
+
+          if (template) {
+            appRoot.innerHTML = `<div class="view active">${template.innerHTML}</div>`;
+            window.scrollTo(0, 0);
+
+            // View specific logic
+            if (view === 'home') this.renderHome();
+            if (view === 'products') {
+              if (PRODUCTS.length === 0) {
+                loadProducts().then(() => this.renderProducts(params.get('cat')));
+              } else {
+                this.renderProducts(params.get('cat'));
+              }
+            }
+            if (view === 'product-detail') {
+              if (PRODUCTS.length === 0) {
+                loadProducts().then(() => this.renderProductDetail(params.get('id')));
+              } else {
+                this.renderProductDetail(params.get('id'));
+              }
+            }
+            if (view === 'cart') this.renderCart();
+            if (view === 'profile') {
+              if (!this.currentUser) {
+                this.navigate('auth');
+                return;
+              }
+              this.renderProfile();
+            }
+            if (view === 'auth') {
+              if (this.currentUser) {
+                this.navigate('profile');
+                return;
+              }
+            }
+            if (view === 'services') this.renderServices();
+            if (view === 'contact' || view === 'services') this.applyStoreSettings();
+
+            // Close mobile menu if open
+            document.getElementById('navLinks').classList.remove('show');
+          } else {
+            this.navigate('home');
+          }
+        },
+
+        // Auth Logic
+        updateAuthNav() {
+          const profileLink = document.querySelector('a[href="#profile"]');
+          if (profileLink) {
+            if (this.currentUser) {
+              profileLink.innerHTML = `<i class="fas fa-user"></i> ${this.currentUser.name.split(' ')[0]}`;
+              profileLink.setAttribute('href', '#profile');
+            } else {
+              profileLink.innerHTML = `<i class="fas fa-sign-in-alt"></i> Login/Join`;
+              profileLink.setAttribute('href', '#auth');
+            }
+          }
+          this.loadNotifications();
+        },
+
+        loadNotifications() {
+          const bell = document.getElementById('notifBell');
+          const badge = document.getElementById('notifCount');
+          if (!bell || !badge) return;
+          if (!this.currentUser) { bell.style.display = 'none'; return; }
+          const notifs = JSON.parse(localStorage.getItem(`velorex_notifications_${this.currentUser.id}`)) || [];
+          const unread = notifs.filter(n => !n.read).length;
+          bell.style.display = 'flex';
+          if (unread > 0) {
+            badge.style.display = 'flex';
+            badge.textContent = unread > 9 ? '9+' : unread;
+          } else {
+            badge.style.display = 'none';
+          }
+        },
+
+        markNotificationsRead() {
+          if (!this.currentUser) return;
+          const key = `velorex_notifications_${this.currentUser.id}`;
+          const notifs = JSON.parse(localStorage.getItem(key)) || [];
+          notifs.forEach(n => n.read = true);
+          localStorage.setItem(key, JSON.stringify(notifs));
+          const badge = document.getElementById('notifCount');
+          if (badge) badge.style.display = 'none';
+        },
+
+        renderNotifications() {
+          if (!this.currentUser) return '';
+          const notifs = JSON.parse(localStorage.getItem(`velorex_notifications_${this.currentUser.id}`)) || [];
+          if (notifs.length === 0) return '';
+          return `
+            <div style="margin-bottom:2rem;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+                <h4 style="font-size:1rem;">Notifications</h4>
+                <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.78rem;" onclick="app.clearNotifications()"><i class="fas fa-times"></i> Clear All</button>
+              </div>
+              ${notifs.slice(0, 10).map(n => `
+                <div class="notif-banner ${n.read ? 'read' : 'unread'}">
+                  ${!n.read ? '<div class="notif-dot"></div>' : ''}
+                  <i class="notif-icon fas ${n.status === 'Shipped' ? 'fa-truck' : n.status === 'Delivered' ? 'fa-check-circle' : n.status === 'Cancelled' ? 'fa-times-circle' : 'fa-box-open'}"></i>
+                  <div style="flex:1;">
+                    <div>${n.message}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem;">${n.timestamp}</div>
+                  </div>
+                </div>`).join('')}
+            </div>`;
+        },
+
+        clearNotifications() {
+          if (!this.currentUser) return;
+          localStorage.removeItem(`velorex_notifications_${this.currentUser.id}`);
+          this.renderProfile();
+          this.loadNotifications();
+        },
+
+        handleRegister(e) {
+          e.preventDefault();
+          const name = document.getElementById('regName').value;
+          const email = document.getElementById('regEmail').value;
+          const pass = document.getElementById('regPass').value;
+
+          if (this.users.some(u => u.email === email)) {
+            this.showToast('Email already registered!', 'error');
+            return;
+          }
+
+          const newUser = { name, email, pass, id: Date.now() };
+          this.users.push(newUser);
+          localStorage.setItem('velorex_design_registered_users', JSON.stringify(this.users));
+
+          this.currentUser = newUser;
+          localStorage.setItem('velorex_design_user', JSON.stringify(newUser));
+
+          this.updateAuthNav();
+          this.navigate('profile');
+          this.showToast(`Welcome to Velorex Design, ${name}!`, 'success');
+        },
+
+        handleLogin(e) {
+          e.preventDefault();
+          const email = document.getElementById('loginEmail').value;
+          const pass = document.getElementById('loginPass').value;
+
+          const user = this.users.find(u => u.email === email && u.pass === pass);
+          if (user) {
+            this.currentUser = user;
+            localStorage.setItem('velorex_design_user', JSON.stringify(user));
+            this.updateAuthNav();
+            this.navigate('profile');
+            this.showToast(`Welcome back, ${user.name}!`, 'success');
+          } else {
+            this.showToast('Invalid email or password!', 'error');
+          }
+        },
+
+        handleLogout() {
+          this.currentUser = null;
+          localStorage.removeItem('velorex_design_user');
+          this.updateAuthNav();
+          this.navigate('home');
+          this.showToast('You have been logged out.', 'info');
+        },
+
+        // Admin Logic
+        renderAdmin() {
+          const isAdmin = localStorage.getItem('velorex_admin_logged') === 'true';
+          if (!isAdmin) {
+            const pass = prompt("Enter Admin Password:");
+            if (pass === 'admin123') {
+              localStorage.setItem('velorex_admin_logged', 'true');
+            } else {
+              alert("Unauthorized!");
+              this.navigate('home');
+              return;
+            }
+          }
+
+          // Render Stats
+          document.getElementById('adminStatProducts').textContent = PRODUCTS.length;
+          document.getElementById('adminStatOrders').textContent = this.allOrders.length;
+          const totalRev = this.allOrders.reduce((sum, o) => sum + o.total, 0);
+          document.getElementById('adminStatRevenue').textContent = `₹${totalRev.toLocaleString()}`;
+
+          this.renderAdminInventory();
+          this.renderAdminOrders();
+        },
+
+        switchAdminTab(tabId) {
+          document.querySelectorAll('#admin-inventory, #admin-orders').forEach(el => el.classList.remove('active'));
+          document.getElementById('admin-' + tabId).classList.add('active');
+
+          document.querySelectorAll('.profile-sidebar .profile-menu-item').forEach(el => el.classList.remove('active'));
+          event.currentTarget.classList.add('active');
+        },
+
+        renderAdminInventory() {
+          const list = document.getElementById('adminProductList');
+          list.innerHTML = PRODUCTS.map(p => `
+          <div class="service-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; margin-bottom: 0.5rem;">
+            <div style="display: flex; gap: 1.5rem; align-items: center;">
+              <img src="${p.img}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+              <div>
+                <h4 style="margin: 0; font-size: 1rem;">${p.name}</h4>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">${p.cat} • ₹${p.price}</div>
+              </div>
+            </div>
+            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.7rem; border-color: #ef4444; color: #ef4444;" onclick="app.adminDeleteProduct('${p.id}')">Delete</button>
+          </div>
+        `).join('');
+        },
+
+        renderAdminOrders() {
+          const list = document.getElementById('adminOrderList');
+          if (this.allOrders.length === 0) {
+            list.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No store orders yet.</p>`;
+            return;
+          }
+
+          list.innerHTML = this.allOrders.map(o => `
+          <div class="order-card" style="margin-bottom: 1rem;">
+            <div class="order-header">
+              <div>
+                <div style="font-weight: bold; font-size: 0.9rem;">Order #${o.id}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">${o.date}</div>
+              </div>
+              <div style="text-align: right;">
+                <select onchange="app.adminUpdateOrderStatus('${o.id}', this.value)" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); padding: 4px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">
+                  <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                  <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                  <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                  <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                </select>
+                <div style="font-weight: bold; margin-top: 5px; font-size: 0.9rem;">₹${o.total}</div>
+              </div>
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+              Customer: ${o.address.street}, ${o.address.city}
+            </div>
+          </div>
+        `).join('');
+        },
+
+        showAddProductModal() {
+          document.getElementById('adminProductModal').style.display = 'flex';
+        },
+
+        hideAddProductModal() {
+          document.getElementById('adminProductModal').style.display = 'none';
+        },
+
+        handleAdminAddProduct(e) {
+          e.preventDefault();
+          const newProd = {
+            id: Date.now(),
+            name: document.getElementById('adminProdName').value,
+            price: parseInt(document.getElementById('adminProdPrice').value),
+            cat: document.getElementById('adminProdCat').value,
+            img: document.getElementById('adminProdImg').value,
+            desc: document.getElementById('adminProdDesc').value,
+            featured: false
+          };
+
+          const custom = JSON.parse(localStorage.getItem('velorex_design_custom_products')) || [];
+          custom.push(newProd);
+          localStorage.setItem('velorex_design_custom_products', JSON.stringify(custom));
+
+          PRODUCTS.push(newProd);
+          this.hideAddProductModal();
+          this.renderAdmin();
+          this.showToast('Product added to inventory!', 'success');
+        },
+
+        adminDeleteProduct(id) {
+          if (!confirm("Are you sure you want to delete this product?")) return;
+
+          PRODUCTS = PRODUCTS.filter(p => p.id.toString() !== id.toString());
+
+          let custom = JSON.parse(localStorage.getItem('velorex_design_custom_products')) || [];
+          custom = custom.filter(p => p.id.toString() !== id.toString());
+          localStorage.setItem('velorex_design_custom_products', JSON.stringify(custom));
+
+          this.renderAdmin();
+          this.showToast('Product removed!', 'info');
+        },
+
+        adminUpdateOrderStatus(id, newStatus) {
+          const order = this.allOrders.find(o => o.id === id);
+          if (order) {
+            order.status = newStatus;
+            localStorage.setItem('velorex_design_all_orders', JSON.stringify(this.allOrders));
+            this.showToast(`Order #${id} updated to ${newStatus}`, 'success');
+          }
+        },
+
+        // Render Functions
+        createProductCard(product) {
+          return `
+                    <div class="product-card">
+                        <div class="product-img" onclick="app.navigate('product-detail', {id: ${product.id}})" style="cursor:pointer;">
+                            <img src="${product.img}" alt="${product.name}">
+                            ${product.featured ? '<span class="product-badge">Featured</span>' : ''}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-cat">${product.cat === 'wood' ? 'Wood Item' : 'Resin Art'}</div>
+                            <h3 class="product-title" onclick="app.navigate('product-detail', {id: ${product.id}})">${product.name}</h3>
+                            <div class="product-price">₹${product.price}</div>
+                            <button class="btn btn-primary btn-block" onclick="app.addToCart(${product.id})">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+        },
+
+        renderHome() {
+          const grid = document.getElementById('homeFeaturedGrid');
+          let featured = PRODUCTS.filter(p => p.featured);
+          if (featured.length === 0) featured = PRODUCTS.slice(0, 3);
+          else featured = featured.slice(0, 3);
+          if (featured.length === 0) {
+            grid.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:2rem; grid-column:1/-1;">No products yet. Add some from the admin panel.</p>`;
+          } else {
+            grid.innerHTML = featured.map(p => this.createProductCard(p)).join('');
+          }
+        },
+
+        renderServices() {
+          const typesGrid = document.getElementById('servicesTypeGrid');
+          if (!typesGrid) return;
+          this._selectedService = null;
+          this._selectedPkg = null;
+          typesGrid.innerHTML = SERVICES_DATA.map(s => `
+            <div class="service-card service-type-card" id="svc-${s.id}" onclick="app.selectServiceType('${s.id}')">
+              <div class="service-icon"><i class="${s.icon}"></i></div>
+              <div style="flex:1;">
+                <h3>${s.name}</h3>
+                <p style="color:var(--text-muted); margin-top:0.5rem; font-size:0.9rem;">${s.desc}</p>
+                <p style="color:var(--accent); margin-top:0.8rem; font-weight:700; font-size:0.95rem;">Starting at ₹${s.startingAt.toLocaleString()}</p>
+                <div class="select-hint"><i class="fas fa-hand-pointer"></i> Click to see packages</div>
+              </div>
+            </div>
+          `).join('');
+          const dp = document.getElementById('serviceDetailPanel');
+          const pb = document.getElementById('servicesProceedBar');
+          if (dp) dp.style.display = 'none';
+          if (pb) pb.style.display = 'none';
+        },
+
+        selectServiceType(id) {
+          const svc = SERVICES_DATA.find(s => s.id === id);
+          if (!svc) return;
+          document.querySelectorAll('.service-type-card').forEach(c => c.classList.remove('active'));
+          const card = document.getElementById('svc-' + id);
+          if (card) card.classList.add('active');
+          this._selectedService = id;
+          this._selectedPkg = null;
+          const dp = document.getElementById('serviceDetailPanel');
+          const pb = document.getElementById('servicesProceedBar');
+          dp.style.display = 'block';
+          dp.innerHTML = `
+            <div class="service-detail-panel">
+              <div style="margin-bottom:1.8rem;">
+                <h3 style="font-family:var(--font-display); font-size:1.55rem;">
+                  ${svc.name} &mdash; <span class="text-gradient">Choose a Package</span>
+                </h3>
+                <p style="color:var(--text-muted); margin-top:0.4rem;">Select the package that fits your needs, then proceed.</p>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1.5rem;">
+                ${svc.packages.map((pkg, i) => `
+                  <div class="pkg-card" id="pkg-${id}-${i}" onclick="app.selectPackage('${id}', ${i})">
+                    ${pkg.badge ? `<div class="pkg-badge">${pkg.badge}</div>` : ''}
+                    <div class="pkg-name">${pkg.name}</div>
+                    <div class="pkg-price">₹${pkg.price.toLocaleString()}</div>
+                    <ul class="pkg-features">
+                      ${pkg.features.map(f => `<li><i class="fas fa-check-circle"></i>${f}</li>`).join('')}
+                    </ul>
+                    <button class="pkg-select-btn">${pkg.badge ? pkg.badge + ' — Select' : 'Select Package'}</button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+          if (pb) pb.style.display = 'none';
+          dp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+
+        selectPackage(serviceId, pkgIdx) {
+          document.querySelectorAll(`[id^="pkg-${serviceId}-"]`).forEach(c => c.classList.remove('selected'));
+          const selected = document.getElementById(`pkg-${serviceId}-${pkgIdx}`);
+          if (selected) selected.classList.add('selected');
+          this._selectedPkg = pkgIdx;
+          const svc = SERVICES_DATA.find(s => s.id === serviceId);
+          const pkg = svc.packages[pkgIdx];
+          const pb = document.getElementById('servicesProceedBar');
+          pb.style.display = 'block';
+          pb.innerHTML = `
+            <div class="proceed-bar">
+              <div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.2rem; text-transform:uppercase; letter-spacing:1px;">Your Selection</div>
+                <div style="font-weight:700; font-size:1.05rem;">${svc.name} &mdash; ${pkg.name} Package</div>
+                <div style="color:var(--accent); font-weight:700; font-size:1.25rem; margin-top:0.15rem;">₹${pkg.price.toLocaleString()}</div>
+              </div>
+              <button class="btn btn-primary" style="white-space:nowrap; padding:0.9rem 1.8rem;" onclick="app.proceedService('${serviceId}', ${pkgIdx})">
+                <i class="fab fa-whatsapp"></i>&nbsp; Proceed to Order
+              </button>
+            </div>
+          `;
+          pb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+
+        proceedService(serviceId, pkgIdx) {
+          const svc = SERVICES_DATA.find(s => s.id === serviceId);
+          const pkg = svc.packages[pkgIdx];
+          const storeSettings = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
+          const waNumber = storeSettings.whatsapp || '';
+          if (!waNumber) { this.showToast('WhatsApp number not configured by admin.', 'error'); return; }
+          const features = pkg.features.map(f => '• ' + f).join('\n');
+          const text = `Hi Velorex Design! I would like to order the following service:\n\n*Service:* ${svc.name}\n*Package:* ${pkg.name}\n*Price:* ₹${pkg.price.toLocaleString()}\n\n*What's included:*\n${features}\n\nPlease let me know the next steps!`;
+          window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, '_blank');
+        },
+
+        renderProducts(catFilter = 'all') {
+          const grid = document.getElementById('productsGrid');
+          const noProd = document.getElementById('noProducts');
+          const title = document.getElementById('catalogTitle');
+          const select = document.getElementById('catFilter');
+
+          // Populate filter dropdown dynamically from CATEGORIES
+          if (select) {
+            const current = catFilter || 'all';
+            select.innerHTML = `<option value="all">All Categories</option>` +
+              CATEGORIES.map(c => `<option value="${c.id}"${c.id === current ? ' selected' : ''}>${c.name}</option>`).join('');
+          }
+
+          let filtered = PRODUCTS;
+          if (catFilter && catFilter !== 'all') {
+            filtered = PRODUCTS.filter(p => p.cat === catFilter);
+            title.innerHTML = `${getCatName(catFilter)} <span class="text-gradient">Collection</span>`;
+          } else {
+            title.innerHTML = `Our <span class="text-gradient">Catalog</span>`;
+          }
+
+          // Breadcrumbs
+          const bc = document.getElementById('bc-products');
+          if (bc) {
+            let bcHtml = `<li class="breadcrumb-item"><a href="#home">Home</a></li>`;
+            bcHtml += `<li class="breadcrumb-item"><a href="#products">Catalog</a></li>`;
+            if (catFilter && catFilter !== 'all') {
+              bcHtml += `<li class="breadcrumb-item active">${getCatName(catFilter)}</li>`;
+            }
+            bc.innerHTML = bcHtml;
+          }
+
+          if (filtered.length > 0) {
+            grid.style.display = 'grid';
+            noProd.style.display = 'none';
+            grid.innerHTML = filtered.map(p => this.createProductCard(p)).join('');
+          } else {
+            grid.style.display = 'none';
+            noProd.style.display = 'block';
+          }
+        },
+
+        filterProducts() {
+          const val = document.getElementById('catFilter').value;
+          this.navigate('products', { cat: val });
+        },
+
+        renderProductDetail(id) {
+          const product = PRODUCTS.find(p => p.id == id);
+          const container = document.getElementById('productDetailContent');
+
+          if (!product) {
+            container.innerHTML = `<h2>Product not found.</h2>`;
+            return;
+          }
+
+          // Breadcrumbs
+          const bc = document.getElementById('bc-detail');
+          if (bc) {
+            bc.innerHTML = `
+                        <li class="breadcrumb-item"><a href="#home">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#products">Catalog</a></li>
+                        <li class="breadcrumb-item"><a href="#products?cat=${product.cat}">
+                            ${getCatName(product.cat)}
+                        </a></li>
+                        <li class="breadcrumb-item active">${product.name}</li>
+                    `;
+          }
+
+          const gallery = (product.images && product.images.length ? product.images : [product.img]).filter(Boolean);
+          this._detailGallery = gallery;
+          const thumbsHtml = gallery.length > 1 ? `
+                        <div class="detail-thumbs" style="display:flex; gap:0.6rem; margin-top:0.9rem; flex-wrap:wrap;">
+                            ${gallery.map((src, i) => `
+                                <div onclick="app.selectDetailImage(${i})" id="detail-thumb-${i}" style="width:74px; height:74px; border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid ${i === 0 ? 'var(--secondary)' : 'var(--border)'}; transition:border-color 0.2s; background:#000;">
+                                    <img src="${src}" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.opacity=0.3">
+                                </div>
+                            `).join('')}
+                        </div>` : '';
+
+          container.innerHTML = `
+                    <div class="detail-img">
+                        <img id="detailMainImage" src="${gallery[0] || ''}" alt="${product.name}">
+                        ${thumbsHtml}
+                    </div>
+                    <div class="detail-info">
+                        <div style="color: var(--secondary); font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 2px;">
+                            ${getCatName(product.cat)} Collection
+                        </div>
+                        <h1>${product.name}</h1>
+                        <div class="detail-price">₹${product.price}</div>
+                        <p class="detail-desc">${product.desc}</p>
+                        
+                        <div style="background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                <i class="fas fa-check-circle text-gold"></i> <span>100% Handcrafted</span>
+                            </div>
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                <i class="fas fa-truck text-gold"></i> <span>Ships in 3-5 business days</span>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <i class="fas fa-shield-alt text-gold"></i> <span>Secure checkout</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-primary" style="flex: 2;" onclick="app.addToCart(${product.id})">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+        },
+
+        selectDetailImage(i) {
+          if (!Array.isArray(this._detailGallery) || !this._detailGallery[i]) return;
+          const main = document.getElementById('detailMainImage');
+          if (main) main.src = this._detailGallery[i];
+          this._detailGallery.forEach((_, idx) => {
+            const t = document.getElementById('detail-thumb-' + idx);
+            if (t) t.style.borderColor = idx === i ? 'var(--secondary)' : 'var(--border)';
+          });
+        },
+
+        // Cart Logic
+        addToCart(id) {
+          const product = PRODUCTS.find(p => p.id == id);
+          if (!product) return;
+
+          const existing = this.cart.find(item => item.id == id);
+          if (existing) {
+            existing.qty += 1;
+          } else {
+            this.cart.push({ ...product, qty: 1 });
+          }
+
+          this.saveCart();
+          this.showToast(`Added ${product.name} to cart!`);
+          if (window.location.hash.includes('cart')) this.renderCart();
+        },
+
+        updateQty(id, change) {
+          const item = this.cart.find(i => i.id == id);
+          if (item) {
+            item.qty += change;
+            if (item.qty <= 0) {
+              this.cart = this.cart.filter(i => i.id != id);
+            }
+            this.saveCart();
+            this.renderCart();
+          }
+        },
+
+        saveCart() {
+          localStorage.setItem('velorex_design_cart', JSON.stringify(this.cart));
+          this.updateCartBadge();
+        },
+
+        updateCartBadge() {
+          const count = this.cart.reduce((sum, item) => sum + item.qty, 0);
+          const badge = document.getElementById('cartCount');
+          badge.textContent = count;
+          badge.style.display = count > 0 ? 'flex' : 'none';
+        },
+
+        renderCart() {
+          const container = document.getElementById('cartContent');
+
+          if (this.cart.length === 0) {
+            container.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+                            <i class="fas fa-shopping-cart" style="font-size: 4rem; color: var(--border); margin-bottom: 1.5rem;"></i>
+                            <h2>Your cart is empty</h2>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem;">Looks like you haven't added anything yet.</p>
+                            <button class="btn btn-primary" onclick="app.navigate('products')">Continue Shopping</button>
+                        </div>
+                    `;
+            return;
+          }
+
+          const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+          const shipping = subtotal > 999 ? 0 : 99;
+          const total = subtotal + shipping;
+
+          const itemsHtml = this.cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">₹${item.price}</div>
+                        </div>
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="app.updateQty(${item.id}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" onclick="app.updateQty(${item.id}, 1)">+</button>
+                        </div>
+                        <div class="cart-remove" onclick="app.updateQty(${item.id}, -${item.qty})">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                `).join('');
+
+          container.innerHTML = `
+                    <div class="cart-items">
+                        ${itemsHtml}
+                    </div>
+                    <div class="cart-summary">
+                        <h3 style="margin-bottom: 1.5rem;">Order Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>₹${subtotal}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping ${shipping === 0 ? '(Free)' : ''}</span>
+                            <span>₹${shipping}</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span class="text-gradient">₹${total}</span>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                            <h4 style="margin-bottom: 1rem;">Checkout via WhatsApp</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">We currently process secure payments manually via WhatsApp to ensure product customization and availability.</p>
+                            <button class="btn btn-primary btn-block" onclick="app.checkout()">
+                                <i class="fab fa-whatsapp"></i> Proceed to Order
+                            </button>
+                        </div>
+                    </div>
+                `;
+        },
+
+        checkout() {
+          if (this.cart.length === 0) return;
+
+          let text = "Hi Velorex Design! I would like to place an order for:\n\n";
+          let subtotal = 0;
+          const items = this.cart.map(item => {
+            subtotal += item.price * item.qty;
+            text += `- ${item.qty}x ${item.name} (₹${item.price * item.qty})\n`;
+            return {
+              product_id: item.id,
+              name: item.name,
+              qty: item.qty,
+              price: item.price
+            };
+          });
+
+          const shipping = subtotal > 999 ? 0 : 99;
+          const total = subtotal + shipping;
+          const defaultAddr = this.userProfile.addresses && this.userProfile.addresses.length > 0 ? this.userProfile.addresses.find(a => a.isDefault) || this.userProfile.addresses[0] : null;
+          const addressText = defaultAddr ? `${defaultAddr.street}, ${defaultAddr.city} ${defaultAddr.zip}` : 'No address provided';
+
+          text += `\nSubtotal: ₹${subtotal}\nShipping: ₹${shipping}\n*Total: ₹${total}*\n\nShipping Address: ${addressText}\n\nPlease let me know the payment details.`;
+
+          const payload = {
+            customer_name: this.userProfile.name || 'Guest',
+            customer_email: this.userProfile.email || '',
+            customer_phone: this.userProfile.phone || '',
+            address: defaultAddr ? {
+              street: defaultAddr.street,
+              city: defaultAddr.city,
+              zip: defaultAddr.zip
+            } : null,
+            total: total,
+            items: items
+          };
+
+          fetch('api/create-order.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(response => response.json().then(data => ({ ok: response.ok, data })))
+          .then(({ ok, data }) => {
+            if (!ok || !data.success) {
+              throw new Error(data.error || 'Unable to save order');
+            }
+
+            const orderCode = data.order_code;
+            const serverTotal = typeof data.total_amount === 'number' ? data.total_amount : total;
+
+            const orderRecord = {
+              id: orderCode,
+              date: new Date().toLocaleDateString(),
+              createdAt: new Date().toISOString(),
+              items: items.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+              total: serverTotal,
+              status: 'Pending',
+              userId: this.currentUser?.id || 'guest',
+              userName: this.currentUser?.name || this.userProfile.name || 'Guest',
+              userEmail: this.userProfile.email || '',
+              userPhone: this.userProfile.phone || '',
+              address: defaultAddr ? { street: defaultAddr.street, city: defaultAddr.city, zip: defaultAddr.zip } : null,
+              trackingNumber: '',
+              adminNote: '',
+              statusHistory: [{ status: 'Pending', timestamp: new Date().toLocaleString() }]
+            };
+
+            const allOrders = JSON.parse(localStorage.getItem('velorex_design_all_orders')) || [];
+            allOrders.unshift(orderRecord);
+            localStorage.setItem('velorex_design_all_orders', JSON.stringify(allOrders));
+
+            const storeSettings = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
+            const waNumber = storeSettings.whatsapp || '';
+            const finalText = text + `\n\n*Order Reference:* ${orderCode}\n\nPlease let me know the payment details.`;
+            if (waNumber) {
+              window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(finalText)}`, '_blank');
+            }
+
+            this.cart = [];
+            this.saveCart();
+            this.renderCart();
+            if (waNumber) {
+              this.showToast(`Order placed! Reference: ${orderCode}`, 'success');
+            } else {
+              this.showToast(`Order placed (ref ${orderCode}). Admin hasn't set a WhatsApp number — please contact the store directly.`, 'info');
+            }
+          })
+          .catch(error => {
+            this.showToast(error.message, 'error');
+          });
+        },
+
+        // Profile Logic
+        renderProfile() {
+          // Populate Form
+          document.getElementById('profName').value = this.userProfile.name || '';
+          document.getElementById('profEmail').value = this.userProfile.email || '';
+          document.getElementById('profPhone').value = this.userProfile.phone || '';
+
+          // Render Addresses
+          this.renderAddresses();
+
+          // Render Orders — read from shared all_orders filtered by current user
+          // Inject notifications at top of the orders section header
+          const ordersHeader = document.querySelector('#tab-orders h3');
+          if (ordersHeader) {
+            const notifHtml = this.renderNotifications();
+            const existing = document.getElementById('notifBannerArea');
+            if (existing) existing.remove();
+            if (notifHtml) {
+              const div = document.createElement('div');
+              div.id = 'notifBannerArea';
+              div.innerHTML = notifHtml;
+              ordersHeader.insertAdjacentElement('afterend', div);
+            }
+          }
+          const ordersContainer = document.getElementById('orderHistoryContent');
+          const userId = this.currentUser?.id || null;
+          const allOrders = JSON.parse(localStorage.getItem('velorex_design_all_orders')) || [];
+          const myOrders = userId ? allOrders.filter(o => o.userId === userId) : [];
+
+          // Mark notifications as read when orders tab is open
+          this.markNotificationsRead();
+
+          if (myOrders.length === 0) {
+            ordersContainer.innerHTML = `
+              <div style="text-align:center; padding:3rem; color:var(--text-muted);">
+                <i class="fas fa-box-open" style="font-size:3rem; opacity:0.3; margin-bottom:1rem; display:block;"></i>
+                <p>You haven't placed any orders yet.</p>
+                <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="app.navigate('products')"><i class="fas fa-shopping-bag"></i> Browse Products</button>
+              </div>`;
+          } else {
+            const statusSteps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+            const statusPill = s => `<span class="order-status-pill pill-${s.toLowerCase()}">${s}</span>`;
+            ordersContainer.innerHTML = myOrders.map(o => {
+              const idx = statusSteps.indexOf(o.status);
+              const currentIndex = idx === -1 ? 0 : idx;
+              const progressWidth = ['0%', '33%', '66%', '100%'][currentIndex] || '0%';
+              const cancelled = o.status === 'Cancelled';
+              return `
+                <div class="order-card" style="${cancelled ? 'opacity:0.65;' : ''}">
+                  <div class="order-header">
+                    <div>
+                      <div style="font-weight:bold; font-size:1.1rem;">${o.id}</div>
+                      <div style="font-size:0.8rem; color:var(--text-muted);">${o.date}</div>
+                    </div>
+                    <div style="text-align:right;">
+                      ${statusPill(o.status)}
+                      <div style="font-weight:bold; margin-top:5px;">₹${o.total.toLocaleString()}</div>
+                      ${o.trackingNumber ? `<div style="margin-top:5px; font-size:0.78rem; color:var(--text-muted);">Tracking: <strong style="color:var(--text);">${o.trackingNumber}</strong></div>` : ''}
+                    </div>
+                  </div>
+                  <div class="order-items">
+                    <h5 style="margin-bottom:0.5rem; font-size:0.9rem;">Items:</h5>
+                    ${(o.items || []).map(item => `<div style="font-size:0.9rem; color:var(--text-muted);">• ${item.qty}× ${item.name} — ₹${(item.price * item.qty).toLocaleString()}</div>`).join('')}
+                  </div>
+                  ${o.adminNote ? `<div style="margin-top:1rem; padding:0.75rem 1rem; background:rgba(255,107,53,0.07); border-left:3px solid var(--secondary); border-radius:6px; font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-comment-dots" style="color:var(--secondary); margin-right:6px;"></i>${o.adminNote}</div>` : ''}
+                  ${cancelled ? '' : `
+                  <div class="order-tracking" style="margin-top:1.5rem;">
+                    <div class="tracking-progress" style="width:${progressWidth};"></div>
+                    ${statusSteps.map((s, i) => `
+                      <div class="tracking-step ${currentIndex >= i ? 'completed' : ''}">
+                        <div class="tracking-icon"><i class="fas ${['fa-clipboard-list','fa-box-open','fa-truck','fa-home'][i]}" style="font-size:0.8rem;"></i></div>
+                        <div style="font-size:0.75rem; font-weight:bold;">${s}</div>
+                      </div>`).join('')}
+                  </div>`}
+                </div>`;
+            }).join('');
+          }
+        },
+
+        saveProfile() {
+          this.userProfile.name = document.getElementById('profName').value;
+          this.userProfile.email = document.getElementById('profEmail').value;
+          this.userProfile.phone = document.getElementById('profPhone').value;
+
+          this.saveProfileData();
+          this.showToast('Personal info updated successfully!', 'success');
+        },
+
+        renderAddresses() {
+          const container = document.getElementById('addressListContainer');
+          const addresses = this.userProfile.addresses || [];
+
+          if (addresses.length === 0) {
+            container.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">No addresses saved.</p>`;
+            return;
+          }
+
+          container.innerHTML = addresses.map(addr => `
+                    <div class="address-card ${addr.isDefault ? 'default' : ''}">
+                        ${addr.isDefault ? '<span class="address-badge">Default</span>' : ''}
+                        <h4 style="margin-bottom: 0.5rem;">${addr.title}</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.2rem;">${addr.street}</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">${addr.city}, ${addr.zip}</p>
+                        
+                        <div class="address-actions">
+                            <span class="address-btn" onclick="app.showAddressForm(${addr.id})"><i class="fas fa-edit"></i> Edit</span>
+                            <span class="address-btn" onclick="app.deleteAddress(${addr.id})"><i class="fas fa-trash"></i> Delete</span>
+                            ${!addr.isDefault ? `<span class="address-btn" style="margin-left:auto" onclick="app.setDefaultAddress(${addr.id})">Set Default</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+        },
+
+        showAddressForm(id = null) {
+          document.getElementById('addressFormContainer').style.display = 'block';
+          if (id) {
+            const addr = this.userProfile.addresses.find(a => a.id === id);
+            document.getElementById('addrFormTitle').textContent = 'Edit Address';
+            document.getElementById('addrId').value = addr.id;
+            document.getElementById('addrTitle').value = addr.title;
+            document.getElementById('addrStreet').value = addr.street;
+            document.getElementById('addrCity').value = addr.city;
+            document.getElementById('addrZip').value = addr.zip;
+          } else {
+            document.getElementById('addrFormTitle').textContent = 'Add New Address';
+            document.getElementById('addrId').value = '';
+            document.getElementById('addrTitle').value = '';
+            document.getElementById('addrStreet').value = '';
+            document.getElementById('addrCity').value = '';
+            document.getElementById('addrZip').value = '';
+          }
+        },
+
+        hideAddressForm() {
+          document.getElementById('addressFormContainer').style.display = 'none';
+        },
+
+        saveAddress() {
+          if (!this.userProfile.addresses) this.userProfile.addresses = [];
+
+          const id = document.getElementById('addrId').value;
+          const newAddr = {
+            id: id ? parseInt(id) : Date.now(),
+            title: document.getElementById('addrTitle').value || 'Address',
+            street: document.getElementById('addrStreet').value,
+            city: document.getElementById('addrCity').value,
+            zip: document.getElementById('addrZip').value,
+            isDefault: this.userProfile.addresses.length === 0
+          };
+
+          if (!newAddr.street || !newAddr.city) {
+            this.showToast('Please fill required fields', 'error');
+            return;
+          }
+
+          if (id) {
+            const idx = this.userProfile.addresses.findIndex(a => a.id === parseInt(id));
+            newAddr.isDefault = this.userProfile.addresses[idx].isDefault;
+            this.userProfile.addresses[idx] = newAddr;
+          } else {
+            this.userProfile.addresses.push(newAddr);
+          }
+
+          this.saveProfileData();
+          this.hideAddressForm();
+          this.renderAddresses();
+          this.showToast('Address saved!', 'success');
+        },
+
+        deleteAddress(id) {
+          if (confirm('Delete this address?')) {
+            this.userProfile.addresses = this.userProfile.addresses.filter(a => a.id !== id);
+            if (this.userProfile.addresses.length > 0 && !this.userProfile.addresses.find(a => a.isDefault)) {
+              this.userProfile.addresses[0].isDefault = true;
+            }
+            this.saveProfileData();
+            this.renderAddresses();
+          }
+        },
+
+        setDefaultAddress(id) {
+          this.userProfile.addresses.forEach(a => a.isDefault = (a.id === id));
+          this.saveProfileData();
+          this.renderAddresses();
+        },
+
+        saveProfileData() {
+          localStorage.setItem('velorex_design_profile', JSON.stringify(this.userProfile));
+        },
+
+        switchProfileTab(tabId) {
+          // Update Menu active state
+          document.querySelectorAll('.profile-menu-item').forEach(el => el.classList.remove('active'));
+          event.currentTarget.classList.add('active');
+
+          // Update Content active state
+          document.querySelectorAll('.profile-section').forEach(el => el.classList.remove('active'));
+          document.getElementById('tab-' + tabId).classList.add('active');
+        },
+
+
+        // Utilities
+        submitContact() {
+          const name = document.getElementById('contactName').value;
+          const subj = document.getElementById('contactSubject').value;
+
+          this.showToast(`Thanks ${name}! Your inquiry about '${subj}' has been sent.`, 'success');
+
+          document.getElementById('contactName').value = '';
+          document.getElementById('contactEmail').value = '';
+          document.getElementById('contactMessage').value = '';
+        },
+
+        showToast(msg, type = 'info') {
+          const container = document.getElementById('toastContainer');
+          const toast = document.createElement('div');
+          toast.className = 'toast';
+          toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}" style="color:var(--${type === 'success' ? 'success' : 'secondary'}); margin-right: 10px;"></i> ${msg}`;
+          container.appendChild(toast);
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+          }, 3000);
+        }
+      };
+
+      // Boot
+      app.init();
+
+    </script>
+</body>
+
+</html>

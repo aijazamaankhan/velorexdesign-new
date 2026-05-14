@@ -1,0 +1,30 @@
+# Sensitive credentials — never commit
+api/.env
+.env
+
+# Runtime artifacts
+api/error.log
+api/uploads/products/*
+!api/uploads/products/.gitkeep
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.tmp
+
+# Node (not used here, defensive)
+node_modules/
+
+# PHP vendor (not used here, defensive)
+vendor/

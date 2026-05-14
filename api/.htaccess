@@ -1,0 +1,24 @@
+# Block direct HTTP access to sensitive support files.
+# PHP includes (require_once 'db.php') are unaffected — those run server-side.
+
+<Files "db.php">
+    Require all denied
+</Files>
+
+<Files "error.log">
+    Require all denied
+</Files>
+
+<Files ".env">
+    Require all denied
+</Files>
+
+<FilesMatch "\.(log|env|sql|bak|swp)$">
+    Require all denied
+</FilesMatch>
+
+# Disable PHP execution inside the uploads directory.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^uploads/.*\.(php|phtml|phar)$ - [F,L,NC]
+</IfModule>
