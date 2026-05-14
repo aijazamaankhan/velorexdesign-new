@@ -671,7 +671,7 @@
                     </div>
                     <div style="display:flex; gap:0.75rem;">
                         <button class="btn btn-secondary" onclick="renderOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                        <button class="btn btn-secondary" onclick="clearStats()"><i class="fas fa-history"></i> Clear</button>
+                        <button class="btn btn-secondary" onclick="clearOrderFilters()"><i class="fas fa-eraser"></i> Clear</button>
                     </div>
                 </div>
 
@@ -696,6 +696,7 @@
                                 <th>Items</th>
                                 <th>Total</th>
                                 <th>Status</th>
+                                <th style="width:60px; text-align:center;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="orderList"></tbody>
@@ -1495,7 +1496,7 @@
             const oList = document.getElementById('orderList');
             if (!oList) return;
             if (filtered.length === 0) {
-                oList.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2rem; margin-bottom:1rem; display:block; opacity:0.3;"></i>No orders found.</td></tr>`;
+                oList.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2rem; margin-bottom:1rem; display:block; opacity:0.3;"></i>No orders found.</td></tr>`;
                 return;
             }
 
@@ -1527,6 +1528,13 @@
                                 <option value="Cancelled"  ${o.status==='Cancelled'  ? 'selected':''}>Cancelled</option>
                             </select>
                         </td>
+                        <td onclick="event.stopPropagation()" style="text-align:center;">
+                            <button onclick="deleteOrder('${o.id}')" title="Delete order"
+                                style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.95rem; padding:0.35rem 0.55rem; border-radius:6px; transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(239,68,68,0.12)'" onmouseout="this.style.background='none'">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
                     </tr>
                     ${expandHtml}
                 `;
@@ -1553,7 +1561,7 @@
 
             return `
                 <tr id="expand-${o.id}">
-                    <td colspan="7" style="padding:0 1rem 1rem 3rem; border-top:none;">
+                    <td colspan="8" style="padding:0 1rem 1rem 3rem; border-top:none;">
                         <div class="expand-row-content">
                             <div class="expand-detail-grid">
                                 <div>
@@ -1626,6 +1634,31 @@
                 renderOrders();
             } else {
                 showToast(explainApiFailure(res, 'Unable to save tracking info'), 'error');
+            }
+        }
+
+        function clearOrderFilters() {
+            const searchEl = document.getElementById('orderSearch');
+            if (searchEl) searchEl.value = '';
+            currentOrderFilter = 'all';
+            document.querySelectorAll('.order-chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+            renderOrders();
+        }
+
+        async function deleteOrder(id) {
+            if (!confirm(`Delete order ${id}? This cannot be undone.`)) return;
+            const res = await apiCall('api/delete-order.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_code: id })
+            });
+            if (res.ok && res.data && res.data.success) {
+                showToast(`Order ${id} deleted`, 'success');
+                if (expandedOrderId === id.toString()) expandedOrderId = null;
+                await loadData();
+                render();
+            } else {
+                showToast(explainApiFailure(res, 'Unable to delete order'), 'error');
             }
         }
 
