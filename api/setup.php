@@ -71,6 +71,18 @@ $tables = [
         total_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
         FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
         FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+    'customer_addresses' => "CREATE TABLE IF NOT EXISTS customer_addresses (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        customer_id INT UNSIGNED NOT NULL,
+        title VARCHAR(80) NOT NULL DEFAULT 'Address',
+        street TEXT NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        zip VARCHAR(50) NULL,
+        is_default TINYINT(1) NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
 ];
 
@@ -87,6 +99,21 @@ $check = $conn->query("SHOW COLUMNS FROM products LIKE 'images'");
 if ($check && $check->num_rows === 0) {
     if ($conn->query("ALTER TABLE products ADD COLUMN images TEXT NULL AFTER image_url")) {
         $columnAdded = true;
+    }
+}
+
+// Migrate customers table for customer accounts (idempotent).
+$customerMigrations = [];
+$pwCheck = $conn->query("SHOW COLUMNS FROM customers LIKE 'password_hash'");
+if ($pwCheck && $pwCheck->num_rows === 0) {
+    if ($conn->query("ALTER TABLE customers ADD COLUMN password_hash VARCHAR(255) NULL AFTER phone")) {
+        $customerMigrations[] = 'added password_hash';
+    }
+}
+$updCheck = $conn->query("SHOW COLUMNS FROM customers LIKE 'updated_at'");
+if ($updCheck && $updCheck->num_rows === 0) {
+    if ($conn->query("ALTER TABLE customers ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")) {
+        $customerMigrations[] = 'added updated_at';
     }
 }
 
@@ -121,6 +148,7 @@ sendResponse([
     'success' => true,
     'tables_ready' => $createdTables,
     'images_column_added' => $columnAdded,
+    'customer_migrations' => $customerMigrations,
     'uploads_dir' => is_dir($uploadDir) ? 'ready' : 'missing — create api/uploads/products/ manually with write permission',
     'admin' => [
         'message' => $adminMessage,
