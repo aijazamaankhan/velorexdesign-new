@@ -1758,6 +1758,9 @@
                 <div class="profile-menu-item" onclick="app.switchProfileTab('orders')">
                   <i class="fas fa-box-open"></i> Order History
                 </div>
+                <div class="profile-menu-item" id="profileLogoutBtn" onclick="app.handleLogout()" style="margin-top: 1rem; color: #ef4444;">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </div>
               </div>
             </div>
 
@@ -2315,16 +2318,31 @@
         }
       ];
 
+      // --- API HELPER ---
+      // Returns { ok, status, data, networkError }. Never throws.
+      async function apiCall(url, options = {}) {
+        let response;
+        try {
+          response = await fetch(url, { credentials: 'include', ...options });
+        } catch (networkErr) {
+          return { ok: false, status: 0, data: null, networkError: true };
+        }
+        const raw = await response.text();
+        let data = null;
+        try { data = raw ? JSON.parse(raw) : null; } catch (_) {}
+        return { ok: response.ok, status: response.status, data, networkError: false };
+      }
+
       // --- APP STATE & LOGIC ---
       const app = {
         cart: JSON.parse(localStorage.getItem('velorex_design_cart')) || [],
         userProfile: JSON.parse(localStorage.getItem('velorex_design_profile')) || { name: '', email: '', phone: '', addresses: [] },
         currentUser: JSON.parse(localStorage.getItem('velorex_design_user')) || null,
-        users: JSON.parse(localStorage.getItem('velorex_design_registered_users')) || [],
 
         init() {
           this.updateCartBadge();
           this.updateAuthNav();  // also calls loadNotifications()
+          this.restoreSession(); // verify server session and refresh user state
           loadProducts();
           this.handleRoute();
           window.addEventListener('hashchange', () => this.handleRoute());
@@ -2516,50 +2534,86 @@
           this.loadNotifications();
         },
 
-        handleRegister(e) {
+        explainApiFailure(res, fallback) {
+          if (res.networkError) return 'Server unreachable. The site needs PHP to be running (Hostinger / XAMPP / Laragon).';
+          if (res.status === 405 || res.status === 501) return 'The host is not running PHP — accounts can only be used on a real PHP server.';
+          if (res.data && res.data.error) return res.data.error;
+          return fallback || ('Request failed (status ' + res.status + ')');
+        },
+
+        setCurrentUser(user) {
+          this.currentUser = user;
+          if (user) {
+            localStorage.setItem('velorex_design_user', JSON.stringify(user));
+            this.userProfile.name = user.name || '';
+            this.userProfile.email = user.email || '';
+            this.userProfile.phone = user.phone || '';
+            this.saveProfileData();
+          } else {
+            localStorage.removeItem('velorex_design_user');
+          }
+          this.updateAuthNav();
+        },
+
+        async restoreSession() {
+          const res = await apiCall('api/customer-session.php');
+          if (res.ok && res.data && res.data.authenticated) {
+            this.setCurrentUser(res.data.user);
+            // If the profile view is open, repaint with fresh data.
+            if (window.location.hash.startsWith('#profile')) this.renderProfile();
+          } else if (res.ok && res.data && res.data.authenticated === false) {
+            // Server says we're not logged in — clear any stale local copy.
+            if (this.currentUser) this.setCurrentUser(null);
+          }
+          // networkError: leave existing local state alone for offline preview.
+        },
+
+        async handleRegister(e) {
           e.preventDefault();
-          const name = document.getElementById('regName').value;
-          const email = document.getElementById('regEmail').value;
+          const name = document.getElementById('regName').value.trim();
+          const email = document.getElementById('regEmail').value.trim();
           const pass = document.getElementById('regPass').value;
 
-          if (this.users.some(u => u.email === email)) {
-            this.showToast('Email already registered!', 'error');
+          const res = await apiCall('api/customer-register.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password: pass })
+          });
+
+          if (res.ok && res.data && res.data.success) {
+            this.setCurrentUser(res.data.user);
+            this.navigate('profile');
+            this.showToast(`Welcome to Velorex Design, ${res.data.user.name}!`, 'success');
             return;
           }
-
-          const newUser = { name, email, pass, id: Date.now() };
-          this.users.push(newUser);
-          localStorage.setItem('velorex_design_registered_users', JSON.stringify(this.users));
-
-          this.currentUser = newUser;
-          localStorage.setItem('velorex_design_user', JSON.stringify(newUser));
-
-          this.updateAuthNav();
-          this.navigate('profile');
-          this.showToast(`Welcome to Velorex Design, ${name}!`, 'success');
+          this.showToast(this.explainApiFailure(res, 'Could not create account'), 'error');
         },
 
-        handleLogin(e) {
+        async handleLogin(e) {
           e.preventDefault();
-          const email = document.getElementById('loginEmail').value;
+          const email = document.getElementById('loginEmail').value.trim();
           const pass = document.getElementById('loginPass').value;
 
-          const user = this.users.find(u => u.email === email && u.pass === pass);
-          if (user) {
-            this.currentUser = user;
-            localStorage.setItem('velorex_design_user', JSON.stringify(user));
-            this.updateAuthNav();
+          const res = await apiCall('api/customer-login.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass })
+          });
+
+          if (res.ok && res.data && res.data.success) {
+            this.setCurrentUser(res.data.user);
             this.navigate('profile');
-            this.showToast(`Welcome back, ${user.name}!`, 'success');
-          } else {
-            this.showToast('Invalid email or password!', 'error');
+            this.showToast(`Welcome back, ${res.data.user.name}!`, 'success');
+            return;
           }
+          this.showToast(this.explainApiFailure(res, 'Login failed'), 'error');
         },
 
-        handleLogout() {
-          this.currentUser = null;
-          localStorage.removeItem('velorex_design_user');
-          this.updateAuthNav();
+        async handleLogout() {
+          await apiCall('api/customer-logout.php', { method: 'POST' });
+          this.setCurrentUser(null);
+          this.userProfile = { name: '', email: '', phone: '', addresses: [] };
+          this.saveProfileData();
           this.navigate('home');
           this.showToast('You have been logged out.', 'info');
         },
@@ -3147,13 +3201,20 @@
         },
 
         // Profile Logic
-        renderProfile() {
-          // Populate Form
+        async renderProfile() {
+          // Populate Form from current user state.
           document.getElementById('profName').value = this.userProfile.name || '';
           document.getElementById('profEmail').value = this.userProfile.email || '';
           document.getElementById('profPhone').value = this.userProfile.phone || '';
 
-          // Render Addresses
+          // Fetch addresses from server for logged-in users.
+          if (this.currentUser) {
+            const res = await apiCall('api/customer-addresses.php');
+            if (res.ok && res.data && Array.isArray(res.data.addresses)) {
+              this.userProfile.addresses = res.data.addresses;
+              this.saveProfileData();
+            }
+          }
           this.renderAddresses();
 
           // Render Orders — read from shared all_orders filtered by current user
@@ -3171,9 +3232,20 @@
             }
           }
           const ordersContainer = document.getElementById('orderHistoryContent');
-          const userId = this.currentUser?.id || null;
-          const allOrders = JSON.parse(localStorage.getItem('velorex_design_all_orders')) || [];
-          const myOrders = userId ? allOrders.filter(o => o.userId === userId) : [];
+
+          // Fetch this customer's orders from the server. Fall back to
+          // local order history only when offline or not logged in.
+          let myOrders = [];
+          if (this.currentUser) {
+            const ordersRes = await apiCall('api/customer-orders.php');
+            if (ordersRes.ok && ordersRes.data && Array.isArray(ordersRes.data.orders)) {
+              myOrders = ordersRes.data.orders;
+            }
+          } else {
+            const localAll = JSON.parse(localStorage.getItem('velorex_design_all_orders')) || [];
+            const userId = this.currentUser?.id || null;
+            myOrders = userId ? localAll.filter(o => o.userId === userId) : [];
+          }
 
           // Mark notifications as read when orders tab is open
           this.markNotificationsRead();
@@ -3225,13 +3297,31 @@
           }
         },
 
-        saveProfile() {
-          this.userProfile.name = document.getElementById('profName').value;
-          this.userProfile.email = document.getElementById('profEmail').value;
-          this.userProfile.phone = document.getElementById('profPhone').value;
+        async saveProfile() {
+          const name = document.getElementById('profName').value.trim();
+          const email = document.getElementById('profEmail').value.trim();
+          const phone = document.getElementById('profPhone').value.trim();
 
+          if (this.currentUser) {
+            const res = await apiCall('api/customer-profile.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email, phone })
+            });
+            if (res.ok && res.data && res.data.success) {
+              this.setCurrentUser(res.data.user);
+              this.showToast('Personal info updated successfully!', 'success');
+              return;
+            }
+            this.showToast(this.explainApiFailure(res, 'Could not save profile'), 'error');
+            return;
+          }
+          // Guest: store locally so checkout can prefill.
+          this.userProfile.name = name;
+          this.userProfile.email = email;
+          this.userProfile.phone = phone;
           this.saveProfileData();
-          this.showToast('Personal info updated successfully!', 'success');
+          this.showToast('Personal info saved locally. Sign in to sync across devices.', 'info');
         },
 
         renderAddresses() {
@@ -3283,51 +3373,110 @@
           document.getElementById('addressFormContainer').style.display = 'none';
         },
 
-        saveAddress() {
-          if (!this.userProfile.addresses) this.userProfile.addresses = [];
-
-          const id = document.getElementById('addrId').value;
-          const newAddr = {
-            id: id ? parseInt(id) : Date.now(),
-            title: document.getElementById('addrTitle').value || 'Address',
-            street: document.getElementById('addrStreet').value,
-            city: document.getElementById('addrCity').value,
-            zip: document.getElementById('addrZip').value,
-            isDefault: this.userProfile.addresses.length === 0
+        async saveAddress() {
+          const idVal = document.getElementById('addrId').value;
+          const payload = {
+            action: idVal ? 'update' : 'add',
+            title: document.getElementById('addrTitle').value.trim() || 'Address',
+            street: document.getElementById('addrStreet').value.trim(),
+            city: document.getElementById('addrCity').value.trim(),
+            zip: document.getElementById('addrZip').value.trim()
           };
+          if (idVal) payload.id = parseInt(idVal);
 
-          if (!newAddr.street || !newAddr.city) {
+          if (!payload.street || !payload.city) {
             this.showToast('Please fill required fields', 'error');
             return;
           }
 
-          if (id) {
-            const idx = this.userProfile.addresses.findIndex(a => a.id === parseInt(id));
-            newAddr.isDefault = this.userProfile.addresses[idx].isDefault;
-            this.userProfile.addresses[idx] = newAddr;
+          if (this.currentUser) {
+            const res = await apiCall('api/customer-addresses.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok && res.data && res.data.success) {
+              this.userProfile.addresses = res.data.addresses || [];
+              this.saveProfileData();
+              this.hideAddressForm();
+              this.renderAddresses();
+              this.showToast('Address saved!', 'success');
+              return;
+            }
+            this.showToast(this.explainApiFailure(res, 'Could not save address'), 'error');
+            return;
+          }
+
+          // Guest fallback (local only).
+          if (!this.userProfile.addresses) this.userProfile.addresses = [];
+          const newAddr = {
+            id: idVal ? parseInt(idVal) : Date.now(),
+            title: payload.title,
+            street: payload.street,
+            city: payload.city,
+            zip: payload.zip,
+            isDefault: this.userProfile.addresses.length === 0
+          };
+          if (idVal) {
+            const idx = this.userProfile.addresses.findIndex(a => a.id === parseInt(idVal));
+            if (idx >= 0) {
+              newAddr.isDefault = this.userProfile.addresses[idx].isDefault;
+              this.userProfile.addresses[idx] = newAddr;
+            }
           } else {
             this.userProfile.addresses.push(newAddr);
           }
-
           this.saveProfileData();
           this.hideAddressForm();
           this.renderAddresses();
           this.showToast('Address saved!', 'success');
         },
 
-        deleteAddress(id) {
-          if (confirm('Delete this address?')) {
-            this.userProfile.addresses = this.userProfile.addresses.filter(a => a.id !== id);
-            if (this.userProfile.addresses.length > 0 && !this.userProfile.addresses.find(a => a.isDefault)) {
-              this.userProfile.addresses[0].isDefault = true;
+        async deleteAddress(id) {
+          if (!confirm('Delete this address?')) return;
+
+          if (this.currentUser) {
+            const res = await apiCall('api/customer-addresses.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'delete', id })
+            });
+            if (res.ok && res.data && res.data.success) {
+              this.userProfile.addresses = res.data.addresses || [];
+              this.saveProfileData();
+              this.renderAddresses();
+              return;
             }
-            this.saveProfileData();
-            this.renderAddresses();
+            this.showToast(this.explainApiFailure(res, 'Could not delete address'), 'error');
+            return;
           }
+
+          this.userProfile.addresses = (this.userProfile.addresses || []).filter(a => a.id !== id);
+          if (this.userProfile.addresses.length > 0 && !this.userProfile.addresses.find(a => a.isDefault)) {
+            this.userProfile.addresses[0].isDefault = true;
+          }
+          this.saveProfileData();
+          this.renderAddresses();
         },
 
-        setDefaultAddress(id) {
-          this.userProfile.addresses.forEach(a => a.isDefault = (a.id === id));
+        async setDefaultAddress(id) {
+          if (this.currentUser) {
+            const res = await apiCall('api/customer-addresses.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'set_default', id })
+            });
+            if (res.ok && res.data && res.data.success) {
+              this.userProfile.addresses = res.data.addresses || [];
+              this.saveProfileData();
+              this.renderAddresses();
+              return;
+            }
+            this.showToast(this.explainApiFailure(res, 'Could not update default'), 'error');
+            return;
+          }
+
+          (this.userProfile.addresses || []).forEach(a => a.isDefault = (a.id === id));
           this.saveProfileData();
           this.renderAddresses();
         },

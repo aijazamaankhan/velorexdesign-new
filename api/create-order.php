@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(['error' => 'Invalid request method'], 405);
@@ -60,7 +61,11 @@ $grandTotal = $subtotal + $shipping;
 $conn->begin_transaction();
 try {
     $customerId = null;
-    if ($customerEmail) {
+    // Prefer the logged-in customer's id over email matching so guest checkouts
+    // by the same person don't accidentally collide.
+    if (!empty($_SESSION['customer_id'])) {
+        $customerId = intval($_SESSION['customer_id']);
+    } elseif ($customerEmail) {
         $stmt = $conn->prepare('SELECT id FROM customers WHERE email = ? LIMIT 1');
         $stmt->bind_param('s', $customerEmail);
         $stmt->execute();
