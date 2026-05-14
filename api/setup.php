@@ -117,6 +117,15 @@ if ($updCheck && $updCheck->num_rows === 0) {
     }
 }
 
+// Convert legacy empty-string emails to NULL. The unique index allows many
+// NULLs but rejects duplicate empty strings, which blocked subsequent guest
+// checkouts. Safe to run repeatedly.
+if ($conn->query("UPDATE customers SET email = NULL WHERE email = ''")) {
+    if ($conn->affected_rows > 0) {
+        $customerMigrations[] = 'normalised ' . $conn->affected_rows . ' blank emails to NULL';
+    }
+}
+
 $uploadDir = __DIR__ . '/uploads/products';
 if (!is_dir($uploadDir)) {
     @mkdir($uploadDir, 0755, true);

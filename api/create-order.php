@@ -12,8 +12,14 @@ if (!$input || !isset($input['items']) || !is_array($input['items']) || empty($i
 }
 
 $customerName = isset($input['customer_name']) ? trim($input['customer_name']) : 'Guest';
-$customerEmail = isset($input['customer_email']) ? trim($input['customer_email']) : null;
-$customerPhone = isset($input['customer_phone']) ? trim($input['customer_phone']) : null;
+$customerEmail = isset($input['customer_email']) ? trim($input['customer_email']) : '';
+$customerPhone = isset($input['customer_phone']) ? trim($input['customer_phone']) : '';
+
+// Empty strings would violate the UNIQUE index on customers.email — store NULL
+// so multiple anonymous guests can coexist.
+if ($customerEmail === '') $customerEmail = null;
+if ($customerPhone === '') $customerPhone = null;
+if ($customerName === '') $customerName = 'Guest';
 $address = isset($input['address']) && is_array($input['address']) ? $input['address'] : [];
 
 $shippingAddress = isset($address['street']) ? trim($address['street']) : '';
