@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:\\\\Users\\\\aijaz\\\\Downloads\\\\velorex-design - Copy\" add admin.html api/delete-order.php)",
+      "Bash(git -C 'c:\\\\Users\\\\aijaz\\\\Downloads\\\\velorex-design - Copy' commit -m ' *)"
+    ]
+  }
+}
