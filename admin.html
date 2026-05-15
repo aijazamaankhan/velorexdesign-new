@@ -771,6 +771,29 @@
                         <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="123 Your Street,&#10;City, PIN&#10;India"></textarea>
                     </div>
                     <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save" style="margin-right:8px"></i>Save Settings</button>
+
+                    <div style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border);">
+                        <h3 style="margin-bottom:0.5rem;">Admin Account</h3>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Change your login username or password. You must provide your current password to confirm.</p>
+
+                        <div class="form-group">
+                            <label>Current Password <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="adminCurrentPass" class="form-control" autocomplete="current-password" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label>New Username</label>
+                            <input type="text" id="adminNewEmail" class="form-control" autocomplete="username" placeholder="Leave blank to keep current">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password <span style="color:var(--text-muted); font-size:0.78rem;">(min 6 characters)</span></label>
+                            <input type="password" id="adminNewPass" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="adminNewPassConfirm" class="form-control" autocomplete="new-password" placeholder="Re-enter new password">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateAdminCredentials()"><i class="fas fa-key" style="margin-right:8px"></i>Update Admin Account</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1052,6 +1075,53 @@
             };
             localStorage.setItem('velorex_store_settings', JSON.stringify(s));
             showToast('Settings saved successfully', 'success');
+        }
+
+        async function updateAdminCredentials() {
+            const currentPass = document.getElementById('adminCurrentPass').value;
+            const newEmail = document.getElementById('adminNewEmail').value.trim();
+            const newPass = document.getElementById('adminNewPass').value;
+            const newPassConfirm = document.getElementById('adminNewPassConfirm').value;
+
+            if (!currentPass) {
+                showToast('Enter your current password to confirm changes', 'error');
+                return;
+            }
+            if (!newEmail && !newPass) {
+                showToast('Enter a new username or password', 'error');
+                return;
+            }
+            if (newPass && newPass !== newPassConfirm) {
+                showToast('New password and confirmation do not match', 'error');
+                return;
+            }
+            if (newPass && newPass.length < 6) {
+                showToast('New password must be at least 6 characters', 'error');
+                return;
+            }
+
+            const payload = { current_password: currentPass };
+            if (newEmail) payload.new_email = newEmail;
+            if (newPass) payload.new_password = newPass;
+
+            const res = await apiCall('api/update-admin.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok && res.data && res.data.success) {
+                document.getElementById('adminCurrentPass').value = '';
+                document.getElementById('adminNewEmail').value = '';
+                document.getElementById('adminNewPass').value = '';
+                document.getElementById('adminNewPassConfirm').value = '';
+                if (newEmail && res.data.admin) {
+                    localStorage.setItem('velorex_admin_email', res.data.admin.email);
+                }
+                showToast('Admin account updated. Use the new credentials next time you log in.', 'success');
+            } else {
+                showToast(explainApiFailure(res, 'Unable to update admin account'), 'error');
+            }
         }
 
         async function saveProduct(e) {
