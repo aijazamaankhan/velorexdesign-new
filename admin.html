@@ -870,13 +870,15 @@
 
         function explainApiFailure(res, fallback) {
             if (res.networkError) return 'Server unreachable. Run the site via a PHP server (XAMPP / Laragon / php -S / Hostinger) — Live Server and file:// will not work.';
+            // Prefer the server's own error message — it's more accurate than
+            // any status-code guess (and avoids leaking default credentials).
+            if (res.data && res.data.error) return res.data.error;
             if (res.status === 405 || res.status === 501) {
                 return 'HTTP ' + res.status + ' — the host is NOT running PHP. VS Code Live Server, python http.server, and similar static servers do not execute .php files. Open the site through XAMPP / Laragon / "php -S localhost:8000" / Hostinger.';
             }
-            if (res.status === 401) return 'Not logged in to the server. Sign in via api/login.php with owner / owner123.';
-            if (res.status === 404) return 'api/login.php not found at this path — make sure the api/ folder was uploaded next to admin.html.';
+            if (res.status === 401) return 'Invalid username or password.';
+            if (res.status === 404) return 'Endpoint not found — make sure the api/ folder was uploaded next to admin.html.';
             if (res.raw && res.raw.trim().startsWith('<')) return 'The server returned HTML instead of JSON — PHP is probably not executing. Open the site through a PHP server (XAMPP / Laragon / "php -S" / Hostinger).';
-            if (res.data && res.data.error) return res.data.error;
             if (!res.raw) return 'Server returned an empty response (status ' + res.status + ') — check api/error.log for a PHP fatal.';
             return fallback || ('Unexpected response (status ' + res.status + ')');
         }
