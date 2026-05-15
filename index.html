@@ -1046,15 +1046,6 @@
       color: var(--secondary);
     }
 
-    #addressFormContainer {
-      background: var(--bg);
-      padding: 1.5rem;
-      border-radius: var(--radius);
-      border: 1px dashed var(--border);
-      margin-top: 1rem;
-      display: none;
-    }
-
     /* Footer */
     .footer {
       background: var(--surface);
@@ -1561,6 +1552,117 @@
     </div>
   </div>
 
+  <!-- ADDRESS MODAL (used on the My Account page) -->
+  <div id="addressModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:1000; align-items:flex-start; justify-content:center; padding:2rem 1rem; overflow-y:auto;">
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; max-width:680px; width:100%; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 id="addrModalTitle" style="margin:0;">Add Address</h3>
+        <button type="button" onclick="app.hideAddressForm()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.4rem; padding:0; line-height:1;">&times;</button>
+      </div>
+      <form id="addressForm" onsubmit="event.preventDefault(); app.saveAddress();">
+        <input type="hidden" id="addrId">
+
+        <div class="form-group">
+          <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Country <span style="color:#ef4444;">*</span></label>
+          <select id="addrCountry" class="form-control" required>
+            <option value="India">India</option>
+          </select>
+        </div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Full Name <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="addrFullName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Phone <span style="color:#ef4444;">*</span></label>
+            <input type="tel" id="addrPhone" class="form-control" placeholder="+91 98765 43210" required pattern="[0-9+\-\s]{7,15}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Address Line 1 <span style="color:#ef4444;">*</span></label>
+          <input type="text" id="addrStreet" class="form-control" placeholder="House / Flat / Building, Street" required>
+        </div>
+
+        <div class="form-group">
+          <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Address Line 2</label>
+          <input type="text" id="addrLine2" class="form-control" placeholder="Apartment, suite, unit (optional)">
+        </div>
+
+        <div class="form-group">
+          <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Landmark</label>
+          <input type="text" id="addrLandmark" class="form-control" placeholder="e.g. Near Apollo Hospital (optional)">
+        </div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">City <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="addrCity" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">State / Region <span style="color:#ef4444;">*</span></label>
+            <select id="addrState" class="form-control" required>
+              <option value="">Select state…</option>
+              <option>Andhra Pradesh</option>
+              <option>Arunachal Pradesh</option>
+              <option>Assam</option>
+              <option>Bihar</option>
+              <option>Chhattisgarh</option>
+              <option>Goa</option>
+              <option>Gujarat</option>
+              <option>Haryana</option>
+              <option>Himachal Pradesh</option>
+              <option>Jharkhand</option>
+              <option>Karnataka</option>
+              <option>Kerala</option>
+              <option>Madhya Pradesh</option>
+              <option>Maharashtra</option>
+              <option>Manipur</option>
+              <option>Meghalaya</option>
+              <option>Mizoram</option>
+              <option>Nagaland</option>
+              <option>Odisha</option>
+              <option>Punjab</option>
+              <option>Rajasthan</option>
+              <option>Sikkim</option>
+              <option>Tamil Nadu</option>
+              <option>Telangana</option>
+              <option>Tripura</option>
+              <option>Uttar Pradesh</option>
+              <option>Uttarakhand</option>
+              <option>West Bengal</option>
+              <option>Andaman and Nicobar Islands</option>
+              <option>Chandigarh</option>
+              <option>Dadra and Nagar Haveli and Daman and Diu</option>
+              <option>Delhi</option>
+              <option>Jammu and Kashmir</option>
+              <option>Ladakh</option>
+              <option>Lakshadweep</option>
+              <option>Puducherry</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Postal Code <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="addrZip" class="form-control" required pattern="[0-9]{4,8}">
+          </div>
+          <div class="form-group">
+            <label style="text-transform:uppercase; letter-spacing:0.5px; font-size:0.78rem;">Label (optional)</label>
+            <input type="text" id="addrTitle" class="form-control" placeholder="Home, Office, …">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:0.75rem; margin-top:1rem;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="app.hideAddressForm()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex:2;"><i class="fas fa-save"></i> Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- BACK TO TOP -->
   <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
     <i class="fas fa-arrow-up"></i>
@@ -1841,25 +1943,6 @@
 
                   <div class="address-grid" id="addressListContainer">
                     <!-- Injected via JS -->
-                  </div>
-
-                  <div id="addressFormContainer">
-                    <h4 id="addrFormTitle" style="margin-bottom: 1rem;">Add New Address</h4>
-                    <input type="hidden" id="addrId">
-                    <div class="form-group"><input type="text" id="addrTitle" class="form-control"
-                        placeholder="Title (e.g. Home, Office)"></div>
-                    <div class="form-group"><textarea id="addrStreet" class="form-control" placeholder="Street Address"
-                        rows="2"></textarea></div>
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem; gap: 1rem;">
-                      <input type="text" id="addrCity" class="form-control" placeholder="City">
-                      <input type="text" id="addrZip" class="form-control" placeholder="Zip / Postal Code">
-                    </div>
-                    <div style="display: flex; gap: 1rem;">
-                      <button type="button" class="btn btn-primary" style="padding: 0.5rem 1rem;"
-                        onclick="app.saveAddress()">Save Address</button>
-                      <button type="button" class="btn btn-secondary" style="padding: 0.5rem 1rem;"
-                        onclick="app.hideAddressForm()">Cancel</button>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -3155,17 +3238,22 @@
           if (this.cart.length === 0) return;
 
           // Pre-fill the checkout form from the logged-in profile and the
-          // default saved address, when available.
+          // default saved address, when available. The saved address may
+          // carry its own full name and phone — prefer those over the
+          // profile's, since the address represents the recipient.
           const p = this.userProfile || {};
-          document.getElementById('coName').value = p.name || '';
-          document.getElementById('coEmail').value = p.email || '';
-          document.getElementById('coPhone').value = p.phone || '';
-
           const defaultAddr = (p.addresses && p.addresses.length > 0)
             ? (p.addresses.find(a => a.isDefault) || p.addresses[0])
             : null;
-          document.getElementById('coStreet').value = defaultAddr ? (defaultAddr.street || '') : '';
-          document.getElementById('coCity').value = defaultAddr ? (defaultAddr.city || '') : '';
+
+          document.getElementById('coName').value = (defaultAddr && defaultAddr.fullName) || p.name || '';
+          document.getElementById('coEmail').value = p.email || '';
+          document.getElementById('coPhone').value = (defaultAddr && defaultAddr.phone) || p.phone || '';
+
+          const streetParts = defaultAddr ? [defaultAddr.street, defaultAddr.line2, defaultAddr.landmark ? ('Landmark: ' + defaultAddr.landmark) : ''].filter(Boolean) : [];
+          document.getElementById('coStreet').value = streetParts.join(', ');
+          const cityParts = defaultAddr ? [defaultAddr.city, defaultAddr.state].filter(Boolean) : [];
+          document.getElementById('coCity').value = cityParts.join(', ');
           document.getElementById('coZip').value = defaultAddr ? (defaultAddr.zip || '') : '';
 
           const modal = document.getElementById('checkoutModal');
@@ -3423,59 +3511,98 @@
             return;
           }
 
-          container.innerHTML = addresses.map(addr => `
-                    <div class="address-card ${addr.isDefault ? 'default' : ''}">
-                        ${addr.isDefault ? '<span class="address-badge">Default</span>' : ''}
-                        <h4 style="margin-bottom: 0.5rem;">${addr.title}</h4>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.2rem;">${addr.street}</p>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">${addr.city}, ${addr.zip}</p>
-                        
-                        <div class="address-actions">
-                            <span class="address-btn" onclick="app.showAddressForm(${addr.id})"><i class="fas fa-edit"></i> Edit</span>
-                            <span class="address-btn" onclick="app.deleteAddress(${addr.id})"><i class="fas fa-trash"></i> Delete</span>
-                            ${!addr.isDefault ? `<span class="address-btn" style="margin-left:auto" onclick="app.setDefaultAddress(${addr.id})">Set Default</span>` : ''}
-                        </div>
-                    </div>
-                `).join('');
+          const esc = (s) => (s == null ? '' : String(s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])));
+
+          container.innerHTML = addresses.map(addr => {
+            const label = addr.title || 'Address';
+            const line2 = addr.line2 ? `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.2rem;">${esc(addr.line2)}</p>` : '';
+            const landmark = addr.landmark ? `<p style="color: var(--text-muted); font-size: 0.85rem; font-style:italic; margin-bottom: 0.2rem;">${esc(addr.landmark)}</p>` : '';
+            const cityLine = [addr.city, addr.state].filter(Boolean).join(', ');
+            const zipCountry = [addr.zip, addr.country].filter(Boolean).join(' • ');
+            const contact = (addr.fullName || addr.phone)
+              ? `<p style="color: var(--text-muted); font-size: 0.8rem; margin-top:0.5rem;">${esc(addr.fullName || '')}${addr.phone ? ' · ' + esc(addr.phone) : ''}</p>`
+              : '';
+            return `
+              <div class="address-card ${addr.isDefault ? 'default' : ''}">
+                ${addr.isDefault ? '<span class="address-badge">Default</span>' : ''}
+                <h4 style="margin-bottom: 0.5rem;">${esc(label)}</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.2rem;">${esc(addr.street || '')}</p>
+                ${line2}
+                ${landmark}
+                <p style="color: var(--text-muted); font-size: 0.9rem;">${esc(cityLine)}</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">${esc(zipCountry)}</p>
+                ${contact}
+                <div class="address-actions">
+                  <span class="address-btn" onclick="app.showAddressForm(${addr.id})"><i class="fas fa-edit"></i> Edit</span>
+                  <span class="address-btn" onclick="app.deleteAddress(${addr.id})"><i class="fas fa-trash"></i> Delete</span>
+                  ${!addr.isDefault ? `<span class="address-btn" style="margin-left:auto" onclick="app.setDefaultAddress(${addr.id})">Set Default</span>` : ''}
+                </div>
+              </div>`;
+          }).join('');
         },
 
         showAddressForm(id = null) {
-          document.getElementById('addressFormContainer').style.display = 'block';
+          const modal = document.getElementById('addressModal');
+          const titleEl = document.getElementById('addrModalTitle');
+
+          const setVal = (elId, v) => { const el = document.getElementById(elId); if (el) el.value = v == null ? '' : v; };
+
           if (id) {
-            const addr = this.userProfile.addresses.find(a => a.id === id);
-            document.getElementById('addrFormTitle').textContent = 'Edit Address';
-            document.getElementById('addrId').value = addr.id;
-            document.getElementById('addrTitle').value = addr.title;
-            document.getElementById('addrStreet').value = addr.street;
-            document.getElementById('addrCity').value = addr.city;
-            document.getElementById('addrZip').value = addr.zip;
+            const addr = (this.userProfile.addresses || []).find(a => a.id === id);
+            if (!addr) return;
+            if (titleEl) titleEl.textContent = 'Edit Address';
+            setVal('addrId', addr.id);
+            setVal('addrCountry', addr.country || 'India');
+            setVal('addrFullName', addr.fullName || this.userProfile.name || '');
+            setVal('addrPhone', addr.phone || this.userProfile.phone || '');
+            setVal('addrStreet', addr.street);
+            setVal('addrLine2', addr.line2);
+            setVal('addrLandmark', addr.landmark);
+            setVal('addrCity', addr.city);
+            setVal('addrState', addr.state || '');
+            setVal('addrZip', addr.zip);
+            setVal('addrTitle', addr.title);
           } else {
-            document.getElementById('addrFormTitle').textContent = 'Add New Address';
-            document.getElementById('addrId').value = '';
-            document.getElementById('addrTitle').value = '';
-            document.getElementById('addrStreet').value = '';
-            document.getElementById('addrCity').value = '';
-            document.getElementById('addrZip').value = '';
+            if (titleEl) titleEl.textContent = 'Add Address';
+            setVal('addrId', '');
+            setVal('addrCountry', 'India');
+            setVal('addrFullName', this.userProfile.name || '');
+            setVal('addrPhone', this.userProfile.phone || '');
+            setVal('addrStreet', '');
+            setVal('addrLine2', '');
+            setVal('addrLandmark', '');
+            setVal('addrCity', '');
+            setVal('addrState', '');
+            setVal('addrZip', '');
+            setVal('addrTitle', '');
           }
+          if (modal) modal.style.display = 'flex';
         },
 
         hideAddressForm() {
-          document.getElementById('addressFormContainer').style.display = 'none';
+          const modal = document.getElementById('addressModal');
+          if (modal) modal.style.display = 'none';
         },
 
         async saveAddress() {
           const idVal = document.getElementById('addrId').value;
           const payload = {
             action: idVal ? 'update' : 'add',
-            title: document.getElementById('addrTitle').value.trim() || 'Address',
+            country: document.getElementById('addrCountry').value.trim() || 'India',
+            fullName: document.getElementById('addrFullName').value.trim(),
+            phone: document.getElementById('addrPhone').value.trim(),
             street: document.getElementById('addrStreet').value.trim(),
+            line2: document.getElementById('addrLine2').value.trim(),
+            landmark: document.getElementById('addrLandmark').value.trim(),
             city: document.getElementById('addrCity').value.trim(),
-            zip: document.getElementById('addrZip').value.trim()
+            state: document.getElementById('addrState').value.trim(),
+            zip: document.getElementById('addrZip').value.trim(),
+            title: document.getElementById('addrTitle').value.trim() || 'Address'
           };
           if (idVal) payload.id = parseInt(idVal);
 
-          if (!payload.street || !payload.city) {
-            this.showToast('Please fill required fields', 'error');
+          if (!payload.fullName || !payload.phone || !payload.street || !payload.city || !payload.state || !payload.zip) {
+            this.showToast('Please fill all required fields', 'error');
             return;
           }
 
@@ -3502,8 +3629,14 @@
           const newAddr = {
             id: idVal ? parseInt(idVal) : Date.now(),
             title: payload.title,
+            fullName: payload.fullName,
+            phone: payload.phone,
+            country: payload.country,
             street: payload.street,
+            line2: payload.line2,
+            landmark: payload.landmark,
             city: payload.city,
+            state: payload.state,
             zip: payload.zip,
             isDefault: this.userProfile.addresses.length === 0
           };

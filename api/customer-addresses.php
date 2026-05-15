@@ -9,7 +9,7 @@ if (empty($_SESSION['customer_id'])) {
 $customerId = intval($_SESSION['customer_id']);
 
 function fetchAddresses($conn, $customerId) {
-    $stmt = $conn->prepare('SELECT id, title, street, city, zip, is_default FROM customer_addresses WHERE customer_id = ? ORDER BY is_default DESC, id ASC');
+    $stmt = $conn->prepare('SELECT id, title, full_name, phone, street, line2, landmark, city, state, country, zip, is_default FROM customer_addresses WHERE customer_id = ? ORDER BY is_default DESC, id ASC');
     $stmt->bind_param('i', $customerId);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -17,10 +17,16 @@ function fetchAddresses($conn, $customerId) {
     while ($row = $res->fetch_assoc()) {
         $list[] = [
             'id' => intval($row['id']),
-            'title' => $row['title'],
-            'street' => $row['street'],
-            'city' => $row['city'],
-            'zip' => $row['zip'],
+            'title' => $row['title'] ?: '',
+            'fullName' => $row['full_name'] ?: '',
+            'phone' => $row['phone'] ?: '',
+            'street' => $row['street'] ?: '',
+            'line2' => $row['line2'] ?: '',
+            'landmark' => $row['landmark'] ?: '',
+            'city' => $row['city'] ?: '',
+            'state' => $row['state'] ?: '',
+            'country' => $row['country'] ?: 'India',
+            'zip' => $row['zip'] ?: '',
             'isDefault' => intval($row['is_default']) === 1
         ];
     }
@@ -42,25 +48,33 @@ if (!$input) $input = $_POST;
 $action = isset($input['action']) ? $input['action'] : '';
 
 if ($action === 'add' || $action === 'update') {
-    $title = isset($input['title']) ? trim($input['title']) : 'Address';
-    $street = isset($input['street']) ? trim($input['street']) : '';
-    $city = isset($input['city']) ? trim($input['city']) : '';
-    $zip = isset($input['zip']) ? trim($input['zip']) : '';
+    $title    = isset($input['title']) ? trim($input['title']) : '';
+    $fullName = isset($input['fullName']) ? trim($input['fullName']) : '';
+    $phone    = isset($input['phone']) ? trim($input['phone']) : '';
+    $street   = isset($input['street']) ? trim($input['street']) : '';
+    $line2    = isset($input['line2']) ? trim($input['line2']) : '';
+    $landmark = isset($input['landmark']) ? trim($input['landmark']) : '';
+    $city     = isset($input['city']) ? trim($input['city']) : '';
+    $state    = isset($input['state']) ? trim($input['state']) : '';
+    $country  = isset($input['country']) ? trim($input['country']) : 'India';
+    $zip      = isset($input['zip']) ? trim($input['zip']) : '';
 
-    if ($street === '' || $city === '') {
-        sendResponse(['error' => 'Street and city are required'], 422);
+    if ($fullName === '' || $phone === '' || $street === '' || $city === '' || $state === '' || $zip === '') {
+        sendResponse(['error' => 'Full name, phone, address line 1, city, state and postal code are required'], 422);
     }
-    if ($title === '') $title = 'Address';
+    if ($country === '') $country = 'India';
 
     if ($action === 'add') {
-        // First address becomes default automatically.
         $count = $conn->prepare('SELECT COUNT(*) AS n FROM customer_addresses WHERE customer_id = ?');
         $count->bind_param('i', $customerId);
         $count->execute();
         $isDefault = intval($count->get_result()->fetch_assoc()['n']) === 0 ? 1 : 0;
 
-        $ins = $conn->prepare('INSERT INTO customer_addresses (customer_id, title, street, city, zip, is_default, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())');
-        $ins->bind_param('issssi', $customerId, $title, $street, $city, $zip, $isDefault);
+        // Types: i (customer_id), 10x s (title, full_name, phone, street, line2, landmark, city, state, country, zip), i (is_default)
+        $ins = $conn->prepare('INSERT INTO customer_addresses (customer_id, title, full_name, phone, street, line2, landmark, city, state, country, zip, is_default, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
+        $ins->bind_param('issssssssssi',
+            $customerId, $title, $fullName, $phone, $street, $line2, $landmark, $city, $state, $country, $zip, $isDefault
+        );
         if (!$ins->execute()) {
             sendResponse(['error' => 'Failed to save address'], 500);
         }
@@ -68,8 +82,10 @@ if ($action === 'add' || $action === 'update') {
         $addrId = isset($input['id']) ? intval($input['id']) : 0;
         if ($addrId <= 0) sendResponse(['error' => 'Address id required'], 422);
 
-        $upd = $conn->prepare('UPDATE customer_addresses SET title = ?, street = ?, city = ?, zip = ? WHERE id = ? AND customer_id = ?');
-        $upd->bind_param('ssssii', $title, $street, $city, $zip, $addrId, $customerId);
+        $upd = $conn->prepare('UPDATE customer_addresses SET title = ?, full_name = ?, phone = ?, street = ?, line2 = ?, landmark = ?, city = ?, state = ?, country = ?, zip = ? WHERE id = ? AND customer_id = ?');
+        $upd->bind_param('ssssssssssii',
+            $title, $fullName, $phone, $street, $line2, $landmark, $city, $state, $country, $zip, $addrId, $customerId
+        );
         if (!$upd->execute()) {
             sendResponse(['error' => 'Failed to update address'], 500);
         }
