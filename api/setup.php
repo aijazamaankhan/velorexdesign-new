@@ -126,6 +126,25 @@ if ($conn->query("UPDATE customers SET email = NULL WHERE email = ''")) {
     }
 }
 
+// Expand customer_addresses with the richer fields collected by the profile
+// address modal (country, full name, phone, line 2, landmark, state).
+$addressCols = [
+    'full_name' => "ADD COLUMN full_name VARCHAR(150) NULL AFTER title",
+    'phone'     => "ADD COLUMN phone VARCHAR(30) NULL AFTER full_name",
+    'line2'     => "ADD COLUMN line2 TEXT NULL AFTER street",
+    'landmark'  => "ADD COLUMN landmark VARCHAR(255) NULL AFTER line2",
+    'state'     => "ADD COLUMN state VARCHAR(100) NULL AFTER city",
+    'country'   => "ADD COLUMN country VARCHAR(80) NOT NULL DEFAULT 'India' AFTER state"
+];
+foreach ($addressCols as $col => $sql) {
+    $exists = $conn->query("SHOW COLUMNS FROM customer_addresses LIKE '" . $conn->real_escape_string($col) . "'");
+    if ($exists && $exists->num_rows === 0) {
+        if ($conn->query("ALTER TABLE customer_addresses $sql")) {
+            $customerMigrations[] = "added customer_addresses.$col";
+        }
+    }
+}
+
 $uploadDir = __DIR__ . '/uploads/products';
 if (!is_dir($uploadDir)) {
     @mkdir($uploadDir, 0755, true);
