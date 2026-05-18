@@ -639,6 +639,8 @@
                     <div style="display: flex; gap: 1rem;">
                         <button class="btn btn-secondary" onclick="exportData()"><i class="fas fa-download"></i>
                             Export</button>
+                        <button class="btn btn-secondary" onclick="showBulkModal()"><i class="fas fa-file-csv"></i>
+                            Bulk Upload</button>
                         <button class="btn btn-primary" onclick="showModal()"><i class="fas fa-plus"></i> New
                             Product</button>
                     </div>
@@ -871,6 +873,67 @@
                         onclick="hideModal()">Discard</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Modal -->
+    <div id="bulkModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 900px;">
+            <h2 style="margin-bottom: 0.5rem;">Bulk Upload Products</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                Upload a CSV file to add many products in one go. Columns:
+                <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-size:0.82rem;">name, category, price, stock, image_url, description, featured</code>
+            </p>
+
+            <div id="bulkStep1">
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.25rem;">
+                    <button type="button" class="btn btn-secondary" onclick="downloadBulkTemplate()">
+                        <i class="fas fa-download"></i> Download CSV template
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('bulkFileInput').click()">
+                        <i class="fas fa-file-csv"></i> Choose CSV file
+                    </button>
+                    <input type="file" id="bulkFileInput" accept=".csv,text/csv" style="display:none;" onchange="handleBulkFile(event)">
+                </div>
+                <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.2rem; font-size:0.85rem; color:var(--text-muted); line-height:1.65;">
+                    <strong style="color:var(--text);">Tips</strong><br>
+                    • <code>category</code> must match an existing category ID (e.g. <code>wood</code>, <code>resin</code>) — see the Categories tab.<br>
+                    • <code>image_url</code> should be a public HTTPS URL; the same URL is used as the cover.<br>
+                    • <code>featured</code> can be <code>1</code>/<code>0</code>, <code>true</code>/<code>false</code>, or blank.<br>
+                    • Wrap any field containing commas in double quotes: <code>"Walnut Bowl, Large"</code>.
+                </div>
+            </div>
+
+            <div id="bulkStep2" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+                    <div id="bulkSummary" style="font-size:0.9rem; color:var(--text-muted);"></div>
+                    <button type="button" class="btn btn-secondary" onclick="resetBulkModal()" style="font-size:0.85rem; padding:0.4rem 0.9rem;">
+                        <i class="fas fa-redo"></i> Pick another file
+                    </button>
+                </div>
+                <div style="max-height:340px; overflow:auto; border:1px solid var(--border); border-radius:var(--radius);">
+                    <table style="width:100%; font-size:0.85rem;">
+                        <thead style="background:var(--surface); position:sticky; top:0;">
+                            <tr>
+                                <th style="text-align:left; padding:0.6rem;">#</th>
+                                <th style="text-align:left; padding:0.6rem;">Name</th>
+                                <th style="text-align:left; padding:0.6rem;">Category</th>
+                                <th style="text-align:left; padding:0.6rem;">Price</th>
+                                <th style="text-align:left; padding:0.6rem;">Stock</th>
+                                <th style="text-align:left; padding:0.6rem;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulkPreview"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.75rem;">
+                <button type="button" id="bulkSubmitBtn" class="btn btn-primary" style="flex: 1; display:none;" onclick="submitBulkUpload()">
+                    Upload products
+                </button>
+                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="hideBulkModal()">Close</button>
+            </div>
         </div>
     </div>
 
@@ -1378,6 +1441,215 @@
             document.getElementById('productModal').style.display = 'flex';
         }
         function hideModal() { document.getElementById('productModal').style.display = 'none'; }
+
+        /* ── BULK UPLOAD ─────────────────────────────────────────────
+           Parses a CSV in the browser and replays each row through the
+           existing api/add-product.php endpoint — so no backend changes
+           are required. */
+        let bulkRows = []; // [{ data: {...}, valid: bool, errors: [...] }, ...]
+
+        function showBulkModal() {
+            resetBulkModal();
+            document.getElementById('bulkModal').style.display = 'flex';
+        }
+        function hideBulkModal() {
+            document.getElementById('bulkModal').style.display = 'none';
+        }
+        function resetBulkModal() {
+            bulkRows = [];
+            document.getElementById('bulkFileInput').value = '';
+            document.getElementById('bulkStep1').style.display = '';
+            document.getElementById('bulkStep2').style.display = 'none';
+            document.getElementById('bulkSubmitBtn').style.display = 'none';
+            document.getElementById('bulkPreview').innerHTML = '';
+            document.getElementById('bulkSummary').textContent = '';
+        }
+
+        function downloadBulkTemplate() {
+            const sampleCat = (categories[0] && categories[0].id) || 'wood';
+            const header = 'name,category,price,stock,image_url,description,featured';
+            const example = [
+                `"Walnut Serving Board",${sampleCat},1499,10,https://example.com/board.jpg,"Hand-finished walnut, food-safe oil",1`,
+                `"Resin Coaster Set",resin,799,25,https://example.com/coasters.jpg,"Set of 4 ocean-blue coasters",0`
+            ].join('\n');
+            const csv = header + '\n' + example + '\n';
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'velorex_bulk_upload_template.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // RFC-4180-ish CSV parser: handles quoted fields, escaped quotes ("") and CRLF.
+        function parseCsv(text) {
+            const rows = [];
+            let row = [], field = '', inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (inQuotes) {
+                    if (ch === '"') {
+                        if (text[i + 1] === '"') { field += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else {
+                        field += ch;
+                    }
+                } else {
+                    if (ch === '"') { inQuotes = true; }
+                    else if (ch === ',') { row.push(field); field = ''; }
+                    else if (ch === '\n' || ch === '\r') {
+                        if (ch === '\r' && text[i + 1] === '\n') i++;
+                        row.push(field); field = '';
+                        if (row.some(c => c !== '')) rows.push(row);
+                        row = [];
+                    } else {
+                        field += ch;
+                    }
+                }
+            }
+            // flush last field/row
+            if (field !== '' || row.length) {
+                row.push(field);
+                if (row.some(c => c !== '')) rows.push(row);
+            }
+            return rows;
+        }
+
+        function handleBulkFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const rows = parseCsv(String(reader.result || ''));
+                    if (rows.length < 2) {
+                        showToast('CSV must have a header row and at least one product row', 'error');
+                        return;
+                    }
+                    const header = rows[0].map(h => h.trim().toLowerCase());
+                    const required = ['name', 'category', 'price'];
+                    const missing = required.filter(c => !header.includes(c));
+                    if (missing.length) {
+                        showToast('CSV is missing required column(s): ' + missing.join(', '), 'error');
+                        return;
+                    }
+                    const idx = name => header.indexOf(name);
+                    const validCatIds = new Set(categories.map(c => c.id));
+
+                    bulkRows = rows.slice(1).map(r => {
+                        const get = c => (idx(c) >= 0 ? (r[idx(c)] || '').trim() : '');
+                        const name        = get('name');
+                        const category    = get('category');
+                        const priceRaw    = get('price');
+                        const stockRaw    = get('stock');
+                        const image_url   = get('image_url');
+                        const description = get('description');
+                        const featRaw     = get('featured').toLowerCase();
+                        const price = parseFloat(priceRaw);
+                        const stock = stockRaw === '' ? 10 : parseInt(stockRaw, 10);
+                        const featured = ['1', 'true', 'yes', 'y'].includes(featRaw) ? 1 : 0;
+                        const errors = [];
+                        if (!name) errors.push('name is empty');
+                        if (!category) errors.push('category is empty');
+                        else if (!validCatIds.has(category)) errors.push(`unknown category "${category}"`);
+                        if (!priceRaw || isNaN(price) || price <= 0) errors.push('price must be > 0');
+                        if (stockRaw !== '' && (isNaN(stock) || stock < 0)) errors.push('stock must be a non-negative number');
+                        return {
+                            data: { name, category, price, stock, image_url, description, featured },
+                            valid: errors.length === 0,
+                            errors,
+                            status: 'pending'
+                        };
+                    });
+
+                    renderBulkPreview();
+                    document.getElementById('bulkStep1').style.display = 'none';
+                    document.getElementById('bulkStep2').style.display = '';
+                    const validCount = bulkRows.filter(r => r.valid).length;
+                    document.getElementById('bulkSubmitBtn').style.display = validCount > 0 ? '' : 'none';
+                    document.getElementById('bulkSubmitBtn').textContent = `Upload ${validCount} product${validCount === 1 ? '' : 's'}`;
+                } catch (err) {
+                    showToast('Could not parse CSV: ' + err.message, 'error');
+                }
+            };
+            reader.onerror = () => showToast('Could not read the selected file', 'error');
+            reader.readAsText(file);
+        }
+
+        function renderBulkPreview() {
+            const tbody = document.getElementById('bulkPreview');
+            const total = bulkRows.length;
+            const ok    = bulkRows.filter(r => r.valid).length;
+            const bad   = total - ok;
+            const done  = bulkRows.filter(r => r.status === 'success').length;
+            const fail  = bulkRows.filter(r => r.status === 'error').length;
+            document.getElementById('bulkSummary').innerHTML =
+                `${total} rows — <span style="color:var(--success);">${ok} ready</span>` +
+                (bad ? `, <span style="color:var(--danger);">${bad} invalid</span>` : '') +
+                (done ? `, <span style="color:var(--success);">${done} uploaded</span>` : '') +
+                (fail ? `, <span style="color:var(--danger);">${fail} failed</span>` : '');
+            tbody.innerHTML = bulkRows.map((r, i) => {
+                let badge;
+                if (r.status === 'success')    badge = '<span style="color:var(--success);"><i class="fas fa-check-circle"></i> Uploaded</span>';
+                else if (r.status === 'error') badge = `<span style="color:var(--danger);" title="${(r.errors[0] || 'failed').replace(/"/g, '&quot;')}"><i class="fas fa-times-circle"></i> ${r.errors[0] || 'failed'}</span>`;
+                else if (r.status === 'uploading') badge = '<span style="color:var(--accent);"><i class="fas fa-spinner fa-spin"></i> Uploading…</span>';
+                else if (!r.valid)             badge = `<span style="color:var(--danger);"><i class="fas fa-exclamation-circle"></i> ${r.errors.join('; ')}</span>`;
+                else                           badge = '<span style="color:var(--text-muted);">Ready</span>';
+                const rowBg = !r.valid ? 'background:rgba(239,68,68,0.06);' : (r.status === 'success' ? 'background:rgba(16,185,129,0.06);' : '');
+                return `
+                    <tr style="border-top:1px solid var(--border); ${rowBg}">
+                        <td style="padding:0.55rem; color:var(--text-muted);">${i + 1}</td>
+                        <td style="padding:0.55rem;">${(r.data.name || '').slice(0, 60) || '<em style="color:var(--text-muted);">(empty)</em>'}</td>
+                        <td style="padding:0.55rem;">${r.data.category || '—'}</td>
+                        <td style="padding:0.55rem;">₹${isFinite(r.data.price) ? r.data.price : '—'}</td>
+                        <td style="padding:0.55rem;">${r.data.stock}</td>
+                        <td style="padding:0.55rem;">${badge}</td>
+                    </tr>`;
+            }).join('');
+        }
+
+        async function submitBulkUpload() {
+            const ready = bulkRows.filter(r => r.valid && r.status !== 'success');
+            if (!ready.length) { showToast('Nothing to upload', 'info'); return; }
+            const btn = document.getElementById('bulkSubmitBtn');
+            btn.disabled = true;
+            btn.dataset.originalText = btn.textContent;
+
+            let success = 0, fail = 0;
+            for (const r of ready) {
+                r.status = 'uploading';
+                renderBulkPreview();
+                btn.textContent = `Uploading… ${success + fail + 1} / ${ready.length}`;
+
+                const fd = new FormData();
+                fd.append('name', r.data.name);
+                fd.append('category', r.data.category);
+                fd.append('price', r.data.price);
+                fd.append('stock', r.data.stock);
+                fd.append('image_url', r.data.image_url || '');
+                fd.append('images', JSON.stringify(r.data.image_url ? [r.data.image_url] : []));
+                fd.append('description', r.data.description || '');
+                fd.append('featured', r.data.featured ? '1' : '0');
+
+                const res = await apiCall('api/add-product.php', { method: 'POST', body: fd });
+                if (res.ok && res.data && res.data.success) {
+                    r.status = 'success';
+                    success++;
+                } else {
+                    r.status = 'error';
+                    r.errors = [explainApiFailure(res, 'Upload failed')];
+                    fail++;
+                }
+            }
+
+            renderBulkPreview();
+            btn.disabled = false;
+            btn.textContent = fail ? `Retry ${fail} failed` : 'Done';
+            if (fail === 0) btn.style.display = 'none';
+            showToast(`Bulk upload complete — ${success} added, ${fail} failed`, fail ? 'error' : 'success');
+            await loadData();
+            render();
+        }
 
         function editProduct(id) {
             const p = products.find(x => x.id.toString() === id.toString());
