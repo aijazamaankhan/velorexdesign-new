@@ -6,12 +6,23 @@ if (empty($_SESSION['admin_id'])) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
+// Discover columns so we can degrade gracefully on un-migrated databases.
+$custCols = [];
+if ($r = $conn->query('SHOW COLUMNS FROM customers')) {
+    while ($c = $r->fetch_assoc()) $custCols[$c['Field']] = true;
+}
+$hasPw = isset($custCols['password_hash']);
+
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 
+$accountExpr = $hasPw
+    ? '(c.password_hash IS NOT NULL AND c.password_hash <> "")'
+    : '0';
+
 $query = 'SELECT c.id, c.name, c.email, c.phone, c.created_at,
-                 (c.password_hash IS NOT NULL AND c.password_hash <> "") AS has_account,
-                 COALESCE(o.orders_count, 0)  AS orders_count,
-                 COALESCE(o.total_spent, 0)   AS total_spent,
+                 ' . $accountExpr . ' AS has_account,
+                 COALESCE(o.orders_count, 0) AS orders_count,
+                 COALESCE(o.total_spent, 0)  AS total_spent,
                  o.last_order_at
           FROM customers c
           LEFT JOIN (
@@ -25,7 +36,7 @@ $query = 'SELECT c.id, c.name, c.email, c.phone, c.created_at,
           ) o ON o.customer_id = c.id';
 
 $params = [];
-$types = '';
+$types  = '';
 if ($search !== '') {
     $query .= ' WHERE c.name LIKE ? OR c.email LIKE ? OR c.phone LIKE ?';
     $types  = 'sss';
@@ -36,6 +47,9 @@ if ($search !== '') {
 $query .= ' ORDER BY c.created_at DESC';
 
 $stmt = $conn->prepare($query);
+if (!$stmt) {
+    sendResponse(['error' => 'Customer query failed', 'detail' => $conn->error], 500);
+}
 if ($params) {
     $stmt->bind_param($types, ...$params);
 }
