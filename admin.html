@@ -554,6 +554,9 @@
             <a href="#" class="nav-link" onclick="switchTab('orders', this)">
                 <i class="fas fa-shopping-bag"></i> <span>Orders</span>
             </a>
+            <a href="#" class="nav-link" onclick="switchTab('customers', this)">
+                <i class="fas fa-users"></i> <span>Customers</span>
+            </a>
             <a href="#" class="nav-link" onclick="switchTab('featured', this)">
                 <i class="fas fa-star"></i> <span>Featured</span>
             </a>
@@ -702,6 +705,42 @@
                             </tr>
                         </thead>
                         <tbody id="orderList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── CUSTOMERS TAB ── -->
+            <div id="customers-tab" class="tab-content" style="display: none;">
+                <div class="section-header">
+                    <div style="display: flex; align-items: center; gap: 1.5rem; flex: 1; flex-wrap: wrap;">
+                        <h2>Customers</h2>
+                        <div style="position: relative; flex: 1; max-width: 320px;">
+                            <i class="fas fa-search"
+                                style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.9rem;"></i>
+                            <input type="text" id="customerSearch" class="form-control"
+                                placeholder="Search by name, email or phone..."
+                                style="padding-left: 2.5rem; margin-bottom: 0;" oninput="renderCustomers()">
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:0.75rem;">
+                        <button class="btn btn-secondary" onclick="loadCustomers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Account</th>
+                                <th style="text-align:right;">Orders</th>
+                                <th style="text-align:right;">Total spent</th>
+                                <th>Joined</th>
+                                <th style="text-align:center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerList"></tbody>
                     </table>
                 </div>
             </div>
@@ -933,6 +972,62 @@
                     Upload products
                 </button>
                 <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="hideBulkModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Detail / Edit Modal -->
+    <div id="customerModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 860px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.5rem;">
+                <div>
+                    <h2 style="margin:0;" id="customerModalTitle">Customer</h2>
+                    <p id="customerModalSubtitle" style="color:var(--text-muted); font-size:0.85rem; margin-top:0.25rem;"></p>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="hideCustomerModal()" style="font-size:0.85rem; padding:0.4rem 0.9rem;"><i class="fas fa-times"></i></button>
+            </div>
+
+            <input type="hidden" id="custEditingId">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="custName" class="form-control" placeholder="Customer name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="custEmail" class="form-control" placeholder="customer@example.com">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="custPhone" class="form-control" placeholder="+91 …">
+                </div>
+                <div class="form-group">
+                    <label>New password <span style="color:var(--text-muted); font-size:0.78rem; font-weight:400;">— leave blank to keep current</span></label>
+                    <input type="text" id="custNewPassword" class="form-control" autocomplete="new-password" placeholder="At least 6 characters">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-top:0.5rem;">
+                <div>
+                    <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.75rem;">Saved addresses</h3>
+                    <div id="custAddresses" style="font-size:0.9rem; max-height:260px; overflow:auto;"></div>
+                </div>
+                <div>
+                    <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.75rem;">Order history</h3>
+                    <div id="custOrders" style="font-size:0.9rem; max-height:260px; overflow:auto;"></div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap:wrap;">
+                <button type="button" id="custSaveBtn" class="btn btn-primary" style="flex:1; min-width:160px;" onclick="saveCustomer()">
+                    <i class="fas fa-save"></i> Save changes
+                </button>
+                <button type="button" class="btn btn-secondary" style="background:rgba(239,68,68,0.12); color:#ef4444; border-color:rgba(239,68,68,0.3); flex:1; min-width:160px;" onclick="deleteCustomer()">
+                    <i class="fas fa-trash"></i> Delete customer
+                </button>
             </div>
         </div>
     </div>
@@ -1422,9 +1517,10 @@
             document.getElementById(tab + '-tab').style.display = 'block';
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings' };
+            const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings' };
             document.getElementById('tabTitle').textContent = titles[tab] || tab;
             if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
+            if (tab === 'customers') loadCustomers();
             if (tab === 'featured') { loadData(); renderFeatured(); }
             if (tab === 'categories') renderCategories();
         }
@@ -1649,6 +1745,192 @@
             showToast(`Bulk upload complete — ${success} added, ${fail} failed`, fail ? 'error' : 'success');
             await loadData();
             render();
+        }
+
+        /* ── CUSTOMER MANAGEMENT ─────────────────────────────────────
+           List + view + edit + reset-password + delete for customer
+           accounts. All endpoints require an admin session. */
+        let customers = [];
+
+        async function loadCustomers() {
+            const tbody = document.getElementById('customerList');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading customers…</td></tr>';
+            const res = await apiCall('api/get-customers.php');
+            if (!res.ok || !res.data || !Array.isArray(res.data.customers)) {
+                customers = [];
+                if (tbody) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--danger);">${explainApiFailure(res, 'Failed to load customers')}</td></tr>`;
+                return;
+            }
+            customers = res.data.customers;
+            renderCustomers();
+        }
+
+        function renderCustomers() {
+            const tbody = document.getElementById('customerList');
+            if (!tbody) return;
+            const q = (document.getElementById('customerSearch').value || '').trim().toLowerCase();
+            const filtered = !q ? customers : customers.filter(c =>
+                (c.name  || '').toLowerCase().includes(q) ||
+                (c.email || '').toLowerCase().includes(q) ||
+                (c.phone || '').toLowerCase().includes(q)
+            );
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2.5rem; color:var(--text-muted);">${customers.length === 0 ? 'No customers yet.' : 'No customers match this search.'}</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = filtered.map(c => `
+                <tr>
+                    <td>
+                        <div style="font-weight:600;">${escapeHtml(c.name || 'Guest')}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">#${c.id}</div>
+                    </td>
+                    <td>${c.email ? escapeHtml(c.email) : '<span style="color:var(--text-muted);">—</span>'}</td>
+                    <td>${c.phone ? escapeHtml(c.phone) : '<span style="color:var(--text-muted);">—</span>'}</td>
+                    <td>${c.has_account
+                        ? '<span style="font-size:0.72rem; background:rgba(0,212,170,0.12); color:var(--success); padding:2px 8px; border-radius:10px; font-weight:600;">Registered</span>'
+                        : '<span style="font-size:0.72rem; background:rgba(152,144,176,0.12); color:var(--text-muted); padding:2px 8px; border-radius:10px; font-weight:600;">Guest</span>'}</td>
+                    <td style="text-align:right;">${c.orders_count}</td>
+                    <td style="text-align:right;">₹${Number(c.total_spent || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
+                    <td style="white-space:nowrap;">${formatDate(c.created_at)}</td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button class="btn btn-secondary" style="padding:0.35rem 0.7rem; font-size:0.78rem;" onclick="openCustomerModal(${c.id})">
+                            <i class="fas fa-eye"></i> View / Edit
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+        }
+
+        function formatDate(s) {
+            if (!s) return '—';
+            const d = new Date(s.replace(' ', 'T'));
+            if (isNaN(d)) return s;
+            return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        async function openCustomerModal(id) {
+            const modal = document.getElementById('customerModal');
+            document.getElementById('custEditingId').value = id;
+            document.getElementById('custName').value = '';
+            document.getElementById('custEmail').value = '';
+            document.getElementById('custPhone').value = '';
+            document.getElementById('custNewPassword').value = '';
+            document.getElementById('custAddresses').innerHTML = '<p style="color:var(--text-muted);">Loading…</p>';
+            document.getElementById('custOrders').innerHTML = '<p style="color:var(--text-muted);">Loading…</p>';
+            document.getElementById('customerModalTitle').textContent = 'Customer';
+            document.getElementById('customerModalSubtitle').textContent = '';
+            modal.style.display = 'flex';
+
+            const res = await apiCall('api/get-customer.php?id=' + encodeURIComponent(id));
+            if (!res.ok || !res.data || !res.data.customer) {
+                showToast(explainApiFailure(res, 'Failed to load customer'), 'error');
+                hideCustomerModal();
+                return;
+            }
+            const c = res.data.customer;
+            document.getElementById('custName').value  = c.name  || '';
+            document.getElementById('custEmail').value = c.email || '';
+            document.getElementById('custPhone').value = c.phone || '';
+            document.getElementById('customerModalTitle').textContent = c.name || 'Customer';
+            document.getElementById('customerModalSubtitle').innerHTML =
+                `#${c.id} · ${c.has_account ? 'Registered account' : 'Guest record'} · Joined ${formatDate(c.created_at)} · ` +
+                `<strong style="color:var(--text);">${res.data.orders.length} order${res.data.orders.length === 1 ? '' : 's'}</strong> · ` +
+                `Total spent <strong style="color:var(--text);">₹${Number(res.data.total_spent || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</strong>`;
+
+            // Addresses
+            const addrEl = document.getElementById('custAddresses');
+            if (!res.data.addresses.length) {
+                addrEl.innerHTML = '<p style="color:var(--text-muted);">No saved addresses.</p>';
+            } else {
+                addrEl.innerHTML = res.data.addresses.map(a => {
+                    const parts = [a.full_name, a.street, a.line2, a.landmark, [a.city, a.state, a.zip].filter(Boolean).join(' '), a.country].filter(Boolean);
+                    return `
+                        <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:0.75rem 0.9rem; margin-bottom:0.5rem;">
+                            <div style="font-weight:600; display:flex; align-items:center; gap:0.5rem;">${escapeHtml(a.title || 'Address')}${a.is_default ? '<span style="font-size:0.66rem; background:rgba(255,107,53,0.12); color:var(--secondary); padding:2px 6px; border-radius:8px;">Default</span>' : ''}</div>
+                            ${a.phone ? `<div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(a.phone)}</div>` : ''}
+                            <div style="font-size:0.82rem; margin-top:0.25rem;">${parts.map(escapeHtml).join('<br>')}</div>
+                        </div>`;
+                }).join('');
+            }
+
+            // Orders
+            const ordEl = document.getElementById('custOrders');
+            if (!res.data.orders.length) {
+                ordEl.innerHTML = '<p style="color:var(--text-muted);">No orders yet.</p>';
+            } else {
+                ordEl.innerHTML = res.data.orders.map(o => `
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:0.65rem 0.9rem; margin-bottom:0.4rem; display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+                        <div>
+                            <div style="font-weight:600;">${escapeHtml(o.order_code)}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">${formatDate(o.created_at)} · ${escapeHtml(o.status)}</div>
+                        </div>
+                        <div style="font-weight:600;">₹${Number(o.total_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
+                    </div>`).join('');
+            }
+        }
+
+        function hideCustomerModal() {
+            document.getElementById('customerModal').style.display = 'none';
+        }
+
+        async function saveCustomer() {
+            const id = parseInt(document.getElementById('custEditingId').value, 10);
+            if (!id) return;
+            const payload = {
+                id,
+                name:  document.getElementById('custName').value.trim(),
+                email: document.getElementById('custEmail').value.trim(),
+                phone: document.getElementById('custPhone').value.trim()
+            };
+            const newPassword = document.getElementById('custNewPassword').value;
+            if (newPassword) payload.new_password = newPassword;
+
+            const btn = document.getElementById('custSaveBtn');
+            const originalLabel = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+            const res = await apiCall('api/admin-update-customer.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = originalLabel;
+
+            if (res.ok && res.data && res.data.success) {
+                showToast(res.data.password_reset ? 'Customer updated · password reset' : 'Customer updated', 'success');
+                document.getElementById('custNewPassword').value = '';
+                await loadCustomers();
+                hideCustomerModal();
+                return;
+            }
+            showToast(explainApiFailure(res, 'Failed to update customer'), 'error');
+        }
+
+        async function deleteCustomer() {
+            const id = parseInt(document.getElementById('custEditingId').value, 10);
+            if (!id) return;
+            const name = document.getElementById('custName').value.trim() || ('customer #' + id);
+            if (!confirm(`Permanently delete ${name}?\n\nTheir saved addresses will be removed.\nPast orders will stay (marked as Guest).`)) return;
+
+            const res = await apiCall('api/admin-delete-customer.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            if (res.ok && res.data && res.data.success) {
+                showToast('Customer deleted', 'success');
+                hideCustomerModal();
+                await loadCustomers();
+                return;
+            }
+            showToast(explainApiFailure(res, 'Failed to delete customer'), 'error');
         }
 
         function editProduct(id) {
