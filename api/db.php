@@ -4,14 +4,20 @@
  *
  * Configuration order:
  *   1. Environment variables (DB_HOST, DB_USER, DB_PASS, DB_NAME)
- *   2. api/.env file (KEY=VALUE per line, ignored by .htaccess)
+ *   2. .env file — checked in the project root first (../.env), then in api/.env
+ *      for backward compatibility. KEY=VALUE per line, blocked from public access
+ *      by the project-root .htaccess (and api/.htaccess if it lives there).
  *   3. Defaults below (override these for production)
  *
- * On Hostinger, create api/.env with your DB credentials from cPanel.
+ * On Hostinger, create a .env file next to index.html with your DB credentials.
  */
 
-$envFile = __DIR__ . '/.env';
-if (file_exists($envFile)) {
+$envCandidates = [
+    __DIR__ . '/../.env',  // project root — preferred location
+    __DIR__ . '/.env',     // legacy location (kept for backward compatibility)
+];
+foreach ($envCandidates as $envFile) {
+    if (!file_exists($envFile)) continue;
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         $line = trim($line);
@@ -25,6 +31,7 @@ if (file_exists($envFile)) {
         }
         if (!isset($_ENV[$k])) $_ENV[$k] = $v;
     }
+    break; // first file found wins
 }
 
 if (!defined('DB_HOST')) define('DB_HOST', getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? 'localhost'));
@@ -59,7 +66,7 @@ if ($conn->connect_error) {
     header('Content-Type: application/json');
     echo json_encode([
         'error' => 'Database connection failed',
-        'hint'  => 'Edit api/.env (or api/db.php defaults) with your DB credentials, then visit api/setup.php once.'
+        'hint'  => 'Create a .env file in the project root (next to index.html) with your DB credentials, then visit api/setup.php once.'
     ]);
     exit();
 }

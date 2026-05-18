@@ -1,0 +1,24 @@
+# Block public HTTP access to dotfiles and sensitive support files.
+# IMPORTANT: .env now lives in the project root (next to index.html),
+# so this protection is required — without it, anyone could fetch
+# https://your-domain.com/.env and read your DB password.
+
+<Files ".env">
+    Require all denied
+</Files>
+
+<Files ".env.example">
+    Require all denied
+</Files>
+
+<Files ".gitignore">
+    Require all denied
+</Files>
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(log|env|sql|bak|swp|md)$">
+    Require all denied
+</FilesMatch>
