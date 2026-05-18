@@ -1399,16 +1399,8 @@
         <li><a href="#home" class="nav-link">Home</a></li>
         <li class="nav-dropdown">
           <a href="#products" class="nav-link">Catalog <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i></a>
-          <div class="dropdown-menu">
+          <div class="dropdown-menu" id="navCategoryDropdown">
             <a href="#products" class="dropdown-item"><i class="fas fa-th-large text-gradient"></i> All Products</a>
-            <a href="#products?cat=wood" class="dropdown-item"><i class="fas fa-tree text-gradient"></i> Wood Items</a>
-            <a href="#products?cat=resin" class="dropdown-item"><i class="fas fa-tint text-gradient"></i> Resin Arts</a>
-            <a href="#products?cat=raw_material" class="dropdown-item"><i class="fas fa-box text-gradient"></i> Raw
-              Materials</a>
-            <a href="#products?cat=soap" class="dropdown-item"><i class="fas fa-soap text-gradient"></i> Handmade
-              Soaps</a>
-            <a href="#products?cat=candle" class="dropdown-item"><i class="fas fa-fire-alt text-gradient"></i> Handmade
-              Candles</a>
           </div>
         </li>
         <li><a href="#services" class="nav-link">Graphic Design</a></li>
@@ -1468,11 +1460,8 @@
         </div>
         <div class="footer-links">
           <h4>Shop</h4>
-          <ul>
+          <ul id="footerShopLinks">
             <li><a href="#products">All Products</a></li>
-            <li><a href="#products?cat=wood">Wood Items</a></li>
-            <li><a href="#products?cat=resin">Resin Arts</a></li>
-            <li><a href="#products?cat=raw_material">Raw Materials</a></li>
             <li><a href="#services">Design Services</a></li>
           </ul>
         </div>
@@ -1696,40 +1685,7 @@
             <h2 class="section-title">Shop by <span class="text-gold">Category</span></h2>
             <p class="section-subtitle">Curated collections for your home and brand</p>
           </div>
-          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-            <div class="category-card" onclick="app.navigate('products', {cat: 'wood'})">
-              <img src="cat-wood.png" alt="Wood Items" style="width: 100%; height: 200px; object-fit: cover;">
-              <div class="category-overlay">
-                <h3>Wood</h3>
-              </div>
-            </div>
-            <div class="category-card" onclick="app.navigate('products', {cat: 'resin'})">
-              <img src="cat-resin.png" alt="Resin Arts" style="width: 100%; height: 200px; object-fit: cover;">
-              <div class="category-overlay">
-                <h3>Resin</h3>
-              </div>
-            </div>
-            <div class="category-card" onclick="app.navigate('products', {cat: 'raw_material'})">
-              <img src="cat-raw.png" alt="Raw Materials" style="width: 100%; height: 200px; object-fit: cover;">
-              <div class="category-overlay">
-                <h3>Materials</h3>
-              </div>
-            </div>
-            <div class="category-card" onclick="app.navigate('products', {cat: 'soap'})">
-              <img src="https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80"
-                alt="Handmade Soaps" style="width: 100%; height: 200px; object-fit: cover;">
-              <div class="category-overlay">
-                <h3>Soaps</h3>
-              </div>
-            </div>
-            <div class="category-card" onclick="app.navigate('products', {cat: 'candle'})">
-              <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80"
-                alt="Handmade Candles" style="width: 100%; height: 200px; object-fit: cover;">
-              <div class="category-overlay">
-                <h3>Candles</h3>
-              </div>
-            </div>
-          </div>
+          <div class="grid" id="homeCategoryGrid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
         </div>
       </section>
 
@@ -2351,16 +2307,42 @@
       // Products are managed by the admin panel and fetched from the server.
       let PRODUCTS = [];
 
-      // Categories: defaults + any custom ones added by admin
+      // Categories: defaults + any custom ones added by admin (read fresh each call
+      // so additions/removals in admin show up after a page reload without code changes).
       const DEFAULT_CATS = [
-        { id: 'wood',         name: 'Wood Items'    },
-        { id: 'resin',        name: 'Resin Art'     },
-        { id: 'soap',         name: 'Handmade Soap' },
-        { id: 'candle',       name: 'Candles'       },
-        { id: 'raw_material', name: 'Raw Materials' }
+        { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'cat-wood.png' },
+        { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'cat-resin.png' },
+        { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80' },
+        { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80' },
+        { id: 'raw_material', name: 'Raw Materials', icon: 'fas fa-box',       image: 'cat-raw.png' }
       ];
-      const customCats = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
-      const CATEGORIES = [...DEFAULT_CATS, ...customCats.filter(c => !c.isDefault)];
+      const DEFAULT_CAT_FALLBACK_ICON = 'fas fa-tag';
+      const DEFAULT_CAT_FALLBACK_IMAGE = 'https://placehold.co/400x300/1a0a2e/ffd700?text=New+Category';
+
+      function getCategories() {
+        const custom = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
+        // Defaults first (in declared order), then any non-default custom ones the admin added.
+        // Merge in any admin-provided icon/image overrides for defaults.
+        const merged = DEFAULT_CATS.map(d => {
+          const override = custom.find(c => c.id === d.id) || {};
+          return {
+            ...d,
+            icon:  override.icon  || d.icon,
+            image: override.image || d.image
+          };
+        });
+        const extras = custom
+          .filter(c => !c.isDefault && !DEFAULT_CATS.some(d => d.id === c.id))
+          .map(c => ({
+            id: c.id,
+            name: c.name,
+            icon: c.icon || DEFAULT_CAT_FALLBACK_ICON,
+            image: c.image || DEFAULT_CAT_FALLBACK_IMAGE
+          }));
+        return [...merged, ...extras];
+      }
+      // Kept for any inline scripts that already reference CATEGORIES — refreshed each render below.
+      let CATEGORIES = getCategories();
       function getCatName(id) {
         const c = CATEGORIES.find(x => x.id === id);
         return c ? c.name : id;
@@ -2469,9 +2451,21 @@
           this.updateCartBadge();
           this.updateAuthNav();  // also calls loadNotifications()
           this.restoreSession(); // verify server session and refresh user state
+          this.renderNavCategories();
+          this.renderFooterCategories();
           loadProducts();
           this.handleRoute();
           window.addEventListener('hashchange', () => this.handleRoute());
+
+          // If the admin adds/removes a category in another tab, refresh the menus live.
+          window.addEventListener('storage', (e) => {
+            if (e.key === 'velorex_store_categories') {
+              CATEGORIES = getCategories();
+              this.renderNavCategories();
+              this.renderFooterCategories();
+              if ((window.location.hash || '#home').startsWith('#home')) this.renderHome();
+            }
+          });
 
           // Active Nav State
           window.addEventListener('hashchange', () => {
@@ -2896,6 +2890,7 @@
         },
 
         renderHome() {
+          this.renderHomeCategories();
           const grid = document.getElementById('homeFeaturedGrid');
           let featured = PRODUCTS.filter(p => p.featured);
           if (featured.length === 0) featured = PRODUCTS.slice(0, 3);
@@ -2905,6 +2900,44 @@
           } else {
             grid.innerHTML = featured.map(p => this.createProductCard(p)).join('');
           }
+        },
+
+        renderNavCategories() {
+          const dd = document.getElementById('navCategoryDropdown');
+          if (!dd) return;
+          CATEGORIES = getCategories();
+          dd.innerHTML =
+            `<a href="#products" class="dropdown-item"><i class="fas fa-th-large text-gradient"></i> All Products</a>` +
+            CATEGORIES.map(c =>
+              `<a href="#products?cat=${c.id}" class="dropdown-item"><i class="${c.icon || DEFAULT_CAT_FALLBACK_ICON} text-gradient"></i> ${c.name}</a>`
+            ).join('');
+        },
+
+        renderFooterCategories() {
+          const ul = document.getElementById('footerShopLinks');
+          if (!ul) return;
+          CATEGORIES = getCategories();
+          const catLinks = CATEGORIES.map(c =>
+            `<li><a href="#products?cat=${c.id}">${c.name}</a></li>`
+          ).join('');
+          ul.innerHTML =
+            `<li><a href="#products">All Products</a></li>` +
+            catLinks +
+            `<li><a href="#services">Design Services</a></li>`;
+        },
+
+        renderHomeCategories() {
+          const grid = document.getElementById('homeCategoryGrid');
+          if (!grid) return;
+          CATEGORIES = getCategories();
+          grid.innerHTML = CATEGORIES.map(c => `
+            <div class="category-card" onclick="app.navigate('products', {cat: '${c.id}'})">
+              <img src="${c.image || DEFAULT_CAT_FALLBACK_IMAGE}" alt="${c.name}" onerror="this.src='${DEFAULT_CAT_FALLBACK_IMAGE}'" style="width: 100%; height: 200px; object-fit: cover;">
+              <div class="category-overlay">
+                <h3>${c.name}</h3>
+              </div>
+            </div>
+          `).join('');
         },
 
         renderServices() {
@@ -3008,7 +3041,8 @@
           const title = document.getElementById('catalogTitle');
           const select = document.getElementById('catFilter');
 
-          // Populate filter dropdown dynamically from CATEGORIES
+          // Populate filter dropdown dynamically from CATEGORIES (refreshed from storage)
+          CATEGORIES = getCategories();
           if (select) {
             const current = catFilter || 'all';
             select.innerHTML = `<option value="all">All Categories</option>` +
