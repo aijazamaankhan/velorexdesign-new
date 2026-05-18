@@ -1061,7 +1061,9 @@
             if (res.networkError) return 'Server unreachable. Run the site via a PHP server (XAMPP / Laragon / php -S / Hostinger) — Live Server and file:// will not work.';
             // Prefer the server's own error message — it's more accurate than
             // any status-code guess (and avoids leaking default credentials).
-            if (res.data && res.data.error) return res.data.error;
+            if (res.data && res.data.error) {
+                return res.data.detail ? `${res.data.error} — ${res.data.detail}` : res.data.error;
+            }
             if (res.status === 405 || res.status === 501) {
                 return 'HTTP ' + res.status + ' — the host is NOT running PHP. VS Code Live Server, python http.server, and similar static servers do not execute .php files. Open the site through XAMPP / Laragon / "php -S localhost:8000" / Hostinger.';
             }

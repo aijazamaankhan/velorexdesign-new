@@ -23,15 +23,19 @@ if ($id <= 0) {
     sendResponse(['error' => 'Customer id is required'], 422);
 }
 
+// Discover available columns (older DBs may lack password_hash / updated_at).
+$custCols = [];
+if ($r = $conn->query('SHOW COLUMNS FROM customers')) {
+    while ($c = $r->fetch_assoc()) $custCols[$c['Field']] = true;
+}
+
 // Confirm the customer exists.
-$check = $conn->prepare('SELECT id, email FROM customers WHERE id = ? LIMIT 1');
+$check = $conn->prepare('SELECT id FROM customers WHERE id = ? LIMIT 1');
 $check->bind_param('i', $id);
 $check->execute();
-$existing = $check->get_result();
-if ($existing->num_rows === 0) {
+if ($check->get_result()->num_rows === 0) {
     sendResponse(['error' => 'Customer not found'], 404);
 }
-$current = $existing->fetch_assoc();
 
 $fields = [];
 $types  = '';
@@ -74,6 +78,11 @@ if ($phone !== null) {
 }
 
 if ($newPassword !== '') {
+    if (!isset($custCols['password_hash'])) {
+        sendResponse([
+            'error' => 'This database does not have a password_hash column. Run api/setup.php once to add it, then try again.'
+        ], 500);
+    }
     if (strlen($newPassword) < 6) {
         sendResponse(['error' => 'New password must be at least 6 characters'], 422);
     }
@@ -86,20 +95,29 @@ if (empty($fields)) {
     sendResponse(['error' => 'Provide at least one field to update'], 422);
 }
 
-$query = 'UPDATE customers SET ' . implode(', ', $fields) . ', updated_at = NOW() WHERE id = ?';
+// Only touch updated_at if the column exists (older schemas lack it).
+$setClause = implode(', ', $fields);
+if (isset($custCols['updated_at'])) {
+    $setClause .= ', updated_at = NOW()';
+}
+
+$query   = 'UPDATE customers SET ' . $setClause . ' WHERE id = ?';
 $types   .= 'i';
 $params[] = $id;
 
 $upd = $conn->prepare($query);
+if (!$upd) {
+    sendResponse(['error' => 'Update query failed to prepare', 'detail' => $conn->error], 500);
+}
 $upd->bind_param($types, ...$params);
 if (!$upd->execute()) {
-    sendResponse(['error' => 'Failed to update customer'], 500);
+    sendResponse(['error' => 'Failed to update customer', 'detail' => $upd->error], 500);
 }
 
 sendResponse([
-    'success'           => true,
-    'id'                => $id,
-    'password_reset'    => $newPassword !== '',
-    'changed_fields'    => count($fields)
+    'success'        => true,
+    'id'             => $id,
+    'password_reset' => $newPassword !== '',
+    'changed_fields' => count($fields)
 ]);
 ?>
