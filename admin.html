@@ -4,515 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Velorex Admin | Premium Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link
+    <!-- Font Awesome 6.5.1 from cdnjs with Subresource Integrity. If a future
+         version is pinned in href, update the integrity hash from
+         https://cdnjs.com/libraries/font-awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Playfair+Display:wght@700&display=swap"
-        rel="stylesheet">
-    <style>
-        :root {
-            --primary: #0a0a1a;
-            --surface: rgba(20, 20, 45, 0.7);
-            --secondary: #ff6b35;
-            --accent: #ffd700;
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --glow: 0 0 20px rgba(255, 107, 53, 0.2);
-            --bg-body: #0a0a1a;
-        }
-
-        [data-theme="light"] {
-            --primary: #f1f5f9;
-            --surface: rgba(255, 255, 255, 0.9);
-            --secondary: #ff6b35;
-            --accent: #d97706;
-            --border: rgba(0, 0, 0, 0.08);
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --bg-body: #f1f5f9;
-            --glow: 0 0 20px rgba(255, 107, 53, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        body {
-            background: var(--bg-body);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            transition: background 0.3s ease;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: rgba(10, 10, 26, 0.95);
-            border-right: 1px solid var(--border);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-        }
-
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .logo i {
-            color: var(--secondary);
-        }
-
-        .nav-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .nav-link {
-            padding: 1rem 1.2rem;
-            border-radius: var(--radius);
-            color: var(--text-muted);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: var(--transition);
-            border: 1px solid transparent;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background: var(--surface);
-            color: #fff;
-            border-color: var(--border);
-            transform: translateX(5px);
-            box-shadow: var(--glow);
-        }
-
-        .nav-link.active i {
-            color: var(--secondary);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem 3rem;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            backdrop-filter: blur(20px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent));
-            opacity: 0.5;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 900;
-            margin: 0.5rem 0;
-        }
-
-        .stat-trend {
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .trend-up {
-            color: #10b981;
-        }
-
-        /* Content Sections */
-        .section-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            backdrop-filter: blur(20px);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: var(--radius);
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--secondary), #d9480f);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Table Styles */
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            padding: 1rem;
-            color: var(--text-muted);
-            font-weight: 400;
-            font-size: 0.85rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 1.2rem 1rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.95rem;
-        }
-
-        .prod-cell {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .prod-img {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-
-        .status-shipped {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-
-        .status-delivered {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        .status-processing {
-            background: rgba(139, 92, 246, 0.1);
-            color: #8b5cf6;
-        }
-        .status-cancelled {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-
-        /* Order filter chips */
-        .order-filter-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .order-chip {
-            padding: 0.35rem 0.9rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: transparent;
-            color: var(--text);
-        }
-        .order-chip:hover { border-color: var(--secondary); color: var(--secondary); }
-        .order-chip.active { background: var(--secondary); border-color: var(--secondary); color: #fff; }
-        .order-chip .chip-count {
-            display: inline-block;
-            background: rgba(255,255,255,0.25);
-            border-radius: 10px;
-            padding: 0 6px;
-            margin-left: 4px;
-            font-size: 0.7rem;
-        }
-
-        /* Expanded order detail row */
-        .expand-row-content {
-            background: rgba(255,107,53,0.04);
-            border: 1px solid rgba(255,107,53,0.15);
-            border-radius: 12px;
-            padding: 1.25rem 1.5rem;
-            margin: 0.25rem 0;
-            animation: fadeIn 0.2s ease;
-        }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-        .expand-detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1.5rem;
-        }
-        .expand-section-title {
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 0.6rem;
-        }
-        .tracking-input-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-        .tracking-input-row input { flex: 1; }
-        @media (max-width: 768px) { .expand-detail-grid { grid-template-columns: 1fr; } }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(15px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .modal-content {
-            background: #111122;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            width: 100%;
-            max-width: 700px;
-            padding: 3rem;
-            position: relative;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.6rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            border-color: var(--secondary);
-            background: rgba(255, 255, 255, 0.06);
-            outline: none;
-        }
-
-        select.form-control option {
-            background: var(--bg-body);
-            color: var(--text);
-        }
-
-        /* Auth Screen */
-        #authScreen {
-            position: fixed;
-            inset: 0;
-            background: #050510;
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .auth-card {
-            background: var(--surface);
-            padding: 3rem;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            backdrop-filter: blur(30px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Toast */
-        #toastContainer {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            z-index: 9999;
-        }
-
-        .toast {
-            background: var(--surface);
-            border: 1px solid var(--secondary);
-            padding: 1.2rem 2.5rem;
-            border-radius: 50px;
-            box-shadow: var(--glow);
-            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes pop {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-                padding: 2rem 1rem;
-            }
-
-            .sidebar .logo span,
-            .sidebar .nav-link span {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 80px;
-                padding: 2rem 1.5rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="js/admin.js" defer></script>
 </head>
 
 <body>
@@ -523,19 +32,18 @@
                 <i class="fas fa-gem"></i> Velorex <span>Admin</span>
             </div>
             <p style="color: var(--text-muted); margin-bottom: 2rem;">Please enter your administrative credentials</p>
-            
+
             <div class="form-group" style="text-align: left;">
-                <label>Username</label>
-                <input type="text" id="adminUser" class="form-control" placeholder="Enter username">
+                <label for="adminUser">Username</label>
+                <input type="text" id="adminUser" class="form-control" placeholder="Enter username" autocomplete="username" maxlength="100" required>
             </div>
             <div class="form-group" style="text-align: left;">
-                <label>Access Password</label>
-                <input type="password" id="adminPass" class="form-control" placeholder="••••••••">
+                <label for="adminPass">Access Password</label>
+                <input type="password" id="adminPass" class="form-control" placeholder="••••••••" autocomplete="current-password" maxlength="200" required>
             </div>
-            <button class="btn btn-primary" style="width: 100%; padding: 1.2rem;" onclick="checkAuth()">Authorize
-                Login</button>
+            <button type="button" class="btn btn-primary" style="width: 100%; padding: 1.2rem;" data-action="admin-login">Authorize Login</button>
             <div style="margin-top: 2rem;">
-                <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">
+                <a href="index.html" rel="noopener" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">
                     <i class="fas fa-arrow-left"></i> Back to Store
                 </a>
             </div>
@@ -544,34 +52,34 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <a href="index.html" class="logo">
+        <a href="index.html" class="logo" rel="noopener">
             <i class="fas fa-gem"></i> <span>Velorex</span>
         </a>
         <nav class="nav-menu">
-            <a href="#" class="nav-link active" onclick="switchTab('inventory', this)">
+            <a href="#inventory" class="nav-link active" data-action="set-tab" data-tab="inventory">
                 <i class="fas fa-boxes"></i> <span>Inventory</span>
             </a>
-            <a href="#" class="nav-link" onclick="switchTab('orders', this)">
+            <a href="#orders" class="nav-link" data-action="set-tab" data-tab="orders">
                 <i class="fas fa-shopping-bag"></i> <span>Orders</span>
             </a>
-            <a href="#" class="nav-link" onclick="switchTab('customers', this)">
+            <a href="#customers" class="nav-link" data-action="set-tab" data-tab="customers">
                 <i class="fas fa-users"></i> <span>Customers</span>
             </a>
-            <a href="#" class="nav-link" onclick="switchTab('featured', this)">
+            <a href="#featured" class="nav-link" data-action="set-tab" data-tab="featured">
                 <i class="fas fa-star"></i> <span>Featured</span>
             </a>
-            <a href="#" class="nav-link" onclick="switchTab('categories', this)">
+            <a href="#categories" class="nav-link" data-action="set-tab" data-tab="categories">
                 <i class="fas fa-tags"></i> <span>Categories</span>
             </a>
-            <a href="#" class="nav-link" onclick="switchTab('analytics', this)">
+            <a href="#analytics" class="nav-link" data-action="set-tab" data-tab="analytics">
                 <i class="fas fa-chart-line"></i> <span>Analytics</span>
             </a>
-            <a href="#" class="nav-link" onclick="switchTab('settings', this)">
+            <a href="#settings" class="nav-link" data-action="set-tab" data-tab="settings">
                 <i class="fas fa-cog"></i> <span>Settings</span>
             </a>
         </nav>
         <div style="margin-top: auto;">
-            <a href="#" class="nav-link" onclick="logout()" style="color: #ef4444;">
+            <a href="#logout" class="nav-link" data-action="logout" style="color: #ef4444;">
                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </a>
         </div>
@@ -582,11 +90,11 @@
         <div class="top-bar">
             <h1 id="tabTitle">Inventory Management</h1>
             <div style="display: flex; align-items: center; gap: 2rem;">
-                <div onclick="toggleTheme()" style="cursor: pointer; font-size: 1.2rem; padding: 0.5rem;"
+                <button type="button" data-action="toggle-theme" style="background:none; border:none; color:inherit; cursor: pointer; font-size: 1.2rem; padding: 0.5rem;"
                     title="Toggle Theme">
                     <i class="fas fa-moon" id="themeIcon"></i>
-                </div>
-                <a href="index.html" class="btn btn-secondary" target="_blank">
+                </button>
+                <a href="index.html" class="btn btn-secondary" target="_blank" rel="noopener">
                     <i class="fas fa-external-link-alt"></i> View Store
                 </a>
                 <div class="user-info">
@@ -632,19 +140,19 @@
                                 style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem;"></i>
                             <input type="text" id="inventorySearch" class="form-control"
                                 placeholder="Search products..." style="padding-left: 2.5rem; margin-bottom: 0;"
-                                oninput="render()">
+                                data-action="inventory-search" maxlength="120">
                         </div>
                         <select id="categoryFilter" class="form-control" style="max-width: 180px; margin-bottom: 0;"
-                            onchange="render()">
+                            data-action="category-filter">
                             <option value="all">All Categories</option>
                         </select>
                     </div>
                     <div style="display: flex; gap: 1rem;">
-                        <button class="btn btn-secondary" onclick="exportData()"><i class="fas fa-download"></i>
+                        <button type="button" class="btn btn-secondary" data-action="export"><i class="fas fa-download"></i>
                             Export</button>
-                        <button class="btn btn-secondary" onclick="showBulkModal()"><i class="fas fa-file-csv"></i>
+                        <button type="button" class="btn btn-secondary" data-action="show-bulk"><i class="fas fa-file-csv"></i>
                             Bulk Upload</button>
-                        <button class="btn btn-primary" onclick="showModal()"><i class="fas fa-plus"></i> New
+                        <button type="button" class="btn btn-primary" data-action="show-add-product"><i class="fas fa-plus"></i> New
                             Product</button>
                     </div>
                 </div>
@@ -671,23 +179,23 @@
                         <div style="position: relative; flex: 1; max-width: 280px;">
                             <i class="fas fa-search" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.9rem;"></i>
                             <input type="text" id="orderSearch" class="form-control" placeholder="Search by ID, name, status..."
-                                style="padding-left: 2.5rem; margin-bottom: 0;" oninput="renderOrders()">
+                                style="padding-left: 2.5rem; margin-bottom: 0;" data-action="order-search" maxlength="120">
                         </div>
                     </div>
                     <div style="display:flex; gap:0.75rem;">
-                        <button class="btn btn-secondary" onclick="renderOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                        <button class="btn btn-secondary" onclick="clearOrderFilters()"><i class="fas fa-eraser"></i> Clear</button>
+                        <button type="button" class="btn btn-secondary" data-action="render-orders"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <button type="button" class="btn btn-secondary" data-action="clear-order-filters"><i class="fas fa-eraser"></i> Clear</button>
                     </div>
                 </div>
 
                 <!-- Status filter chips -->
                 <div class="order-filter-chips" id="orderFilterChips">
-                    <button class="order-chip active" onclick="setOrderFilter('all', this)">All <span class="chip-count" id="chip-all">0</span></button>
-                    <button class="order-chip" onclick="setOrderFilter('Pending', this)" style="border-color:#f59e0b; color:#f59e0b;">Pending <span class="chip-count" id="chip-pending">0</span></button>
-                    <button class="order-chip" onclick="setOrderFilter('Processing', this)" style="border-color:#8b5cf6; color:#8b5cf6;">Processing <span class="chip-count" id="chip-processing">0</span></button>
-                    <button class="order-chip" onclick="setOrderFilter('Shipped', this)" style="border-color:#3b82f6; color:#3b82f6;">Shipped <span class="chip-count" id="chip-shipped">0</span></button>
-                    <button class="order-chip" onclick="setOrderFilter('Delivered', this)" style="border-color:#10b981; color:#10b981;">Delivered <span class="chip-count" id="chip-delivered">0</span></button>
-                    <button class="order-chip" onclick="setOrderFilter('Cancelled', this)" style="border-color:#ef4444; color:#ef4444;">Cancelled <span class="chip-count" id="chip-cancelled">0</span></button>
+                    <button type="button" class="order-chip active" data-action="set-order-filter" data-filter="all">All <span class="chip-count" id="chip-all">0</span></button>
+                    <button type="button" class="order-chip" data-action="set-order-filter" data-filter="Pending" style="border-color:#f59e0b; color:#f59e0b;">Pending <span class="chip-count" id="chip-pending">0</span></button>
+                    <button type="button" class="order-chip" data-action="set-order-filter" data-filter="Processing" style="border-color:#8b5cf6; color:#8b5cf6;">Processing <span class="chip-count" id="chip-processing">0</span></button>
+                    <button type="button" class="order-chip" data-action="set-order-filter" data-filter="Shipped" style="border-color:#3b82f6; color:#3b82f6;">Shipped <span class="chip-count" id="chip-shipped">0</span></button>
+                    <button type="button" class="order-chip" data-action="set-order-filter" data-filter="Delivered" style="border-color:#10b981; color:#10b981;">Delivered <span class="chip-count" id="chip-delivered">0</span></button>
+                    <button type="button" class="order-chip" data-action="set-order-filter" data-filter="Cancelled" style="border-color:#ef4444; color:#ef4444;">Cancelled <span class="chip-count" id="chip-cancelled">0</span></button>
                 </div>
 
                 <div class="table-container">
@@ -709,7 +217,7 @@
                 </div>
             </div>
 
-            <!-- ── CUSTOMERS TAB ── -->
+            <!-- CUSTOMERS TAB -->
             <div id="customers-tab" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <div style="display: flex; align-items: center; gap: 1.5rem; flex: 1; flex-wrap: wrap;">
@@ -719,11 +227,11 @@
                                 style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.9rem;"></i>
                             <input type="text" id="customerSearch" class="form-control"
                                 placeholder="Search by name, email or phone..."
-                                style="padding-left: 2.5rem; margin-bottom: 0;" oninput="renderCustomers()">
+                                style="padding-left: 2.5rem; margin-bottom: 0;" data-action="customer-search" maxlength="120">
                         </div>
                     </div>
                     <div style="display:flex; gap:0.75rem;">
-                        <button class="btn btn-secondary" onclick="loadCustomers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <button type="button" class="btn btn-secondary" data-action="load-customers"><i class="fas fa-sync-alt"></i> Refresh</button>
                     </div>
                 </div>
                 <div class="table-container">
@@ -745,7 +253,7 @@
                 </div>
             </div>
 
-            <!-- ── FEATURED CREATIONS TAB ── -->
+            <!-- FEATURED CREATIONS TAB -->
             <div id="featured-tab" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h2>Featured Creations</h2>
@@ -754,7 +262,7 @@
                 <div id="featuredGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.25rem;"></div>
             </div>
 
-            <!-- ── CATEGORIES TAB ── -->
+            <!-- CATEGORIES TAB -->
             <div id="categories-tab" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h2>Product Categories</h2>
@@ -767,19 +275,19 @@
                     <div>
                         <h3 style="margin-bottom: 1.25rem; font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Add New Category</h3>
                         <div class="form-group">
-                            <label>Category Name</label>
-                            <input type="text" id="newCatName" class="form-control" placeholder="e.g. Macrame Art">
+                            <label for="newCatName">Category Name</label>
+                            <input type="text" id="newCatName" class="form-control" placeholder="e.g. Macrame Art" maxlength="60" required>
                         </div>
                         <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: -0.5rem; margin-bottom: 1rem;">A unique ID will be auto-generated from the name and used for filtering.</p>
                         <div class="form-group">
-                            <label>Icon <span style="color: var(--text-muted); font-size:0.8rem;">(optional, FontAwesome class — used in the header dropdown)</span></label>
-                            <input type="text" id="newCatIcon" class="form-control" placeholder="e.g. fas fa-leaf">
+                            <label for="newCatIcon">Icon <span style="color: var(--text-muted); font-size:0.8rem;">(optional, FontAwesome class — used in the header dropdown)</span></label>
+                            <input type="text" id="newCatIcon" class="form-control" placeholder="e.g. fas fa-leaf" maxlength="60" pattern="[a-zA-Z0-9 \-]*">
                         </div>
                         <div class="form-group">
-                            <label>Image URL <span style="color: var(--text-muted); font-size:0.8rem;">(optional — used on the "Shop by Category" cards)</span></label>
-                            <input type="text" id="newCatImage" class="form-control" placeholder="https://... or cat-yours.png">
+                            <label for="newCatImage">Image URL <span style="color: var(--text-muted); font-size:0.8rem;">(optional — used on the "Shop by Category" cards)</span></label>
+                            <input type="text" id="newCatImage" class="form-control" placeholder="https://... or cat-yours.png" maxlength="300">
                         </div>
-                        <button class="btn btn-primary" onclick="saveCategory()"><i class="fas fa-plus" style="margin-right:6px;"></i>Add Category</button>
+                        <button type="button" class="btn btn-primary" data-action="save-category"><i class="fas fa-plus" style="margin-right:6px;"></i>Add Category</button>
                     </div>
                 </div>
             </div>
@@ -800,48 +308,48 @@
                 </div>
                 <div style="max-width: 560px;">
                     <div class="form-group">
-                        <label>Store Name</label>
-                        <input type="text" id="settingsStoreName" class="form-control" placeholder="Velorex Design">
+                        <label for="settingsStoreName">Store Name</label>
+                        <input type="text" id="settingsStoreName" class="form-control" placeholder="Velorex Design" maxlength="120">
                     </div>
                     <div class="form-group">
-                        <label>WhatsApp Number <span style="color: var(--text-muted); font-size:0.8rem;">(with country code, no + or spaces — e.g. 919876543210)</span></label>
-                        <input type="text" id="settingsWhatsapp" class="form-control" placeholder="919876543210">
+                        <label for="settingsWhatsapp">WhatsApp Number <span style="color: var(--text-muted); font-size:0.8rem;">(with country code, no + or spaces — e.g. 919876543210)</span></label>
+                        <input type="text" id="settingsWhatsapp" class="form-control" placeholder="919876543210" maxlength="20" inputmode="numeric" pattern="[0-9]*">
                     </div>
                     <div class="form-group">
-                        <label>Phone Number (shown on contact page)</label>
-                        <input type="text" id="settingsPhone" class="form-control" placeholder="+91 98765 43210">
+                        <label for="settingsPhone">Phone Number (shown on contact page)</label>
+                        <input type="text" id="settingsPhone" class="form-control" placeholder="+91 98765 43210" maxlength="30">
                     </div>
                     <div class="form-group">
-                        <label>Contact Email</label>
-                        <input type="email" id="settingsEmail" class="form-control" placeholder="hello@yourdomain.com">
+                        <label for="settingsEmail">Contact Email</label>
+                        <input type="email" id="settingsEmail" class="form-control" placeholder="hello@yourdomain.com" maxlength="160">
                     </div>
                     <div class="form-group">
-                        <label>Studio Address (shown on contact page)</label>
-                        <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="123 Your Street,&#10;City, PIN&#10;India"></textarea>
+                        <label for="settingsAddress">Studio Address (shown on contact page)</label>
+                        <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="123 Your Street,&#10;City, PIN&#10;India" maxlength="400"></textarea>
                     </div>
-                    <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save" style="margin-right:8px"></i>Save Settings</button>
+                    <button type="button" class="btn btn-primary" data-action="save-settings"><i class="fas fa-save" style="margin-right:8px"></i>Save Settings</button>
 
                     <div style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border);">
                         <h3 style="margin-bottom:0.5rem;">Admin Account</h3>
                         <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Change your login username or password. You must provide your current password to confirm.</p>
 
                         <div class="form-group">
-                            <label>Current Password <span style="color:#ef4444;">*</span></label>
-                            <input type="password" id="adminCurrentPass" class="form-control" autocomplete="current-password" placeholder="Enter current password">
+                            <label for="adminCurrentPass">Current Password <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="adminCurrentPass" class="form-control" autocomplete="current-password" placeholder="Enter current password" maxlength="200">
                         </div>
                         <div class="form-group">
-                            <label>New Username</label>
-                            <input type="text" id="adminNewEmail" class="form-control" autocomplete="username" placeholder="Leave blank to keep current">
+                            <label for="adminNewEmail">New Username</label>
+                            <input type="text" id="adminNewEmail" class="form-control" autocomplete="username" placeholder="Leave blank to keep current" maxlength="120">
                         </div>
                         <div class="form-group">
-                            <label>New Password <span style="color:var(--text-muted); font-size:0.78rem;">(min 6 characters)</span></label>
-                            <input type="password" id="adminNewPass" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current">
+                            <label for="adminNewPass">New Password <span style="color:var(--text-muted); font-size:0.78rem;">(min 6 characters)</span></label>
+                            <input type="password" id="adminNewPass" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current" maxlength="200" minlength="6">
                         </div>
                         <div class="form-group">
-                            <label>Confirm New Password</label>
-                            <input type="password" id="adminNewPassConfirm" class="form-control" autocomplete="new-password" placeholder="Re-enter new password">
+                            <label for="adminNewPassConfirm">Confirm New Password</label>
+                            <input type="password" id="adminNewPassConfirm" class="form-control" autocomplete="new-password" placeholder="Re-enter new password" maxlength="200">
                         </div>
-                        <button class="btn btn-primary" onclick="updateAdminCredentials()"><i class="fas fa-key" style="margin-right:8px"></i>Update Admin Account</button>
+                        <button type="button" class="btn btn-primary" data-action="update-admin-cred"><i class="fas fa-key" style="margin-right:8px"></i>Update Admin Account</button>
                     </div>
                 </div>
             </div>
@@ -852,51 +360,48 @@
     <div id="productModal" class="modal-overlay">
         <div class="modal-content">
             <h2 id="modalTitle" style="margin-bottom: 2rem;">Add Premium Item</h2>
-            <form id="productForm" onsubmit="saveProduct(event)">
+            <form id="productForm" data-action="save-product" novalidate>
                 <input type="hidden" id="editingId">
                 <div class="form-group">
-                    <label>Product Title</label>
-                    <input type="text" id="pName" class="form-control" placeholder="e.g. Handcrafted Walnut Bowl"
-                        required>
+                    <label for="pName">Product Title</label>
+                    <input type="text" id="pName" class="form-control" placeholder="e.g. Handcrafted Walnut Bowl" maxlength="200" required>
                 </div>
 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Category</label>
-                        <select id="pCat" class="form-control">
-                            <!-- populated dynamically by populateCategoryDropdowns() -->
-                        </select>
+                        <label for="pCat">Category</label>
+                        <select id="pCat" class="form-control"></select>
                     </div>
                     <div class="form-group">
-                        <label>Base Price (₹)</label>
-                        <input type="number" id="pPrice" class="form-control" placeholder="0.00" required>
+                        <label for="pPrice">Base Price (₹)</label>
+                        <input type="number" id="pPrice" class="form-control" placeholder="0.00" min="0" step="0.01" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Initial Stock (QTY)</label>
-                    <input type="number" id="pStock" class="form-control" value="10" required>
+                    <label for="pStock">Initial Stock (QTY)</label>
+                    <input type="number" id="pStock" class="form-control" value="10" min="0" step="1" required>
                 </div>
 
                 <div class="form-group">
                     <label>Product Images <span style="color:var(--text-muted); font-size:0.78rem; font-weight:400;">— first image is the cover. Click ★ to make another image the cover.</span></label>
                     <div id="pImagesGallery" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.7rem; min-height:50px; padding:0.6rem; background:rgba(0,0,0,0.18); border:1px dashed var(--border); border-radius:var(--radius);"></div>
                     <div style="display:flex; gap:0.75rem; align-items:stretch;">
-                        <input type="url" id="pImgUrlInput" class="form-control" placeholder="Paste image URL and click Add — or use Upload" style="margin-bottom:0;">
-                        <button type="button" class="btn btn-secondary" onclick="addImageFromUrl()" style="white-space:nowrap;">
+                        <input type="url" id="pImgUrlInput" class="form-control" placeholder="Paste image URL and click Add — or use Upload" style="margin-bottom:0;" maxlength="500">
+                        <button type="button" class="btn btn-secondary" data-action="add-image-url" style="white-space:nowrap;">
                             <i class="fas fa-link"></i> Add URL
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('pImgFile').click()" style="white-space:nowrap;">
+                        <button type="button" class="btn btn-secondary" data-action="pick-img-file" style="white-space:nowrap;">
                             <i class="fas fa-upload"></i> Upload
                         </button>
                     </div>
-                    <input type="file" id="pImgFile" accept="image/*" multiple style="display:none;" onchange="uploadProductImages(event)">
+                    <input type="file" id="pImgFile" accept="image/*" multiple style="display:none;" data-action="upload-images">
                     <input type="hidden" id="pImg">
                 </div>
 
                 <div class="form-group">
-                    <label>Product Description</label>
-                    <textarea id="pDesc" class="form-control" style="min-height: 100px;"
+                    <label for="pDesc">Product Description</label>
+                    <textarea id="pDesc" class="form-control" style="min-height: 100px;" maxlength="4000"
                         placeholder="Tell the story of this handcrafted piece..."></textarea>
                 </div>
 
@@ -908,8 +413,7 @@
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                     <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 1;">Create
                         Listing</button>
-                    <button type="button" class="btn btn-secondary" style="flex: 1;"
-                        onclick="hideModal()">Discard</button>
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" data-action="hide-modal">Discard</button>
                 </div>
             </form>
         </div>
@@ -926,13 +430,13 @@
 
             <div id="bulkStep1">
                 <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.25rem;">
-                    <button type="button" class="btn btn-secondary" onclick="downloadBulkTemplate()">
+                    <button type="button" class="btn btn-secondary" data-action="download-bulk-tpl">
                         <i class="fas fa-download"></i> Download CSV template
                     </button>
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('bulkFileInput').click()">
+                    <button type="button" class="btn btn-secondary" data-action="pick-bulk-file">
                         <i class="fas fa-file-csv"></i> Choose CSV file
                     </button>
-                    <input type="file" id="bulkFileInput" accept=".csv,text/csv" style="display:none;" onchange="handleBulkFile(event)">
+                    <input type="file" id="bulkFileInput" accept=".csv,text/csv" style="display:none;" data-action="pick-bulk">
                 </div>
                 <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.2rem; font-size:0.85rem; color:var(--text-muted); line-height:1.65;">
                     <strong style="color:var(--text);">Tips</strong><br>
@@ -946,7 +450,7 @@
             <div id="bulkStep2" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
                     <div id="bulkSummary" style="font-size:0.9rem; color:var(--text-muted);"></div>
-                    <button type="button" class="btn btn-secondary" onclick="resetBulkModal()" style="font-size:0.85rem; padding:0.4rem 0.9rem;">
+                    <button type="button" class="btn btn-secondary" data-action="reset-bulk" style="font-size:0.85rem; padding:0.4rem 0.9rem;">
                         <i class="fas fa-redo"></i> Pick another file
                     </button>
                 </div>
@@ -968,10 +472,10 @@
             </div>
 
             <div style="display: flex; gap: 1rem; margin-top: 1.75rem;">
-                <button type="button" id="bulkSubmitBtn" class="btn btn-primary" style="flex: 1; display:none;" onclick="submitBulkUpload()">
+                <button type="button" id="bulkSubmitBtn" class="btn btn-primary" style="flex: 1; display:none;" data-action="submit-bulk">
                     Upload products
                 </button>
-                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="hideBulkModal()">Close</button>
+                <button type="button" class="btn btn-secondary" style="flex: 1;" data-action="hide-bulk">Close</button>
             </div>
         </div>
     </div>
@@ -984,29 +488,29 @@
                     <h2 style="margin:0;" id="customerModalTitle">Customer</h2>
                     <p id="customerModalSubtitle" style="color:var(--text-muted); font-size:0.85rem; margin-top:0.25rem;"></p>
                 </div>
-                <button type="button" class="btn btn-secondary" onclick="hideCustomerModal()" style="font-size:0.85rem; padding:0.4rem 0.9rem;"><i class="fas fa-times"></i></button>
+                <button type="button" class="btn btn-secondary" data-action="hide-customer" style="font-size:0.85rem; padding:0.4rem 0.9rem;"><i class="fas fa-times"></i></button>
             </div>
 
             <input type="hidden" id="custEditingId">
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="custName" class="form-control" placeholder="Customer name">
+                    <label for="custName">Name</label>
+                    <input type="text" id="custName" class="form-control" placeholder="Customer name" maxlength="120">
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="custEmail" class="form-control" placeholder="customer@example.com">
+                    <label for="custEmail">Email</label>
+                    <input type="email" id="custEmail" class="form-control" placeholder="customer@example.com" maxlength="160">
                 </div>
             </div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Phone</label>
-                    <input type="text" id="custPhone" class="form-control" placeholder="+91 …">
+                    <label for="custPhone">Phone</label>
+                    <input type="text" id="custPhone" class="form-control" placeholder="+91 …" maxlength="30">
                 </div>
                 <div class="form-group">
-                    <label>New password <span style="color:var(--text-muted); font-size:0.78rem; font-weight:400;">— leave blank to keep current</span></label>
-                    <input type="text" id="custNewPassword" class="form-control" autocomplete="new-password" placeholder="At least 6 characters">
+                    <label for="custNewPassword">New password <span style="color:var(--text-muted); font-size:0.78rem; font-weight:400;">— leave blank to keep current</span></label>
+                    <input type="text" id="custNewPassword" class="form-control" autocomplete="new-password" placeholder="At least 6 characters" maxlength="200" minlength="6">
                 </div>
             </div>
 
@@ -1022,10 +526,10 @@
             </div>
 
             <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap:wrap;">
-                <button type="button" id="custSaveBtn" class="btn btn-primary" style="flex:1; min-width:160px;" onclick="saveCustomer()">
+                <button type="button" id="custSaveBtn" class="btn btn-primary" style="flex:1; min-width:160px;" data-action="save-customer">
                     <i class="fas fa-save"></i> Save changes
                 </button>
-                <button type="button" class="btn btn-secondary" style="background:rgba(239,68,68,0.12); color:#ef4444; border-color:rgba(239,68,68,0.3); flex:1; min-width:160px;" onclick="deleteCustomer()">
+                <button type="button" class="btn btn-secondary" style="background:rgba(239,68,68,0.12); color:#ef4444; border-color:rgba(239,68,68,0.3); flex:1; min-width:160px;" data-action="delete-customer">
                     <i class="fas fa-trash"></i> Delete customer
                 </button>
             </div>
@@ -1033,1315 +537,6 @@
     </div>
 
     <div id="toastContainer"></div>
-
-    <script>
-        let products = [];
-        let allOrders = [];
-        let categories = [];
-        let currentImages = []; // image URLs being edited in the product modal
-        const ADMIN_BUILD = 'v4'; // bump when you ship to force-reload check
-        console.log('Velorex admin build', ADMIN_BUILD);
-
-        // Defensive fetch helper — NEVER throws on non-JSON responses.
-        // Returns { ok, status, data, raw, networkError } for the caller to inspect.
-        async function apiCall(url, options = {}) {
-            let response;
-            try {
-                response = await fetch(url, { credentials: 'include', ...options });
-            } catch (networkErr) {
-                return { ok: false, status: 0, data: null, raw: '', networkError: true };
-            }
-            const raw = await response.text();
-            let data = null;
-            try { data = raw ? JSON.parse(raw) : null; } catch (_) {}
-            return { ok: response.ok, status: response.status, data, raw, networkError: false };
-        }
-
-        function explainApiFailure(res, fallback) {
-            if (res.networkError) return 'Server unreachable. Run the site via a PHP server (XAMPP / Laragon / php -S / Hostinger) — Live Server and file:// will not work.';
-            // Prefer the server's own error message — it's more accurate than
-            // any status-code guess (and avoids leaking default credentials).
-            if (res.data && res.data.error) {
-                return res.data.detail ? `${res.data.error} — ${res.data.detail}` : res.data.error;
-            }
-            if (res.status === 405 || res.status === 501) {
-                return 'HTTP ' + res.status + ' — the host is NOT running PHP. VS Code Live Server, python http.server, and similar static servers do not execute .php files. Open the site through XAMPP / Laragon / "php -S localhost:8000" / Hostinger.';
-            }
-            if (res.status === 401) return 'Invalid username or password.';
-            if (res.status === 404) return 'Endpoint not found — make sure the api/ folder was uploaded next to admin.html.';
-            if (res.raw && res.raw.trim().startsWith('<')) return 'The server returned HTML instead of JSON — PHP is probably not executing. Open the site through a PHP server (XAMPP / Laragon / "php -S" / Hostinger).';
-            if (!res.raw) return 'Server returned an empty response (status ' + res.status + ') — check api/error.log for a PHP fatal.';
-            return fallback || ('Unexpected response (status ' + res.status + ')');
-        }
-
-        const DEFAULT_CATEGORIES = [
-            { id: 'wood',         name: 'Wood Items',      isDefault: true },
-            { id: 'resin',        name: 'Resin Art',       isDefault: true },
-            { id: 'soap',         name: 'Handmade Soap',   isDefault: true },
-            { id: 'candle',       name: 'Candles',         isDefault: true },
-            { id: 'raw_material', name: 'Raw Materials',   isDefault: true }
-        ];
-
-        async function checkAuth() {
-            const user = document.getElementById('adminUser').value.trim();
-            const pass = document.getElementById('adminPass').value;
-
-            if (!user || !pass) {
-                showToast('Please enter username and password', 'error');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('email', user);
-            formData.append('password', pass);
-
-            const res = await apiCall('api/login.php', { method: 'POST', body: formData });
-
-            if (res.ok && res.data && res.data.success) {
-                localStorage.setItem('velorex_admin_logged', 'true');
-                localStorage.setItem('velorex_admin_email', res.data.admin.email);
-                showToast('Login successful', 'success');
-                setTimeout(() => showApp(), 400);
-                return;
-            }
-
-            if (res.networkError) {
-                if (user === 'owner' && pass === 'owner123') {
-                    localStorage.setItem('velorex_admin_logged', 'true');
-                    localStorage.setItem('velorex_admin_email', user);
-                    showToast('Server unreachable — offline preview only (writes will fail)', 'info');
-                    setTimeout(() => showApp(), 400);
-                } else {
-                    showToast('Server unreachable. Default credentials are owner / owner123.', 'error');
-                }
-                return;
-            }
-
-            showToast(explainApiFailure(res, 'Login failed'), 'error');
-        }
-
-        async function checkSession() {
-            const res = await apiCall('api/session-check.php');
-            if (res.ok && res.data && res.data.authenticated) {
-                localStorage.setItem('velorex_admin_logged', 'true');
-                showApp();
-            } else {
-                localStorage.removeItem('velorex_admin_logged');
-            }
-        }
-
-        // Theme Logic
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme') || 'dark';
-            setTheme(current === 'light' ? 'dark' : 'light');
-        }
-
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('velorex_design_theme', theme);
-            const icon = document.getElementById('themeIcon');
-            if (icon) icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-
-        async function showApp() {
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('adminApp').style.display = 'block';
-
-            // Sync theme on app show
-            const savedTheme = localStorage.getItem('velorex_design_theme') || 'dark';
-            setTheme(savedTheme);
-
-            await loadData();
-            loadCategories();
-            loadSettings();
-            render();
-        }
-
-        async function loadSettings() {
-            const s = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
-            document.getElementById('settingsStoreName').value = s.storeName || '';
-            document.getElementById('settingsWhatsapp').value = s.whatsapp || '';
-            document.getElementById('settingsPhone').value = s.phone || '';
-            document.getElementById('settingsEmail').value = s.email || '';
-            document.getElementById('settingsAddress').value = s.address || '';
-        }
-
-        async function loadData() {
-            try {
-                const [productsRes, ordersRes] = await Promise.all([
-                    apiCall('api/get-products.php'),
-                    apiCall('api/get-orders.php')
-                ]);
-
-                if (productsRes.networkError && ordersRes.networkError) {
-                    showToast('Server unreachable — admin panel is in offline preview mode. Run the site through PHP for live data.', 'info');
-                }
-
-                if (productsRes.ok && productsRes.data) {
-                    const json = productsRes.data;
-                    products = (json.products || []).map(p => {
-                        const imagesArr = Array.isArray(p.images) ? p.images : [];
-                        const cover = imagesArr[0] || p.image_url || p.img || '';
-                        return {
-                            id: p.id,
-                            name: p.name,
-                            price: parseFloat(p.price),
-                            stock: parseInt(p.stock, 10) || 0,
-                            cat: p.category,
-                            img: cover,
-                            images: imagesArr.length ? imagesArr : (cover ? [cover] : []),
-                            desc: p.description || p.desc || '',
-                            featured: p.featured === '1' || p.featured === 1 || p.featured === true
-                        };
-                    });
-                }
-
-                if (ordersRes.ok && ordersRes.data) {
-                    const json = ordersRes.data;
-                    allOrders = (json.orders || []).map(o => ({
-                        id: o.id,
-                        total: parseFloat(o.total) || 0,
-                        status: o.status || 'Pending',
-                        items: o.items || [],
-                        userName: o.customer_name || 'Guest',
-                        userEmail: o.customer_email || '',
-                        userPhone: o.customer_phone || '',
-                        address: {
-                            street: o.shipping_address || '',
-                            city: o.shipping_city || '',
-                            zip: o.shipping_zip || ''
-                        },
-                        trackingNumber: o.tracking_number || '',
-                        adminNote: o.admin_note || '',
-                        statusHistory: o.status_history || [],
-                        createdAt: o.created_at || null,
-                        date: o.created_at ? new Date(o.created_at).toLocaleDateString() : ''
-                    }));
-                }
-            } catch (error) {
-                console.error('Load data failed', error);
-                showToast('Could not load data from server', 'error');
-            }
-        }
-
-        function logout() {
-            fetch('api/logout.php', { credentials: 'include' })
-                .finally(() => {
-                    localStorage.removeItem('velorex_admin_logged');
-                    window.location.reload();
-                });
-        }
-
-        async function saveSettings() {
-            const whatsapp = document.getElementById('settingsWhatsapp').value.replace(/\D/g, '');
-            const s = {
-                storeName: document.getElementById('settingsStoreName').value.trim(),
-                whatsapp,
-                phone: document.getElementById('settingsPhone').value.trim(),
-                email: document.getElementById('settingsEmail').value.trim(),
-                address: document.getElementById('settingsAddress').value.trim()
-            };
-            localStorage.setItem('velorex_store_settings', JSON.stringify(s));
-            showToast('Settings saved successfully', 'success');
-        }
-
-        async function updateAdminCredentials() {
-            const currentPass = document.getElementById('adminCurrentPass').value;
-            const newEmail = document.getElementById('adminNewEmail').value.trim();
-            const newPass = document.getElementById('adminNewPass').value;
-            const newPassConfirm = document.getElementById('adminNewPassConfirm').value;
-
-            if (!currentPass) {
-                showToast('Enter your current password to confirm changes', 'error');
-                return;
-            }
-            if (!newEmail && !newPass) {
-                showToast('Enter a new username or password', 'error');
-                return;
-            }
-            if (newPass && newPass !== newPassConfirm) {
-                showToast('New password and confirmation do not match', 'error');
-                return;
-            }
-            if (newPass && newPass.length < 6) {
-                showToast('New password must be at least 6 characters', 'error');
-                return;
-            }
-
-            const payload = { current_password: currentPass };
-            if (newEmail) payload.new_email = newEmail;
-            if (newPass) payload.new_password = newPass;
-
-            const res = await apiCall('api/update-admin.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok && res.data && res.data.success) {
-                document.getElementById('adminCurrentPass').value = '';
-                document.getElementById('adminNewEmail').value = '';
-                document.getElementById('adminNewPass').value = '';
-                document.getElementById('adminNewPassConfirm').value = '';
-                if (newEmail && res.data.admin) {
-                    localStorage.setItem('velorex_admin_email', res.data.admin.email);
-                }
-                showToast('Admin account updated. Use the new credentials next time you log in.', 'success');
-            } else {
-                showToast(explainApiFailure(res, 'Unable to update admin account'), 'error');
-            }
-        }
-
-        async function saveProduct(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editingId').value;
-
-            if (currentImages.length === 0) {
-                showToast('Please add at least one product image', 'error');
-                return;
-            }
-
-            // Offline-preview data URLs can't be saved to the DB (image_url is VARCHAR(255)).
-            const hasOfflinePreview = currentImages.some(u => typeof u === 'string' && u.startsWith('data:'));
-            if (hasOfflinePreview) {
-                showToast('One or more images are offline previews. Run the site with PHP and re-upload, or paste real image URLs.', 'error');
-                return;
-            }
-
-            const cover = currentImages[0];
-            const formData = new FormData();
-            formData.append('name', document.getElementById('pName').value.trim());
-            formData.append('category', document.getElementById('pCat').value);
-            formData.append('price', document.getElementById('pPrice').value);
-            formData.append('stock', document.getElementById('pStock').value);
-            formData.append('image_url', cover);
-            formData.append('images', JSON.stringify(currentImages));
-            formData.append('description', document.getElementById('pDesc').value.trim());
-            formData.append('featured', document.getElementById('pFeatured').checked ? '1' : '0');
-
-            const endpoint = editId ? 'api/update-product.php' : 'api/add-product.php';
-            if (editId) formData.append('id', editId);
-
-            let response;
-            try {
-                response = await fetch(endpoint, { method: 'POST', body: formData, credentials: 'include' });
-            } catch (networkErr) {
-                showToast('Server unreachable — products can only be saved when the site is running with PHP.', 'error');
-                return;
-            }
-
-            const text = await response.text();
-            let json = null;
-            try { json = text ? JSON.parse(text) : null; } catch (_) {}
-
-            if (response.ok && json && json.success) {
-                showToast(editId ? 'Product updated successfully' : 'Product listed successfully', 'success');
-                hideModal();
-                await loadData();
-                render();
-                return;
-            }
-            if (json && json.error) {
-                showToast(json.error, 'error');
-            } else {
-                showToast('Save failed (status ' + response.status + ') — check that api/add-product.php is reachable via PHP.', 'error');
-            }
-        }
-
-        async function loadCategories() {
-            const custom = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
-            categories = [...DEFAULT_CATEGORIES, ...custom.filter(c => !c.isDefault)];
-            populateCategoryDropdowns();
-        }
-
-        function populateCategoryDropdowns() {
-            const opts = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            const pCat = document.getElementById('pCat');
-            const catFilter = document.getElementById('categoryFilter');
-            if (pCat) pCat.innerHTML = opts;
-            if (catFilter) catFilter.innerHTML = `<option value="all">All Categories</option>` + opts;
-        }
-
-        function getCatName(id) {
-            const c = categories.find(x => x.id === id);
-            return c ? c.name : id;
-        }
-
-        async function saveCategory() {
-            const nameEl  = document.getElementById('newCatName');
-            const iconEl  = document.getElementById('newCatIcon');
-            const imageEl = document.getElementById('newCatImage');
-            const name  = (nameEl.value  || '').trim();
-            const icon  = (iconEl  ? iconEl.value  : '').trim();
-            const image = (imageEl ? imageEl.value : '').trim();
-            if (!name) { showToast('Enter a category name', 'error'); return; }
-            const id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-            if (categories.find(c => c.id === id)) { showToast('Category already exists', 'error'); return; }
-            const custom = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
-            const entry = { id, name, isDefault: false };
-            if (icon)  entry.icon  = icon;
-            if (image) entry.image = image;
-            custom.push(entry);
-            localStorage.setItem('velorex_store_categories', JSON.stringify(custom));
-            nameEl.value = '';
-            if (iconEl)  iconEl.value  = '';
-            if (imageEl) imageEl.value = '';
-            await loadCategories();
-            renderCategories();
-            showToast(`Category "${name}" added`, 'success');
-        }
-
-        function deleteCategory(id) {
-            if (!confirm('Remove this category? Products using it will keep their category ID.')) return;
-            let custom = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
-            custom = custom.filter(c => c.id !== id);
-            localStorage.setItem('velorex_store_categories', JSON.stringify(custom));
-            loadCategories();
-            renderCategories();
-            showToast('Category removed', 'info');
-        }
-
-        function renderCategories() {
-            const list = document.getElementById('categoriesList');
-            if (!list) return;
-            list.innerHTML = categories.map(c => {
-                const thumb = c.image
-                    ? `<img src="${c.image}" onerror="this.style.display='none'" alt="" style="width:38px; height:38px; border-radius:8px; object-fit:cover; flex:none;">`
-                    : `<div style="width:38px; height:38px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; color:var(--text-muted); flex:none;"><i class="${c.icon || 'fas fa-tag'}"></i></div>`;
-                return `
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:0.9rem 1.1rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.5rem;">
-                    <div style="display:flex; align-items:center; gap:0.85rem;">
-                        ${thumb}
-                        <div>
-                            <span style="font-weight:600;">${c.name}</span>
-                            <span style="font-size:0.73rem; color:var(--text-muted); margin-left:0.6rem;">/ ${c.id}</span>
-                            ${c.isDefault ? '<span style="font-size:0.68rem; background:rgba(255,107,53,0.12); color:var(--secondary); padding:2px 8px; border-radius:10px; margin-left:0.5rem; font-weight:600;">Default</span>' : ''}
-                        </div>
-                    </div>
-                    ${c.isDefault ? '' : `<button onclick="deleteCategory('${c.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:0.82rem; padding:0.3rem 0.6rem;"><i class="fas fa-trash"></i></button>`}
-                </div>`;
-            }).join('');
-        }
-
-        /* ── FEATURED CREATIONS ── */
-        async function toggleFeatured(id) {
-            const p = products.find(x => x.id.toString() === id.toString());
-            if (!p) return;
-            const newFeatured = p.featured ? 0 : 1;
-            const formData = new FormData();
-            formData.append('id', p.id);
-            formData.append('featured', newFeatured);
-
-            const res = await apiCall('api/update-product.php', { method: 'POST', body: formData });
-            if (res.ok && res.data && res.data.success) {
-                showToast(newFeatured ? 'Added to Featured Creations' : 'Removed from Featured Creations', 'success');
-                await loadData();
-                renderFeatured();
-                render();
-            } else {
-                showToast(explainApiFailure(res, 'Unable to update featured status'), 'error');
-            }
-        }
-
-        function renderFeatured() {
-            const grid = document.getElementById('featuredGrid');
-            if (!grid) return;
-            if (products.length === 0) {
-                grid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:3rem; grid-column:1/-1;">No products yet. Add some from the Inventory tab first.</p>';
-                return;
-            }
-            grid.innerHTML = products.map(p => `
-                <div style="background:var(--surface); border:2px solid ${p.featured ? 'var(--secondary)' : 'var(--border)'}; border-radius:16px; overflow:hidden; transition:all 0.2s;">
-                    <div style="position:relative;">
-                        <img src="${p.img}" onerror="this.src='https://placehold.co/200x160?text=No+Image'" style="width:100%; height:150px; object-fit:cover; display:block;">
-                        <button onclick="toggleFeatured('${p.id}')" title="${p.featured ? 'Remove from Featured' : 'Add to Featured'}"
-                            style="position:absolute; top:8px; right:8px; width:34px; height:34px; border-radius:50%; border:none; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:all 0.2s;
-                            background:${p.featured ? 'var(--secondary)' : 'rgba(0,0,0,0.55)'}; color:${p.featured ? '#fff' : '#aaa'};">
-                            <i class="fas fa-star"></i>
-                        </button>
-                    </div>
-                    <div style="padding:0.85rem;">
-                        <div style="font-weight:600; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:0.2rem;">${p.name}</div>
-                        <div style="color:var(--text-muted); font-size:0.75rem; margin-bottom:0.4rem;">${getCatName(p.cat)}</div>
-                        <div style="color:var(--accent); font-weight:700; font-size:0.9rem;">₹${p.price.toLocaleString()}</div>
-                        ${p.featured ? '<div style="margin-top:0.4rem; font-size:0.72rem; color:var(--secondary); font-weight:700;"><i class="fas fa-star"></i> Featured</div>' : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function render() {
-            document.getElementById('statProducts').textContent = products.length;
-            document.getElementById('statOrders').textContent = allOrders.filter(o => o.status === 'Pending').length;
-            const revenue = allOrders.reduce((sum, o) => sum + o.total, 0);
-            document.getElementById('statRevenue').textContent = `₹${revenue.toLocaleString()}`;
-
-            // Search filtering
-            const invQuery = document.getElementById('inventorySearch').value.toLowerCase();
-            const catFilter = document.getElementById('categoryFilter').value;
-
-            const filteredProducts = products.filter(p => {
-                const matchesSearch = p.name.toLowerCase().includes(invQuery) || p.cat.toLowerCase().includes(invQuery);
-                const matchesCat = catFilter === 'all' || p.cat === catFilter;
-                return matchesSearch && matchesCat;
-            });
-
-            const pList = document.getElementById('productList');
-            pList.innerHTML = filteredProducts.map(p => `
-                <tr>
-                    <td>
-                        <div class="prod-cell">
-                            <img src="${p.img}" class="prod-img">
-                            <div style="font-weight: 600;">${p.name}</div>
-                        </div>
-                    </td>
-                    <td><span style="color: var(--text-muted); text-transform: capitalize;">${p.cat.replace('_', ' ')}</span></td>
-                    <td>₹${p.price.toLocaleString()}</td>
-                    <td>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <input type="number" value="${p.stock || 0}" style="width: 60px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 4px; border-radius: 4px;" onchange="updateStock('${p.id}', this.value)">
-                        </div>
-                    </td>
-                    <td>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn btn-secondary" onclick="editProduct('${p.id}')" style="padding: 4px 10px; font-size: 0.75rem;"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-secondary" onclick="deleteProduct('${p.id}')" style="color: #ef4444; border-color: #ef4444; padding: 4px 10px; font-size: 0.75rem;">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            renderOrders();
-        }
-
-        function switchTab(tab, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.getElementById(tab + '-tab').style.display = 'block';
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-            const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings' };
-            document.getElementById('tabTitle').textContent = titles[tab] || tab;
-            if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
-            if (tab === 'customers') loadCustomers();
-            if (tab === 'featured') { loadData(); renderFeatured(); }
-            if (tab === 'categories') renderCategories();
-        }
-
-        function showModal(edit = false) {
-            if (!edit) {
-                document.getElementById('productForm').reset();
-                document.getElementById('editingId').value = '';
-                document.getElementById('modalTitle').textContent = 'Add Premium Item';
-                document.getElementById('submitBtn').textContent = 'Create Listing';
-                currentImages = [];
-                renderImagesGallery();
-            }
-            document.getElementById('productModal').style.display = 'flex';
-        }
-        function hideModal() { document.getElementById('productModal').style.display = 'none'; }
-
-        /* ── BULK UPLOAD ─────────────────────────────────────────────
-           Parses a CSV in the browser and replays each row through the
-           existing api/add-product.php endpoint — so no backend changes
-           are required. */
-        let bulkRows = []; // [{ data: {...}, valid: bool, errors: [...] }, ...]
-
-        function showBulkModal() {
-            resetBulkModal();
-            document.getElementById('bulkModal').style.display = 'flex';
-        }
-        function hideBulkModal() {
-            document.getElementById('bulkModal').style.display = 'none';
-        }
-        function resetBulkModal() {
-            bulkRows = [];
-            document.getElementById('bulkFileInput').value = '';
-            document.getElementById('bulkStep1').style.display = '';
-            document.getElementById('bulkStep2').style.display = 'none';
-            document.getElementById('bulkSubmitBtn').style.display = 'none';
-            document.getElementById('bulkPreview').innerHTML = '';
-            document.getElementById('bulkSummary').textContent = '';
-        }
-
-        function downloadBulkTemplate() {
-            const sampleCat = (categories[0] && categories[0].id) || 'wood';
-            const header = 'name,category,price,stock,image_url,description,featured';
-            const example = [
-                `"Walnut Serving Board",${sampleCat},1499,10,https://example.com/board.jpg,"Hand-finished walnut, food-safe oil",1`,
-                `"Resin Coaster Set",resin,799,25,https://example.com/coasters.jpg,"Set of 4 ocean-blue coasters",0`
-            ].join('\n');
-            const csv = header + '\n' + example + '\n';
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'velorex_bulk_upload_template.csv';
-            a.click();
-            URL.revokeObjectURL(a.href);
-        }
-
-        // RFC-4180-ish CSV parser: handles quoted fields, escaped quotes ("") and CRLF.
-        function parseCsv(text) {
-            const rows = [];
-            let row = [], field = '', inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                const ch = text[i];
-                if (inQuotes) {
-                    if (ch === '"') {
-                        if (text[i + 1] === '"') { field += '"'; i++; }
-                        else { inQuotes = false; }
-                    } else {
-                        field += ch;
-                    }
-                } else {
-                    if (ch === '"') { inQuotes = true; }
-                    else if (ch === ',') { row.push(field); field = ''; }
-                    else if (ch === '\n' || ch === '\r') {
-                        if (ch === '\r' && text[i + 1] === '\n') i++;
-                        row.push(field); field = '';
-                        if (row.some(c => c !== '')) rows.push(row);
-                        row = [];
-                    } else {
-                        field += ch;
-                    }
-                }
-            }
-            // flush last field/row
-            if (field !== '' || row.length) {
-                row.push(field);
-                if (row.some(c => c !== '')) rows.push(row);
-            }
-            return rows;
-        }
-
-        function handleBulkFile(event) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                try {
-                    const rows = parseCsv(String(reader.result || ''));
-                    if (rows.length < 2) {
-                        showToast('CSV must have a header row and at least one product row', 'error');
-                        return;
-                    }
-                    const header = rows[0].map(h => h.trim().toLowerCase());
-                    const required = ['name', 'category', 'price'];
-                    const missing = required.filter(c => !header.includes(c));
-                    if (missing.length) {
-                        showToast('CSV is missing required column(s): ' + missing.join(', '), 'error');
-                        return;
-                    }
-                    const idx = name => header.indexOf(name);
-                    const validCatIds = new Set(categories.map(c => c.id));
-
-                    bulkRows = rows.slice(1).map(r => {
-                        const get = c => (idx(c) >= 0 ? (r[idx(c)] || '').trim() : '');
-                        const name        = get('name');
-                        const category    = get('category');
-                        const priceRaw    = get('price');
-                        const stockRaw    = get('stock');
-                        const image_url   = get('image_url');
-                        const description = get('description');
-                        const featRaw     = get('featured').toLowerCase();
-                        const price = parseFloat(priceRaw);
-                        const stock = stockRaw === '' ? 10 : parseInt(stockRaw, 10);
-                        const featured = ['1', 'true', 'yes', 'y'].includes(featRaw) ? 1 : 0;
-                        const errors = [];
-                        if (!name) errors.push('name is empty');
-                        if (!category) errors.push('category is empty');
-                        else if (!validCatIds.has(category)) errors.push(`unknown category "${category}"`);
-                        if (!priceRaw || isNaN(price) || price <= 0) errors.push('price must be > 0');
-                        if (stockRaw !== '' && (isNaN(stock) || stock < 0)) errors.push('stock must be a non-negative number');
-                        return {
-                            data: { name, category, price, stock, image_url, description, featured },
-                            valid: errors.length === 0,
-                            errors,
-                            status: 'pending'
-                        };
-                    });
-
-                    renderBulkPreview();
-                    document.getElementById('bulkStep1').style.display = 'none';
-                    document.getElementById('bulkStep2').style.display = '';
-                    const validCount = bulkRows.filter(r => r.valid).length;
-                    document.getElementById('bulkSubmitBtn').style.display = validCount > 0 ? '' : 'none';
-                    document.getElementById('bulkSubmitBtn').textContent = `Upload ${validCount} product${validCount === 1 ? '' : 's'}`;
-                } catch (err) {
-                    showToast('Could not parse CSV: ' + err.message, 'error');
-                }
-            };
-            reader.onerror = () => showToast('Could not read the selected file', 'error');
-            reader.readAsText(file);
-        }
-
-        function renderBulkPreview() {
-            const tbody = document.getElementById('bulkPreview');
-            const total = bulkRows.length;
-            const ok    = bulkRows.filter(r => r.valid).length;
-            const bad   = total - ok;
-            const done  = bulkRows.filter(r => r.status === 'success').length;
-            const fail  = bulkRows.filter(r => r.status === 'error').length;
-            document.getElementById('bulkSummary').innerHTML =
-                `${total} rows — <span style="color:var(--success);">${ok} ready</span>` +
-                (bad ? `, <span style="color:var(--danger);">${bad} invalid</span>` : '') +
-                (done ? `, <span style="color:var(--success);">${done} uploaded</span>` : '') +
-                (fail ? `, <span style="color:var(--danger);">${fail} failed</span>` : '');
-            tbody.innerHTML = bulkRows.map((r, i) => {
-                let badge;
-                if (r.status === 'success')    badge = '<span style="color:var(--success);"><i class="fas fa-check-circle"></i> Uploaded</span>';
-                else if (r.status === 'error') badge = `<span style="color:var(--danger);" title="${(r.errors[0] || 'failed').replace(/"/g, '&quot;')}"><i class="fas fa-times-circle"></i> ${r.errors[0] || 'failed'}</span>`;
-                else if (r.status === 'uploading') badge = '<span style="color:var(--accent);"><i class="fas fa-spinner fa-spin"></i> Uploading…</span>';
-                else if (!r.valid)             badge = `<span style="color:var(--danger);"><i class="fas fa-exclamation-circle"></i> ${r.errors.join('; ')}</span>`;
-                else                           badge = '<span style="color:var(--text-muted);">Ready</span>';
-                const rowBg = !r.valid ? 'background:rgba(239,68,68,0.06);' : (r.status === 'success' ? 'background:rgba(16,185,129,0.06);' : '');
-                return `
-                    <tr style="border-top:1px solid var(--border); ${rowBg}">
-                        <td style="padding:0.55rem; color:var(--text-muted);">${i + 1}</td>
-                        <td style="padding:0.55rem;">${(r.data.name || '').slice(0, 60) || '<em style="color:var(--text-muted);">(empty)</em>'}</td>
-                        <td style="padding:0.55rem;">${r.data.category || '—'}</td>
-                        <td style="padding:0.55rem;">₹${isFinite(r.data.price) ? r.data.price : '—'}</td>
-                        <td style="padding:0.55rem;">${r.data.stock}</td>
-                        <td style="padding:0.55rem;">${badge}</td>
-                    </tr>`;
-            }).join('');
-        }
-
-        async function submitBulkUpload() {
-            const ready = bulkRows.filter(r => r.valid && r.status !== 'success');
-            if (!ready.length) { showToast('Nothing to upload', 'info'); return; }
-            const btn = document.getElementById('bulkSubmitBtn');
-            btn.disabled = true;
-            btn.dataset.originalText = btn.textContent;
-
-            let success = 0, fail = 0;
-            for (const r of ready) {
-                r.status = 'uploading';
-                renderBulkPreview();
-                btn.textContent = `Uploading… ${success + fail + 1} / ${ready.length}`;
-
-                const fd = new FormData();
-                fd.append('name', r.data.name);
-                fd.append('category', r.data.category);
-                fd.append('price', r.data.price);
-                fd.append('stock', r.data.stock);
-                fd.append('image_url', r.data.image_url || '');
-                fd.append('images', JSON.stringify(r.data.image_url ? [r.data.image_url] : []));
-                fd.append('description', r.data.description || '');
-                fd.append('featured', r.data.featured ? '1' : '0');
-
-                const res = await apiCall('api/add-product.php', { method: 'POST', body: fd });
-                if (res.ok && res.data && res.data.success) {
-                    r.status = 'success';
-                    success++;
-                } else {
-                    r.status = 'error';
-                    r.errors = [explainApiFailure(res, 'Upload failed')];
-                    fail++;
-                }
-            }
-
-            renderBulkPreview();
-            btn.disabled = false;
-            btn.textContent = fail ? `Retry ${fail} failed` : 'Done';
-            if (fail === 0) btn.style.display = 'none';
-            showToast(`Bulk upload complete — ${success} added, ${fail} failed`, fail ? 'error' : 'success');
-            await loadData();
-            render();
-        }
-
-        /* ── CUSTOMER MANAGEMENT ─────────────────────────────────────
-           List + view + edit + reset-password + delete for customer
-           accounts. All endpoints require an admin session. */
-        let customers = [];
-
-        async function loadCustomers() {
-            const tbody = document.getElementById('customerList');
-            if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading customers…</td></tr>';
-            const res = await apiCall('api/get-customers.php');
-            if (!res.ok || !res.data || !Array.isArray(res.data.customers)) {
-                customers = [];
-                if (tbody) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--danger);">${explainApiFailure(res, 'Failed to load customers')}</td></tr>`;
-                return;
-            }
-            customers = res.data.customers;
-            renderCustomers();
-        }
-
-        function renderCustomers() {
-            const tbody = document.getElementById('customerList');
-            if (!tbody) return;
-            const q = (document.getElementById('customerSearch').value || '').trim().toLowerCase();
-            const filtered = !q ? customers : customers.filter(c =>
-                (c.name  || '').toLowerCase().includes(q) ||
-                (c.email || '').toLowerCase().includes(q) ||
-                (c.phone || '').toLowerCase().includes(q)
-            );
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2.5rem; color:var(--text-muted);">${customers.length === 0 ? 'No customers yet.' : 'No customers match this search.'}</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = filtered.map(c => `
-                <tr>
-                    <td>
-                        <div style="font-weight:600;">${escapeHtml(c.name || 'Guest')}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">#${c.id}</div>
-                    </td>
-                    <td>${c.email ? escapeHtml(c.email) : '<span style="color:var(--text-muted);">—</span>'}</td>
-                    <td>${c.phone ? escapeHtml(c.phone) : '<span style="color:var(--text-muted);">—</span>'}</td>
-                    <td>${c.has_account
-                        ? '<span style="font-size:0.72rem; background:rgba(0,212,170,0.12); color:var(--success); padding:2px 8px; border-radius:10px; font-weight:600;">Registered</span>'
-                        : '<span style="font-size:0.72rem; background:rgba(152,144,176,0.12); color:var(--text-muted); padding:2px 8px; border-radius:10px; font-weight:600;">Guest</span>'}</td>
-                    <td style="text-align:right;">${c.orders_count}</td>
-                    <td style="text-align:right;">₹${Number(c.total_spent || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                    <td style="white-space:nowrap;">${formatDate(c.created_at)}</td>
-                    <td style="text-align:center; white-space:nowrap;">
-                        <button class="btn btn-secondary" style="padding:0.35rem 0.7rem; font-size:0.78rem;" onclick="openCustomerModal(${c.id})">
-                            <i class="fas fa-eye"></i> View / Edit
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function escapeHtml(str) {
-            return String(str || '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
-        }
-
-        function formatDate(s) {
-            if (!s) return '—';
-            const d = new Date(s.replace(' ', 'T'));
-            if (isNaN(d)) return s;
-            return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
-
-        async function openCustomerModal(id) {
-            const modal = document.getElementById('customerModal');
-            document.getElementById('custEditingId').value = id;
-            document.getElementById('custName').value = '';
-            document.getElementById('custEmail').value = '';
-            document.getElementById('custPhone').value = '';
-            document.getElementById('custNewPassword').value = '';
-            document.getElementById('custAddresses').innerHTML = '<p style="color:var(--text-muted);">Loading…</p>';
-            document.getElementById('custOrders').innerHTML = '<p style="color:var(--text-muted);">Loading…</p>';
-            document.getElementById('customerModalTitle').textContent = 'Customer';
-            document.getElementById('customerModalSubtitle').textContent = '';
-            modal.style.display = 'flex';
-
-            const res = await apiCall('api/get-customer.php?id=' + encodeURIComponent(id));
-            if (!res.ok || !res.data || !res.data.customer) {
-                showToast(explainApiFailure(res, 'Failed to load customer'), 'error');
-                hideCustomerModal();
-                return;
-            }
-            const c = res.data.customer;
-            document.getElementById('custName').value  = c.name  || '';
-            document.getElementById('custEmail').value = c.email || '';
-            document.getElementById('custPhone').value = c.phone || '';
-            document.getElementById('customerModalTitle').textContent = c.name || 'Customer';
-            document.getElementById('customerModalSubtitle').innerHTML =
-                `#${c.id} · ${c.has_account ? 'Registered account' : 'Guest record'} · Joined ${formatDate(c.created_at)} · ` +
-                `<strong style="color:var(--text);">${res.data.orders.length} order${res.data.orders.length === 1 ? '' : 's'}</strong> · ` +
-                `Total spent <strong style="color:var(--text);">₹${Number(res.data.total_spent || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</strong>`;
-
-            // Addresses
-            const addrEl = document.getElementById('custAddresses');
-            if (!res.data.addresses.length) {
-                addrEl.innerHTML = '<p style="color:var(--text-muted);">No saved addresses.</p>';
-            } else {
-                addrEl.innerHTML = res.data.addresses.map(a => {
-                    const parts = [a.full_name, a.street, a.line2, a.landmark, [a.city, a.state, a.zip].filter(Boolean).join(' '), a.country].filter(Boolean);
-                    return `
-                        <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:0.75rem 0.9rem; margin-bottom:0.5rem;">
-                            <div style="font-weight:600; display:flex; align-items:center; gap:0.5rem;">${escapeHtml(a.title || 'Address')}${a.is_default ? '<span style="font-size:0.66rem; background:rgba(255,107,53,0.12); color:var(--secondary); padding:2px 6px; border-radius:8px;">Default</span>' : ''}</div>
-                            ${a.phone ? `<div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(a.phone)}</div>` : ''}
-                            <div style="font-size:0.82rem; margin-top:0.25rem;">${parts.map(escapeHtml).join('<br>')}</div>
-                        </div>`;
-                }).join('');
-            }
-
-            // Orders
-            const ordEl = document.getElementById('custOrders');
-            if (!res.data.orders.length) {
-                ordEl.innerHTML = '<p style="color:var(--text-muted);">No orders yet.</p>';
-            } else {
-                ordEl.innerHTML = res.data.orders.map(o => `
-                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:0.65rem 0.9rem; margin-bottom:0.4rem; display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
-                        <div>
-                            <div style="font-weight:600;">${escapeHtml(o.order_code)}</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">${formatDate(o.created_at)} · ${escapeHtml(o.status)}</div>
-                        </div>
-                        <div style="font-weight:600;">₹${Number(o.total_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
-                    </div>`).join('');
-            }
-        }
-
-        function hideCustomerModal() {
-            document.getElementById('customerModal').style.display = 'none';
-        }
-
-        async function saveCustomer() {
-            const id = parseInt(document.getElementById('custEditingId').value, 10);
-            if (!id) return;
-            const payload = {
-                id,
-                name:  document.getElementById('custName').value.trim(),
-                email: document.getElementById('custEmail').value.trim(),
-                phone: document.getElementById('custPhone').value.trim()
-            };
-            const newPassword = document.getElementById('custNewPassword').value;
-            if (newPassword) payload.new_password = newPassword;
-
-            const btn = document.getElementById('custSaveBtn');
-            const originalLabel = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
-
-            const res = await apiCall('api/admin-update-customer.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            btn.disabled = false;
-            btn.innerHTML = originalLabel;
-
-            if (res.ok && res.data && res.data.success) {
-                showToast(res.data.password_reset ? 'Customer updated · password reset' : 'Customer updated', 'success');
-                document.getElementById('custNewPassword').value = '';
-                await loadCustomers();
-                hideCustomerModal();
-                return;
-            }
-            showToast(explainApiFailure(res, 'Failed to update customer'), 'error');
-        }
-
-        async function deleteCustomer() {
-            const id = parseInt(document.getElementById('custEditingId').value, 10);
-            if (!id) return;
-            const name = document.getElementById('custName').value.trim() || ('customer #' + id);
-            if (!confirm(`Permanently delete ${name}?\n\nTheir saved addresses will be removed.\nPast orders will stay (marked as Guest).`)) return;
-
-            const res = await apiCall('api/admin-delete-customer.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id })
-            });
-            if (res.ok && res.data && res.data.success) {
-                showToast('Customer deleted', 'success');
-                hideCustomerModal();
-                await loadCustomers();
-                return;
-            }
-            showToast(explainApiFailure(res, 'Failed to delete customer'), 'error');
-        }
-
-        function editProduct(id) {
-            const p = products.find(x => x.id.toString() === id.toString());
-            if (!p) return;
-
-            document.getElementById('editingId').value = p.id;
-            document.getElementById('pName').value = p.name;
-            document.getElementById('pCat').value = p.cat;
-            document.getElementById('pPrice').value = p.price;
-            document.getElementById('pStock').value = p.stock || 0;
-            document.getElementById('pImg').value = p.img;
-            document.getElementById('pDesc').value = p.desc || '';
-            document.getElementById('pFeatured').checked = p.featured || false;
-
-            currentImages = Array.isArray(p.images) && p.images.length ? [...p.images] : (p.img ? [p.img] : []);
-            renderImagesGallery();
-
-            document.getElementById('modalTitle').textContent = 'Edit Premium Item';
-            document.getElementById('submitBtn').textContent = 'Update Changes';
-            showModal(true);
-        }
-
-        function renderImagesGallery() {
-            const g = document.getElementById('pImagesGallery');
-            if (!g) return;
-            const coverHidden = document.getElementById('pImg');
-            if (coverHidden) coverHidden.value = currentImages[0] || '';
-            if (currentImages.length === 0) {
-                g.innerHTML = '<div style="color:var(--text-muted); font-size:0.82rem; padding:0.4rem 0.6rem;">No images yet — paste a URL below or click Upload.</div>';
-                return;
-            }
-            g.innerHTML = currentImages.map((url, i) => `
-                <div style="position:relative; width:96px; height:96px; border-radius:8px; overflow:hidden; border:2px solid ${i === 0 ? 'var(--secondary)' : 'var(--border)'}; background:#000;">
-                    <img src="${url}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.opacity=0.25; this.alt='broken';">
-                    ${i === 0 ? '<div style="position:absolute; top:2px; left:2px; background:var(--secondary); color:#fff; font-size:0.62rem; padding:2px 6px; border-radius:4px; font-weight:700; letter-spacing:0.5px;">COVER</div>' : ''}
-                    <button type="button" onclick="removeImage(${i})" title="Remove" style="position:absolute; top:2px; right:2px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,0.75); color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.7rem;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    ${i > 0 ? `<button type="button" onclick="makeImageCover(${i})" title="Make cover" style="position:absolute; bottom:2px; left:2px; background:rgba(255,107,53,0.9); color:#fff; border:none; padding:3px 7px; font-size:0.7rem; border-radius:4px; cursor:pointer; font-weight:700;">★</button>` : ''}
-                </div>
-            `).join('');
-        }
-
-        function removeImage(i) {
-            currentImages.splice(i, 1);
-            renderImagesGallery();
-        }
-
-        function makeImageCover(i) {
-            if (i <= 0 || i >= currentImages.length) return;
-            const [picked] = currentImages.splice(i, 1);
-            currentImages.unshift(picked);
-            renderImagesGallery();
-        }
-
-        function addImageFromUrl() {
-            const input = document.getElementById('pImgUrlInput');
-            const url = (input.value || '').trim();
-            if (!url) {
-                showToast('Paste an image URL first', 'error');
-                return;
-            }
-            currentImages.push(url);
-            input.value = '';
-            renderImagesGallery();
-        }
-
-        async function updateStock(id, val) {
-            const stockValue = parseInt(val, 10);
-            if (Number.isNaN(stockValue)) {
-                showToast('Stock must be a number', 'error');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('id', id);
-            formData.append('stock', stockValue);
-
-            const res = await apiCall('api/update-product.php', { method: 'POST', body: formData });
-            if (res.ok && res.data && res.data.success) {
-                showToast('Stock updated', 'success');
-                await loadData();
-                render();
-            } else {
-                showToast(explainApiFailure(res, 'Unable to update stock'), 'error');
-            }
-        }
-
-        async function deleteProduct(id) {
-            if (!confirm("Remove this listing?")) return;
-            const formData = new FormData();
-            formData.append('id', id);
-
-            const res = await apiCall('api/delete-product.php', { method: 'POST', body: formData });
-            if (res.ok && res.data && res.data.success) {
-                showToast('Product removed', 'success');
-                await loadData();
-                render();
-            } else {
-                showToast(explainApiFailure(res, 'Could not delete product'), 'error');
-            }
-        }
-
-        function readFileAsDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error(file.name + ' could not be read'));
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function offlinePreviewFallback(files, reasonToast) {
-            try {
-                const dataUrls = await Promise.all(files.map(readFileAsDataURL));
-                currentImages.push(...dataUrls);
-                renderImagesGallery();
-                if (reasonToast) showToast(reasonToast, 'info');
-            } catch (e) {
-                showToast('Could not read files: ' + e.message, 'error');
-            }
-        }
-
-        async function uploadProductImages(event) {
-            const files = Array.from(event.target.files || []);
-            event.target.value = '';
-            if (files.length === 0) return;
-
-            const formData = new FormData();
-            files.forEach(f => formData.append('image[]', f));
-
-            let response;
-            try {
-                response = await fetch('api/upload-image.php', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'include'
-                });
-            } catch (networkErr) {
-                // fetch never reached the server (file://, CORS, server down)
-                await offlinePreviewFallback(files, 'Server unreachable — images stored as offline previews. Real uploads will work once you deploy with PHP.');
-                return;
-            }
-
-            const text = await response.text();
-            let data = null;
-            try { data = text ? JSON.parse(text) : null; } catch (_) { /* not JSON */ }
-
-            if (response.ok && data && data.success && Array.isArray(data.image_urls) && data.image_urls.length) {
-                currentImages.push(...data.image_urls);
-                renderImagesGallery();
-                showToast(`${data.image_urls.length} image(s) uploaded`, 'success');
-                if (Array.isArray(data.skipped) && data.skipped.length) {
-                    showToast('Skipped: ' + data.skipped.join(', '), 'info');
-                }
-                return;
-            }
-
-            if (response.status === 401) {
-                showToast('Not logged in to the server. Log in with owner / owner123 against api/login.php to upload files.', 'error');
-                return;
-            }
-
-            if (data && data.error) {
-                showToast('Upload failed: ' + data.error, 'error');
-                return;
-            }
-
-            // Non-JSON response → static server (Live Server, python http.server, file://) or PHP fatal.
-            // Fall back to offline previews so the gallery still works for local UI testing.
-            const hint = response.status === 404
-                ? 'No PHP server at api/upload-image.php — offline preview only.'
-                : 'Server returned an unexpected response (status ' + response.status + ') — offline preview only.';
-            await offlinePreviewFallback(files, hint);
-        }
-
-        /* ── ORDER MANAGEMENT ── */
-        let currentOrderFilter = 'all';
-        let expandedOrderId = null;
-
-        function setOrderFilter(filter, el) {
-            currentOrderFilter = filter;
-            document.querySelectorAll('.order-chip').forEach(c => c.classList.remove('active'));
-            if (el) el.classList.add('active');
-            renderOrders();
-        }
-
-        function renderOrders() {
-            // Update chip counts
-            const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
-            const chipAll = document.getElementById('chip-all');
-            if (chipAll) chipAll.textContent = allOrders.length;
-            statuses.forEach(s => {
-                const el = document.getElementById('chip-' + s.toLowerCase());
-                if (el) el.textContent = allOrders.filter(o => o.status === s).length;
-            });
-
-            const query = (document.getElementById('orderSearch') || {}).value?.toLowerCase() || '';
-            let filtered = allOrders.filter(o => {
-                const matchFilter = currentOrderFilter === 'all' || o.status === currentOrderFilter;
-                const matchQuery = !query ||
-                    o.id.toString().toLowerCase().includes(query) ||
-                    (o.userName || '').toLowerCase().includes(query) ||
-                    (o.userEmail || '').toLowerCase().includes(query) ||
-                    o.status.toLowerCase().includes(query);
-                return matchFilter && matchQuery;
-            });
-
-            // Sort newest first
-            filtered = filtered.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
-
-            const oList = document.getElementById('orderList');
-            if (!oList) return;
-            if (filtered.length === 0) {
-                oList.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2rem; margin-bottom:1rem; display:block; opacity:0.3;"></i>No orders found.</td></tr>`;
-                return;
-            }
-
-            oList.innerHTML = filtered.map(o => {
-                const itemsSummary = (o.items || []).slice(0, 2).map(i => `${i.qty}× ${i.name}`).join(', ') + ((o.items || []).length > 2 ? ` +${o.items.length - 2} more` : '');
-                const isExpanded = expandedOrderId === o.id.toString();
-                const expandHtml = isExpanded ? buildExpandRow(o) : '';
-                return `
-                    <tr style="cursor:pointer;" onclick="expandOrder('${o.id}')">
-                        <td style="text-align:center; color:var(--text-muted);">
-                            <i class="fas fa-chevron-${isExpanded ? 'up' : 'down'}" style="font-size:0.75rem; transition:transform 0.2s;"></i>
-                        </td>
-                        <td style="font-weight:700; color:var(--secondary); white-space:nowrap;">${o.id}</td>
-                        <td style="white-space:nowrap; font-size:0.85rem;">${o.date}</td>
-                        <td>
-                            <div style="font-weight:600; font-size:0.9rem;">${o.userName || 'Guest'}</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">${o.userEmail || ''}</div>
-                        </td>
-                        <td style="font-size:0.82rem; color:var(--text-muted); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${itemsSummary || '—'}</td>
-                        <td style="font-weight:700;">₹${o.total.toLocaleString()}</td>
-                        <td onclick="event.stopPropagation()">
-                            <select onchange="updateOrderStatus('${o.id}', this.value)"
-                                class="status-badge status-${(o.status || 'pending').toLowerCase()}"
-                                style="background:none; border:1px solid currentColor; cursor:pointer; outline:none; border-radius:20px; padding:4px 10px; font-size:0.75rem; font-weight:600;">
-                                <option value="Pending"    ${o.status==='Pending'    ? 'selected':''}>Pending</option>
-                                <option value="Processing" ${o.status==='Processing' ? 'selected':''}>Processing</option>
-                                <option value="Shipped"    ${o.status==='Shipped'    ? 'selected':''}>Shipped</option>
-                                <option value="Delivered"  ${o.status==='Delivered'  ? 'selected':''}>Delivered</option>
-                                <option value="Cancelled"  ${o.status==='Cancelled'  ? 'selected':''}>Cancelled</option>
-                            </select>
-                        </td>
-                        <td onclick="event.stopPropagation()" style="text-align:center;">
-                            <button onclick="deleteOrder('${o.id}')" title="Delete order"
-                                style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.95rem; padding:0.35rem 0.55rem; border-radius:6px; transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(239,68,68,0.12)'" onmouseout="this.style.background='none'">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    ${expandHtml}
-                `;
-            }).join('');
-        }
-
-        function buildExpandRow(o) {
-            const items = (o.items || []).map(i =>
-                `<div style="display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem;">
-                    <span>${i.qty}× ${i.name}</span>
-                    <span style="color:var(--accent); font-weight:600;">₹${(i.price * i.qty).toLocaleString()}</span>
-                </div>`
-            ).join('');
-
-            const addr = o.address ? `${o.address.street || ''}, ${o.address.city || ''} ${o.address.zip || ''}`.trim().replace(/^,\s*/, '') : 'Not provided';
-
-            const history = (o.statusHistory || []).slice().reverse().map(h =>
-                `<div style="font-size:0.8rem; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.04);">
-                    <span class="status-badge status-${h.status.toLowerCase()}" style="font-size:0.7rem;">${h.status}</span>
-                    <span style="color:var(--text-muted); margin-left:0.5rem;">${h.timestamp}</span>
-                    ${h.note ? `<div style="color:var(--text-muted); font-size:0.75rem; margin-top:2px;">${h.note}</div>` : ''}
-                </div>`
-            ).join('');
-
-            return `
-                <tr id="expand-${o.id}">
-                    <td colspan="8" style="padding:0 1rem 1rem 3rem; border-top:none;">
-                        <div class="expand-row-content">
-                            <div class="expand-detail-grid">
-                                <div>
-                                    <div class="expand-section-title"><i class="fas fa-box" style="margin-right:4px;"></i>Order Items</div>
-                                    ${items || '<p style="color:var(--text-muted); font-size:0.85rem;">No items</p>'}
-                                    <div style="margin-top:0.75rem; font-weight:700; font-size:0.9rem; text-align:right;">Total: ₹${o.total.toLocaleString()}</div>
-                                </div>
-                                <div>
-                                    <div class="expand-section-title"><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>Shipping Details</div>
-                                    <div style="font-size:0.85rem; line-height:1.7;">
-                                        <div style="font-weight:600;">${o.userName || 'Guest'}</div>
-                                        <div style="color:var(--text-muted);">${o.userPhone || ''}</div>
-                                        <div style="color:var(--text-muted);">${o.userEmail || ''}</div>
-                                        <div style="color:var(--text-muted); margin-top:0.3rem;">${addr}</div>
-                                    </div>
-                                    <div class="expand-section-title" style="margin-top:1rem;"><i class="fas fa-truck" style="margin-right:4px;"></i>Tracking Number</div>
-                                    <div class="tracking-input-row">
-                                        <input type="text" id="track-${o.id}" class="form-control" value="${o.trackingNumber || ''}" placeholder="e.g. DTDC123456789" style="margin-bottom:0; font-size:0.85rem;">
-                                        <button class="btn btn-secondary" onclick="saveTrackingInfo('${o.id}')" style="white-space:nowrap; padding:0.4rem 0.8rem; font-size:0.8rem;"><i class="fas fa-save"></i></button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="expand-section-title"><i class="fas fa-history" style="margin-right:4px;"></i>Status History</div>
-                                    ${history || '<p style="color:var(--text-muted); font-size:0.82rem;">No history yet.</p>'}
-                                    <div class="expand-section-title" style="margin-top:1rem;"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Admin Note (visible to customer)</div>
-                                    <textarea id="note-${o.id}" class="form-control" style="min-height:70px; font-size:0.82rem; resize:vertical;" placeholder="e.g. Dispatched via DTDC, expect delivery in 3-5 days">${o.adminNote || ''}</textarea>
-                                    <button class="btn btn-secondary" onclick="saveAdminNote('${o.id}')" style="margin-top:0.5rem; font-size:0.8rem; padding:0.4rem 1rem;"><i class="fas fa-save"></i> Save Note</button>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>`;
-        }
-
-        function expandOrder(id) {
-            expandedOrderId = expandedOrderId === id.toString() ? null : id.toString();
-            renderOrders();
-            if (expandedOrderId) {
-                const el = document.getElementById('expand-' + expandedOrderId);
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-
-        async function updateOrderStatus(id, status) {
-            const res = await apiCall('api/update-order.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_code: id, status })
-            });
-            if (res.ok && res.data && res.data.success) {
-                showToast(`Order ${id} → ${status}`, 'success');
-                await loadData();
-                render();
-            } else {
-                showToast(explainApiFailure(res, 'Unable to update order'), 'error');
-            }
-        }
-
-        async function saveTrackingInfo(id) {
-            const trackingEl = document.getElementById('track-' + id);
-            if (!trackingEl) return;
-            const res = await apiCall('api/update-order.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_code: id, tracking_number: trackingEl.value.trim() })
-            });
-            if (res.ok && res.data && res.data.success) {
-                showToast('Tracking number saved', 'success');
-                await loadData();
-                renderOrders();
-            } else {
-                showToast(explainApiFailure(res, 'Unable to save tracking info'), 'error');
-            }
-        }
-
-        function clearOrderFilters() {
-            const searchEl = document.getElementById('orderSearch');
-            if (searchEl) searchEl.value = '';
-            currentOrderFilter = 'all';
-            document.querySelectorAll('.order-chip').forEach((c, i) => c.classList.toggle('active', i === 0));
-            renderOrders();
-        }
-
-        async function deleteOrder(id) {
-            if (!confirm(`Delete order ${id}? This cannot be undone.`)) return;
-            const res = await apiCall('api/delete-order.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_code: id })
-            });
-            if (res.ok && res.data && res.data.success) {
-                showToast(`Order ${id} deleted`, 'success');
-                if (expandedOrderId === id.toString()) expandedOrderId = null;
-                await loadData();
-                render();
-            } else {
-                showToast(explainApiFailure(res, 'Unable to delete order'), 'error');
-            }
-        }
-
-        async function saveAdminNote(id) {
-            const noteEl = document.getElementById('note-' + id);
-            if (!noteEl) return;
-            const res = await apiCall('api/update-order.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_code: id, admin_note: noteEl.value.trim() })
-            });
-            if (res.ok && res.data && res.data.success) {
-                showToast('Note saved & customer notified', 'success');
-                await loadData();
-                renderOrders();
-            } else {
-                showToast(explainApiFailure(res, 'Unable to save note'), 'error');
-            }
-        }
-
-        function showToast(msg, type) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}" style="margin-right:10px"></i> ${msg}`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
-
-        checkSession();
-    </script>
 </body>
 
 </html>
