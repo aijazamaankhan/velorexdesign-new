@@ -285,16 +285,7 @@ const app = {
         const template = document.getElementById('tpl-' + view);
 
         if (template) {
-            // Use clone of template so embedded scripts (none here) don't re-execute via innerHTML.
-            appRoot.replaceChildren();
-            const wrapper = document.createElement('div');
-            wrapper.className = 'view active';
-            wrapper.appendChild(template.content ? template.content.cloneNode(true) : (() => {
-                const f = document.createElement('div');
-                f.innerHTML = template.innerHTML;
-                return f;
-            })());
-            appRoot.appendChild(wrapper);
+            appRoot.innerHTML = '<div class="view active">' + template.innerHTML + '</div>';
             window.scrollTo(0, 0);
 
             if (view === 'home') this.renderHome();
@@ -1422,7 +1413,8 @@ const app = {
 
     submitContact() {
         const name = document.getElementById('contactName').value.trim();
-        const email = document.getElementById('contactEmail').value.trim();
+        const emailEl = document.getElementById('contactEmailField');
+        const email = emailEl ? emailEl.value.trim() : '';
         const subj = document.getElementById('contactSubject').value;
         const message = document.getElementById('contactMessage').value.trim();
 
@@ -1438,8 +1430,7 @@ const app = {
         this.showToast(`Thanks ${name}! Your inquiry about '${subj}' has been sent.`, 'success');
 
         document.getElementById('contactName').value = '';
-        const ce = document.getElementById('contactEmail');
-        if (ce && ce.tagName === 'INPUT') ce.value = '';
+        if (emailEl) emailEl.value = '';
         document.getElementById('contactMessage').value = '';
     },
 
