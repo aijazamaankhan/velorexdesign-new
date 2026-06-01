@@ -1,7 +1,7 @@
-# Block public HTTP access to dotfiles and sensitive support files.
-# IMPORTANT: .env now lives in the project root (next to index.html),
-# so this protection is required — without it, anyone could fetch
-# https://your-domain.com/.env and read your DB password.
+# Block public HTTP access to dotfiles, dot-directories, and sensitive support files.
+# IMPORTANT: .env lives in the project root (next to index.html), and .git/.claude
+# directories MUST NOT be web-accessible — otherwise anyone can fetch
+# https://your-domain.com/.git/config and download the entire repo + secrets.
 
 <Files ".env">
     Require all denied
@@ -15,10 +15,19 @@
     Require all denied
 </Files>
 
+# Block any file whose name starts with a dot (e.g. .env, .htaccess, .DS_Store).
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>
 
+# Block any sensitive extension regardless of folder.
 <FilesMatch "\.(log|env|sql|bak|swp|md)$">
     Require all denied
 </FilesMatch>
+
+# Block dot-directories entirely (.git, .claude, .vscode, .idea, etc.).
+# FilesMatch only matches files, so directories need a RewriteRule.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule "(^|/)\." - [F]
+</IfModule>
