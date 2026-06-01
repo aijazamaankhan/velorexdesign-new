@@ -73,8 +73,11 @@ function explainApiFailure(res, fallback) {
     if (res.data && res.data.error) {
         return res.data.detail ? `${res.data.error} — ${res.data.detail}` : res.data.error;
     }
-    if (res.status === 405 || res.status === 501) {
-        return 'HTTP ' + res.status + ' — the host is NOT running PHP. VS Code Live Server, python http.server, and similar static servers do not execute .php files. Open the site through XAMPP / Laragon / "php -S localhost:8000" / Hostinger.';
+    if (res.status === 405) {
+        return 'HTTP 405 — usually a redirect issue on Hostinger: opening the site as http:// gets redirected to https://, and browsers convert POST to GET during the redirect. Open the site directly on https:// (and use the same www/non-www variant your domain is set to). If on a local server, make sure you used XAMPP / Laragon / "php -S", not VS Code Live Server.';
+    }
+    if (res.status === 501) {
+        return 'HTTP 501 — the host is NOT running PHP. VS Code Live Server, python http.server, and similar static servers do not execute .php files. Open the site through XAMPP / Laragon / "php -S localhost:8000" / Hostinger.';
     }
     if (res.status === 401) return 'Invalid username or password.';
     if (res.status === 404) return 'Endpoint not found — make sure the api/ folder was uploaded next to admin.html.';
