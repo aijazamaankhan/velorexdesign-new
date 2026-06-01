@@ -19,6 +19,13 @@ desktop.ini
 *.swo
 *~
 
+# Claude / AI assistant working files — never deploy to production
+.claude/
+claude.dm
+scratchpad_*.md
+implementation_plan.md
+task.md
+
 # Backup files
 *.bak
 *.tmp
