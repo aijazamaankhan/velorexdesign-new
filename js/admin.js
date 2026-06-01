@@ -1532,6 +1532,12 @@ function wireUpDelegatedEvents() {
         const trigger = e.target.closest('[data-action]');
         if (!trigger) return;
         if (trigger.tagName === 'SELECT' || trigger.tagName === 'INPUT' || trigger.tagName === 'TEXTAREA') return;
+        // If the trigger is a <form> and the click came from a submit control,
+        // let the native submit event handle it (avoids double-firing + page reload).
+        if (trigger.tagName === 'FORM') {
+            const btn = e.target.closest('button, input[type="submit"]');
+            if (btn && (btn.type === 'submit' || btn.tagName === 'BUTTON' && !btn.type)) return;
+        }
         const handler = ACTION_HANDLERS[trigger.dataset.action];
         if (handler) {
             if (stopEl && stopEl !== trigger && !trigger.contains(stopEl) && stopEl.contains(trigger)) {
@@ -1570,8 +1576,12 @@ function wireUpDelegatedEvents() {
     document.addEventListener('submit', (e) => {
         const trigger = e.target.closest('[data-action]');
         if (!trigger) return;
-        if (trigger.dataset.action === 'save-product') {
+        const action = trigger.dataset.action;
+        if (action === 'save-product') {
             saveProduct(e);
+        } else if (action === 'admin-login') {
+            e.preventDefault();
+            checkAuth();
         }
     });
 
