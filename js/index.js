@@ -88,7 +88,8 @@ const STATIC_WELLNESS_PRODUCTS = [
         cat: 'wellness',
         desc: 'Hand-finished comb made from anti-bacterial neem wood. Helps reduce dandruff, soothes an itchy scalp, controls frizz and distributes natural oils through the hair — a chemical-free, static-free alternative to plastic combs.',
         stock: 100,
-        featured: false
+        featured: false,
+        extra: 'neem'
     },
     {
         id: 'w-acupressure',
@@ -99,9 +100,91 @@ const STATIC_WELLNESS_PRODUCTS = [
         cat: 'wellness',
         desc: 'Hand-held wooden acupressure tool used to stimulate pressure points across the hands, feet and body. Helps ease muscle tension, improve circulation and support everyday relaxation. Crafted from smooth, untreated natural wood.',
         stock: 100,
-        featured: false
+        featured: false,
+        extra: 'acupressure'
     }
 ];
+
+/* Rich "deep-dive" content shown on each wellness product's detail page,
+   keyed by a slug. Add an entry here to give a product its own write-up. */
+const WELLNESS_DETAILS = {
+    vijaysar: {
+        badge: 'Natural · Ayurvedic · Chemical-Free',
+        introHeading: 'Heartwood of the Indian Kino Tree',
+        introText: 'Hand-turned from the heartwood of the Vijaysar tree (<em>Pterocarpus marsupium</em>, the Indian Kino tree), this wooden glass is a time-honoured Ayurvedic vessel. It is used as a holistic, chemical-free way to support healthy metabolic function and help manage blood sugar levels.',
+        points: [
+            '100% natural wood',
+            'Traditionally used to balance blood sugar &amp; aid digestion',
+            'Simple overnight ritual — just water and time'
+        ],
+        steps: [
+            { icon: 'fas fa-fill-drip', title: 'Soak', text: 'Fill the wooden glass with drinking water at night and let it sit for <strong>8 to 10 hours</strong>.' },
+            { icon: 'fas fa-mug-hot', title: 'Drink', text: 'By morning the water turns a <strong>light brown</strong> colour as the wood\'s natural bioactive compounds infuse into it.' },
+            { icon: 'fas fa-sun', title: 'Routine', text: 'Drink the infused water on an <strong>empty stomach</strong> first thing in the morning.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-seedling', title: 'Wellness Support', text: 'Widely used in Ayurveda to help balance blood sugar, aid digestion and detoxify the body.' },
+            { icon: 'fas fa-tree', title: 'Natural Material', text: 'Made from 100% natural wood without any artificial paints, chemicals or polishes.' },
+            { icon: 'fas fa-hourglass-half', title: 'Lifespan', text: 'The leaching properties of the wood gradually diminish with regular use over time.' },
+            { icon: 'fas fa-calendar-alt', title: 'Replace Regularly', text: 'Most tumblers should be replaced every <strong>30 to 45 days</strong> of regular use.' }
+        ],
+        disclaimer: 'Traditional Ayurvedic wellness product. Not a medicine and not intended to diagnose, treat or cure any condition. Consult your doctor before making changes to diabetes care.'
+    },
+    neem: {
+        badge: 'Natural · Ayurvedic · Plastic-Free',
+        introHeading: 'Crafted from Pure Neem Wood',
+        introText: 'Carved from solid neem wood (<em>Azadirachta indica</em>), a wood prized in Ayurveda for its natural anti-bacterial and anti-fungal properties. Unlike plastic combs, a neem comb glides through hair without creating static and helps spread the scalp\'s natural oils for healthier, shinier hair.',
+        points: [
+            '100% natural neem wood — no plastic',
+            'Anti-bacterial &amp; anti-fungal — soothes the scalp',
+            'Reduces dandruff, frizz and static'
+        ],
+        steps: [
+            { icon: 'fas fa-wind', title: 'Detangle', text: 'Start at the ends and work upward in small sections to gently remove knots.' },
+            { icon: 'fas fa-arrows-down-to-line', title: 'Comb Daily', text: 'Run it through your hair <strong>2–3 times a day</strong> to spread natural oils from root to tip.' },
+            { icon: 'fas fa-droplet-slash', title: 'Keep Dry', text: 'Wipe clean after use and store dry — avoid soaking the wood in water.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-head-side-virus', title: 'Scalp Health', text: 'Anti-bacterial neem helps reduce dandruff and soothes an itchy, flaky scalp.' },
+            { icon: 'fas fa-leaf', title: 'Natural Material', text: 'Handmade from solid neem wood — no plastic, paints or chemicals.' },
+            { icon: 'fas fa-wand-magic-sparkles', title: 'Healthier Hair', text: 'Distributes natural oils for smoother, shinier, frizz- and static-free hair.' },
+            { icon: 'fas fa-hand-holding-droplet', title: 'Care &amp; Lifespan', text: 'Keep dry and oil occasionally with a little coconut oil; lasts for years with care.' }
+        ],
+        disclaimer: 'Natural wood grain, tone and engraving may vary slightly from piece to piece — each comb is unique.'
+    },
+    acupressure: {
+        badge: 'Natural · Wellness · Chemical-Free',
+        introHeading: 'Traditional Acupressure Therapy',
+        introText: 'Hand-crafted from smooth, untreated natural wood, this acupressure stick (a thumb / trigger-point tool) applies targeted pressure to acupoints on the hands, feet and body. Acupressure is a traditional practice believed to relieve tension, support circulation and encourage relaxation.',
+        points: [
+            'Smooth, untreated natural wood — comfortable grip',
+            'Targets pressure points on hands, feet &amp; body',
+            'Supports relaxation, circulation &amp; tension relief'
+        ],
+        steps: [
+            { icon: 'fas fa-magnifying-glass', title: 'Locate', text: 'Find the tender pressure point or muscle knot on the hand, foot or body.' },
+            { icon: 'fas fa-hand-pointer', title: 'Press', text: 'Apply firm, steady pressure with the rounded tip for <strong>5–10 seconds</strong>.' },
+            { icon: 'fas fa-repeat', title: 'Release &amp; Repeat', text: 'Release slowly and repeat a few times while breathing deeply.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-spa', title: 'Tension Relief', text: 'Helps ease muscle knots, stiffness and everyday stress.' },
+            { icon: 'fas fa-heart-pulse', title: 'Better Circulation', text: 'Stimulating acupoints is believed to support healthy blood flow.' },
+            { icon: 'fas fa-tree', title: 'Natural Material', text: 'Crafted from smooth, untreated wood — no chemicals, paints or coatings.' },
+            { icon: 'fas fa-suitcase-rolling', title: 'Easy to Carry', text: 'Lightweight and portable, so you can use it anytime, anywhere.' }
+        ],
+        disclaimer: 'Traditional wellness practice — not a medical device, and not intended to diagnose, treat or cure any condition. Avoid pressing over injuries; consult a doctor if you are pregnant or have a medical condition.'
+    }
+};
+
+/* Map a product to its WELLNESS_DETAILS slug via its `extra` flag or name. */
+function resolveWellnessSlug(product) {
+    if (product.extra && WELLNESS_DETAILS[product.extra]) return product.extra;
+    const n = (product.name || '').toLowerCase();
+    if (/vijaysar/.test(n)) return 'vijaysar';
+    if (/neem/.test(n)) return 'neem';
+    if (/acupres|accupres|acupress/.test(n)) return 'acupressure';
+    return '';
+}
 
 /* Add the starter products to PRODUCTS when no real wellness products exist yet,
    so their detail pages and Add-to-Cart work through the normal flow. */
@@ -157,20 +240,23 @@ async function loadProducts() {
                 featured: p.featured === '1' || p.featured === 1 || p.featured === true
             };
         });
-        ensureWellnessSeed();
-
-        const currentHash = window.location.hash || '#home';
-        if (currentHash.startsWith('#products')) {
-            const query = currentHash.split('?')[1] || '';
-            const cat = new URLSearchParams(query).get('cat');
-            app.renderProducts(cat);
-        } else if (currentHash.startsWith('#product-detail')) {
-            const query = currentHash.split('?')[1] || '';
-            const id = new URLSearchParams(query).get('id');
-            app.renderProductDetail(id);
-        }
     } catch (error) {
         console.error('Failed to load products:', error);
+    }
+
+    // Always run — even if the API was unreachable — so the built-in wellness
+    // products exist and their detail pages / Add-to-Cart keep working.
+    ensureWellnessSeed();
+
+    const currentHash = window.location.hash || '#home';
+    if (currentHash.startsWith('#products')) {
+        const cat = new URLSearchParams(currentHash.split('?')[1] || '').get('cat');
+        app.renderProducts(cat);
+    } else if (currentHash.startsWith('#product-detail')) {
+        const id = new URLSearchParams(currentHash.split('?')[1] || '').get('id');
+        app.renderProductDetail(id);
+    } else if (currentHash.startsWith('#wellness')) {
+        app.renderWellness();
     }
 }
 
@@ -710,17 +796,21 @@ const app = {
         const grid = document.getElementById('homeCategoryGrid');
         if (!grid) return;
         CATEGORIES = getCategories();
-        grid.innerHTML = CATEGORIES.map(c => {
+        const card = (c, hidden) => {
             const img = escapeAttr(safeUrl(c.image) || DEFAULT_CAT_FALLBACK_IMAGE);
             return `
-                <div class="category-card" data-action="open-category" data-cat="${escapeAttr(c.id)}" style="cursor:pointer;">
+                <div class="category-card" data-action="open-category" data-cat="${escapeAttr(c.id)}" style="cursor:pointer;"${hidden ? ' aria-hidden="true"' : ''}>
                     <img src="${img}" alt="${escapeAttr(c.name)}" data-fallback="${escapeAttr(DEFAULT_CAT_FALLBACK_IMAGE)}" style="width: 100%; height: 200px; object-fit: cover;">
                     <div class="category-overlay">
                         <h3>${escapeHtml(c.name)}</h3>
                     </div>
                 </div>
             `;
-        }).join('');
+        };
+        // Render the set twice so the marquee can loop seamlessly (translateX -50%).
+        const set = CATEGORIES.map(c => card(c, false)).join('');
+        const dupe = CATEGORIES.map(c => card(c, true)).join('');
+        grid.innerHTML = set + dupe;
     },
 
     renderServices() {
@@ -958,80 +1048,42 @@ const app = {
         `;
 
         const extra = document.getElementById('productExtraContent');
-        if (extra) {
-            const isVijaysar = product.extra === 'vijaysar' || /vijaysar/i.test(product.name || '');
-            extra.innerHTML = isVijaysar ? this.vijaysarDetailHtml() : '';
-        }
+        if (extra) extra.innerHTML = this.wellnessDetailHtml(resolveWellnessSlug(product));
     },
 
-    /* Rich Ayurvedic deep-dive shown on the Vijaysar glass detail page. */
-    vijaysarDetailHtml() {
+    /* Rich deep-dive shown on a wellness product's detail page, built from
+       WELLNESS_DETAILS. Returns '' for products without a deep-dive entry. */
+    wellnessDetailHtml(slug) {
+        const d = WELLNESS_DETAILS[slug];
+        if (!d) return '';
+        const steps = d.steps.map((s, i) => `
+            <div class="wellness-step">
+                <span class="wellness-step-num">0${i + 1}</span>
+                <i class="${s.icon}"></i>
+                <h4>${s.title}</h4>
+                <p>${s.text}</p>
+            </div>`).join('');
+        const benefits = d.benefits.map(b => `
+            <div class="wellness-benefit">
+                <i class="${b.icon}"></i>
+                <h4>${b.title}</h4>
+                <p>${b.text}</p>
+            </div>`).join('');
+        const points = d.points.map(p => `<li><i class="fas fa-check"></i> ${p}</li>`).join('');
         return `
             <section class="wellness-section" style="margin-top:3rem; border:1px solid var(--border); border-radius:var(--radius-lg); padding:2.5rem;">
-                <span class="wellness-badge"><i class="fas fa-leaf"></i> Natural · Ayurvedic · Chemical-Free</span>
-                <h3 style="font-size:1.6rem; margin:1rem 0 0.75rem;">Heartwood of the Indian Kino Tree</h3>
-                <p style="color:var(--text-muted); max-width:760px;">Hand-turned from the heartwood of the Vijaysar tree
-                    (<em>Pterocarpus marsupium</em>, the Indian Kino tree), this wooden glass is a time-honoured Ayurvedic
-                    vessel. It is used as a holistic, chemical-free way to support healthy metabolic function and help
-                    manage blood sugar levels.</p>
-                <ul class="wellness-points" style="margin-top:1.25rem;">
-                    <li><i class="fas fa-check"></i> 100% natural wood</li>
-                    <li><i class="fas fa-check"></i> Traditionally used to balance blood sugar &amp; aid digestion</li>
-                    <li><i class="fas fa-check"></i> Simple overnight ritual — just water and time</li>
-                </ul>
+                <span class="wellness-badge"><i class="fas fa-leaf"></i> ${d.badge}</span>
+                <h3 style="font-size:1.6rem; margin:1rem 0 0.75rem;">${d.introHeading}</h3>
+                <p style="color:var(--text-muted); max-width:760px;">${d.introText}</p>
+                <ul class="wellness-points" style="margin-top:1.25rem;">${points}</ul>
 
                 <h3 class="wellness-subheading" style="margin-top:2.5rem;">How to Use</h3>
-                <div class="grid wellness-steps">
-                    <div class="wellness-step">
-                        <span class="wellness-step-num">01</span>
-                        <i class="fas fa-fill-drip"></i>
-                        <h4>Soak</h4>
-                        <p>Fill the wooden glass with drinking water at night and let it sit for <strong>8 to 10 hours</strong>.</p>
-                    </div>
-                    <div class="wellness-step">
-                        <span class="wellness-step-num">02</span>
-                        <i class="fas fa-mug-hot"></i>
-                        <h4>Drink</h4>
-                        <p>By morning the water turns a <strong>light brown</strong> colour as the wood's natural bioactive
-                            compounds infuse into it.</p>
-                    </div>
-                    <div class="wellness-step">
-                        <span class="wellness-step-num">03</span>
-                        <i class="fas fa-sun"></i>
-                        <h4>Routine</h4>
-                        <p>Drink the infused water on an <strong>empty stomach</strong> first thing in the morning.</p>
-                    </div>
-                </div>
+                <div class="grid wellness-steps">${steps}</div>
 
                 <h3 class="wellness-subheading" style="margin-top:2.5rem;">Key Details &amp; Benefits</h3>
-                <div class="grid wellness-benefits">
-                    <div class="wellness-benefit">
-                        <i class="fas fa-seedling"></i>
-                        <h4>Wellness Support</h4>
-                        <p>Widely used in Ayurveda to help balance blood sugar, aid digestion and detoxify the body.</p>
-                    </div>
-                    <div class="wellness-benefit">
-                        <i class="fas fa-tree"></i>
-                        <h4>Natural Material</h4>
-                        <p>Made from 100% natural wood without any artificial paints, chemicals or polishes.</p>
-                    </div>
-                    <div class="wellness-benefit">
-                        <i class="fas fa-hourglass-half"></i>
-                        <h4>Lifespan</h4>
-                        <p>The leaching properties of the wood gradually diminish with regular use over time.</p>
-                    </div>
-                    <div class="wellness-benefit">
-                        <i class="fas fa-calendar-alt"></i>
-                        <h4>Replace Regularly</h4>
-                        <p>Most tumblers should be replaced every <strong>30 to 45 days</strong> of regular use.</p>
-                    </div>
-                </div>
+                <div class="grid wellness-benefits">${benefits}</div>
 
-                <p class="wellness-disclaimer">
-                    <i class="fas fa-circle-info"></i>
-                    Traditional Ayurvedic wellness product. Not a medicine and not intended to diagnose, treat or cure any
-                    condition. Consult your doctor before making changes to diabetes care.
-                </p>
+                ${d.disclaimer ? `<p class="wellness-disclaimer"><i class="fas fa-circle-info"></i> ${d.disclaimer}</p>` : ''}
             </section>
         `;
     },

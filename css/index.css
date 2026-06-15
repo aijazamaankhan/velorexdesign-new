@@ -507,6 +507,47 @@ h3 {
   gap: 2rem;
 }
 
+/* Full-width auto-scrolling category marquee */
+.cat-marquee {
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
+.cat-marquee-track {
+  display: flex;
+  width: max-content;
+  padding: 0.5rem 0;
+  animation: cat-marquee-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+/* Stop scrolling while the visitor hovers (or focuses a card within). */
+.cat-marquee:hover .cat-marquee-track,
+.cat-marquee-track:focus-within {
+  animation-play-state: paused;
+}
+
+.cat-marquee-track .category-card {
+  flex: 0 0 240px;
+  margin-right: 1.5rem;
+  transition: var(--transition);
+}
+
+.cat-marquee-track .category-card:hover {
+  transform: translateY(-6px);
+}
+
+@keyframes cat-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-marquee-track { animation: none; }
+}
+
 /* Category Card */
 .cat-card {
   background: var(--card-bg);

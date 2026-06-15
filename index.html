@@ -328,7 +328,9 @@
             <h2 class="section-title">Shop by <span class="text-gold">Category</span></h2>
             <p class="section-subtitle">Curated collections for your home and brand</p>
           </div>
-          <div class="grid" id="homeCategoryGrid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
+        </div>
+        <div class="cat-marquee" id="catMarquee">
+          <div class="cat-marquee-track" id="homeCategoryGrid"></div>
         </div>
       </section>
 
@@ -336,13 +338,13 @@
       <section class="section wellness-section">
         <div class="container">
           <div class="wellness-intro">
-            <div class="wellness-intro-media">
+            <div class="wellness-intro-media" data-action="open-product" data-id="w-vijaysar" style="cursor:pointer;">
               <img src="vijaysar-glass.png" alt="Vijaysar wood wellness glass (tumbler)"
                 loading="lazy" data-fallback="https://placehold.co/600x600/3c2a1a/d7f5ec?text=Vijaysar+Glass">
             </div>
             <div class="wellness-intro-text">
               <span class="wellness-badge"><i class="fas fa-leaf"></i> Natural · Ayurvedic · Chemical-Free</span>
-              <h2 class="section-title" style="text-align:left; margin:1rem 0 0.75rem;">Vijaysar Wood
+              <h2 class="section-title" data-action="open-product" data-id="w-vijaysar" style="text-align:left; margin:1rem 0 0.75rem; cursor:pointer;">Vijaysar Wood
                 <span class="wellness-accent">Wellness Glass</span></h2>
               <p class="section-subtitle" style="text-align:left; margin:0 0 1.25rem;">A traditional Ayurvedic tumbler
                 crafted from the heartwood of the Vijaysar tree</p>
