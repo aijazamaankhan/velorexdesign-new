@@ -54,6 +54,7 @@ let PRODUCTS = [];
 
 const DEFAULT_CATS = [
     { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'cat-wood.png' },
+    { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'cat-wellness.svg' },
     { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'cat-resin.png' },
     { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80' },
     { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80' },
@@ -61,6 +62,55 @@ const DEFAULT_CATS = [
 ];
 const DEFAULT_CAT_FALLBACK_ICON = 'fas fa-tag';
 const DEFAULT_CAT_FALLBACK_IMAGE = 'https://placehold.co/400x300/1a0a2e/ffd700?text=New+Category';
+
+/* Built-in starter products for the Wellness page. Shown only while the DB has
+   no products in the 'wellness' category; real admin/DB products replace them.
+   Swap the `img` paths for real photos (e.g. images/neem-comb.png) anytime. */
+const STATIC_WELLNESS_PRODUCTS = [
+    {
+        id: 'w-vijaysar',
+        name: 'Vijaysar Wood Wellness Glass',
+        price: 599,
+        img: 'vijaysar-glass.png',
+        images: ['vijaysar-glass.png', 'vijaysar-glass-2.png'],
+        cat: 'wellness',
+        desc: 'A traditional Ayurvedic tumbler hand-turned from the heartwood of the Vijaysar tree (Pterocarpus marsupium, the Indian Kino tree). Fill it with drinking water at night and let it sit for 8–10 hours; by morning the water turns light brown as the wood’s natural bioactive compounds infuse into it. Drink on an empty stomach to support healthy metabolism and blood sugar balance. 100% natural wood — no paints, chemicals or polishes. Replace every 30–45 days of regular use. (Traditional wellness product, not a medicine.)',
+        stock: 50,
+        featured: false,
+        extra: 'vijaysar'
+    },
+    {
+        id: 'w-neem-comb',
+        name: 'Neem Wood Comb',
+        price: 199,
+        img: 'neem-comb.png',
+        images: ['neem-comb.png', 'neem-comb-detailes.png'],
+        cat: 'wellness',
+        desc: 'Hand-finished comb made from anti-bacterial neem wood. Helps reduce dandruff, soothes an itchy scalp, controls frizz and distributes natural oils through the hair — a chemical-free, static-free alternative to plastic combs.',
+        stock: 100,
+        featured: false
+    },
+    {
+        id: 'w-acupressure',
+        name: 'Acupressure Wooden Stick',
+        price: 149,
+        img: 'acupressure-stick.png',
+        images: ['acupressure-stick.png'],
+        cat: 'wellness',
+        desc: 'Hand-held wooden acupressure tool used to stimulate pressure points across the hands, feet and body. Helps ease muscle tension, improve circulation and support everyday relaxation. Crafted from smooth, untreated natural wood.',
+        stock: 100,
+        featured: false
+    }
+];
+
+/* Add the starter products to PRODUCTS when no real wellness products exist yet,
+   so their detail pages and Add-to-Cart work through the normal flow. */
+function ensureWellnessSeed() {
+    if (PRODUCTS.some(p => p.cat === 'wellness')) return;
+    STATIC_WELLNESS_PRODUCTS.forEach(sp => {
+        if (!PRODUCTS.some(p => String(p.id) === String(sp.id))) PRODUCTS.push(sp);
+    });
+}
 
 function getCategories() {
     const custom = JSON.parse(localStorage.getItem('velorex_store_categories')) || [];
@@ -107,6 +157,7 @@ async function loadProducts() {
                 featured: p.featured === '1' || p.featured === 1 || p.featured === true
             };
         });
+        ensureWellnessSeed();
 
         const currentHash = window.location.hash || '#home';
         if (currentHash.startsWith('#products')) {
@@ -301,6 +352,13 @@ const app = {
                     loadProducts().then(() => this.renderProductDetail(params.get('id')));
                 } else {
                     this.renderProductDetail(params.get('id'));
+                }
+            }
+            if (view === 'wellness') {
+                if (PRODUCTS.length === 0) {
+                    loadProducts().then(() => this.renderWellness());
+                } else {
+                    this.renderWellness();
                 }
             }
             if (view === 'cart') this.renderCart();
@@ -514,7 +572,7 @@ const app = {
         return `
             <div class="product-card">
                 <div class="product-img" data-action="open-product" data-id="${escapeAttr(product.id)}" style="cursor:pointer;">
-                    <img src="${img}" alt="${escapeAttr(product.name)}">
+                    <img src="${img}" alt="${escapeAttr(product.name)}" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
                     ${product.featured ? '<span class="product-badge">Featured</span>' : ''}
                 </div>
                 <div class="product-info">
@@ -530,6 +588,7 @@ const app = {
     },
 
     renderHome() {
+        this.initHeroCarousel();
         this.renderHomeCategories();
         const grid = document.getElementById('homeFeaturedGrid');
         if (!grid) return;
@@ -541,6 +600,86 @@ const app = {
         } else {
             grid.innerHTML = featured.map(p => this.createProductCard(p)).join('');
         }
+    },
+
+    /* Hero banner carousel. Edit HERO_SLIDES below to change the images. */
+    initHeroCarousel() {
+        const HERO_SLIDES = [
+            'images/vijaysar-1.jpg',
+            'images/vijaysar-2.jpg',
+            'images/vijaysar-infographic.jpg'
+        ];
+
+        const track = document.getElementById('heroCarousel');
+        const dotsWrap = document.getElementById('heroDots');
+        if (!track || !dotsWrap) return;
+
+        // Clear any timer from a previous render so we don't stack intervals.
+        if (this._heroTimer) { clearInterval(this._heroTimer); this._heroTimer = null; }
+
+        const overlay = track.querySelector('.hero-overlay');
+        // Remove any slides from a previous render, keep the overlay element.
+        track.querySelectorAll('.hero-slide').forEach(el => el.remove());
+        dotsWrap.innerHTML = '';
+
+        const slides = HERO_SLIDES.map(safeUrl).filter(Boolean);
+        // With one or no images there is nothing to rotate through.
+        if (slides.length <= 1) {
+            dotsWrap.style.display = 'none';
+            const prevBtn = document.getElementById('heroPrev');
+            const nextBtn = document.getElementById('heroNext');
+            if (prevBtn) prevBtn.style.display = 'none';
+            if (nextBtn) nextBtn.style.display = 'none';
+            if (slides.length === 1) {
+                const only = document.createElement('div');
+                only.className = 'hero-slide active';
+                only.style.backgroundImage = `url('${slides[0]}')`;
+                track.insertBefore(only, overlay);
+            }
+            return;
+        }
+        dotsWrap.style.display = 'flex';
+
+        const slideEls = slides.map((src, i) => {
+            const el = document.createElement('div');
+            el.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            el.style.backgroundImage = `url('${src}')`;
+            track.insertBefore(el, overlay);
+
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => go(i));
+            dotsWrap.appendChild(dot);
+            return el;
+        });
+        const dotEls = Array.from(dotsWrap.children);
+
+        let current = 0;
+        const go = (i) => {
+            current = (i + slideEls.length) % slideEls.length;
+            slideEls.forEach((el, idx) => el.classList.toggle('active', idx === current));
+            dotEls.forEach((el, idx) => el.classList.toggle('active', idx === current));
+            restart();
+        };
+        const restart = () => {
+            if (this._heroTimer) clearInterval(this._heroTimer);
+            this._heroTimer = setInterval(() => go(current + 1), 5000);
+        };
+
+        const prevBtn = document.getElementById('heroPrev');
+        const nextBtn = document.getElementById('heroNext');
+        if (prevBtn) { prevBtn.style.display = ''; prevBtn.onclick = () => go(current - 1); }
+        if (nextBtn) { nextBtn.style.display = ''; nextBtn.onclick = () => go(current + 1); }
+
+        const hero = document.getElementById('heroSection');
+        if (hero) {
+            hero.addEventListener('mouseenter', () => { if (this._heroTimer) clearInterval(this._heroTimer); });
+            hero.addEventListener('mouseleave', restart);
+        }
+
+        restart();
     },
 
     renderNavCategories() {
@@ -679,6 +818,22 @@ const app = {
         window.open(`https://wa.me/${encodeURIComponent(waNumber)}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     },
 
+    renderWellness() {
+        ensureWellnessSeed();
+        const grid = document.getElementById('wellnessProductsGrid');
+        const empty = document.getElementById('wellnessNoProducts');
+        if (!grid) return;
+        const items = PRODUCTS.filter(p => p.cat === 'wellness');
+        if (items.length > 0) {
+            grid.style.display = 'grid';
+            if (empty) empty.style.display = 'none';
+            grid.innerHTML = items.map(p => this.createProductCard(p)).join('');
+        } else {
+            grid.style.display = 'none';
+            if (empty) empty.style.display = 'block';
+        }
+    },
+
     renderProducts(catFilter = 'all') {
         const grid = document.getElementById('productsGrid');
         const noProd = document.getElementById('noProducts');
@@ -771,7 +926,7 @@ const app = {
 
         container.innerHTML = `
             <div class="detail-img">
-                <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name)}">
+                <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name)}" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
                 ${thumbsHtml}
             </div>
             <div class="detail-info">
@@ -800,6 +955,84 @@ const app = {
                     </button>
                 </div>
             </div>
+        `;
+
+        const extra = document.getElementById('productExtraContent');
+        if (extra) {
+            const isVijaysar = product.extra === 'vijaysar' || /vijaysar/i.test(product.name || '');
+            extra.innerHTML = isVijaysar ? this.vijaysarDetailHtml() : '';
+        }
+    },
+
+    /* Rich Ayurvedic deep-dive shown on the Vijaysar glass detail page. */
+    vijaysarDetailHtml() {
+        return `
+            <section class="wellness-section" style="margin-top:3rem; border:1px solid var(--border); border-radius:var(--radius-lg); padding:2.5rem;">
+                <span class="wellness-badge"><i class="fas fa-leaf"></i> Natural · Ayurvedic · Chemical-Free</span>
+                <h3 style="font-size:1.6rem; margin:1rem 0 0.75rem;">Heartwood of the Indian Kino Tree</h3>
+                <p style="color:var(--text-muted); max-width:760px;">Hand-turned from the heartwood of the Vijaysar tree
+                    (<em>Pterocarpus marsupium</em>, the Indian Kino tree), this wooden glass is a time-honoured Ayurvedic
+                    vessel. It is used as a holistic, chemical-free way to support healthy metabolic function and help
+                    manage blood sugar levels.</p>
+                <ul class="wellness-points" style="margin-top:1.25rem;">
+                    <li><i class="fas fa-check"></i> 100% natural wood</li>
+                    <li><i class="fas fa-check"></i> Traditionally used to balance blood sugar &amp; aid digestion</li>
+                    <li><i class="fas fa-check"></i> Simple overnight ritual — just water and time</li>
+                </ul>
+
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">How to Use</h3>
+                <div class="grid wellness-steps">
+                    <div class="wellness-step">
+                        <span class="wellness-step-num">01</span>
+                        <i class="fas fa-fill-drip"></i>
+                        <h4>Soak</h4>
+                        <p>Fill the wooden glass with drinking water at night and let it sit for <strong>8 to 10 hours</strong>.</p>
+                    </div>
+                    <div class="wellness-step">
+                        <span class="wellness-step-num">02</span>
+                        <i class="fas fa-mug-hot"></i>
+                        <h4>Drink</h4>
+                        <p>By morning the water turns a <strong>light brown</strong> colour as the wood's natural bioactive
+                            compounds infuse into it.</p>
+                    </div>
+                    <div class="wellness-step">
+                        <span class="wellness-step-num">03</span>
+                        <i class="fas fa-sun"></i>
+                        <h4>Routine</h4>
+                        <p>Drink the infused water on an <strong>empty stomach</strong> first thing in the morning.</p>
+                    </div>
+                </div>
+
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">Key Details &amp; Benefits</h3>
+                <div class="grid wellness-benefits">
+                    <div class="wellness-benefit">
+                        <i class="fas fa-seedling"></i>
+                        <h4>Wellness Support</h4>
+                        <p>Widely used in Ayurveda to help balance blood sugar, aid digestion and detoxify the body.</p>
+                    </div>
+                    <div class="wellness-benefit">
+                        <i class="fas fa-tree"></i>
+                        <h4>Natural Material</h4>
+                        <p>Made from 100% natural wood without any artificial paints, chemicals or polishes.</p>
+                    </div>
+                    <div class="wellness-benefit">
+                        <i class="fas fa-hourglass-half"></i>
+                        <h4>Lifespan</h4>
+                        <p>The leaching properties of the wood gradually diminish with regular use over time.</p>
+                    </div>
+                    <div class="wellness-benefit">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h4>Replace Regularly</h4>
+                        <p>Most tumblers should be replaced every <strong>30 to 45 days</strong> of regular use.</p>
+                    </div>
+                </div>
+
+                <p class="wellness-disclaimer">
+                    <i class="fas fa-circle-info"></i>
+                    Traditional Ayurvedic wellness product. Not a medicine and not intended to diagnose, treat or cure any
+                    condition. Consult your doctor before making changes to diabetes care.
+                </p>
+            </section>
         `;
     },
 
@@ -1509,6 +1742,7 @@ const ACTION_HANDLERS = {
     'show-register':       () => app.showAuthForm('register'),
     'show-login':          () => app.showAuthForm('login'),
     'faq-toggle':          (e, el) => el.classList.toggle('active'),
+    'scroll-to':           (e, el) => { const t = document.getElementById(el.dataset.target); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
     'clear-notifs':        () => app.clearNotifications()
 };
 

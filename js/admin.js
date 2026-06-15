@@ -88,6 +88,7 @@ function explainApiFailure(res, fallback) {
 
 const DEFAULT_CATEGORIES = [
     { id: 'wood',         name: 'Wood Items',      isDefault: true },
+    { id: 'wellness',     name: 'Wellness',        isDefault: true },
     { id: 'resin',        name: 'Resin Art',       isDefault: true },
     { id: 'soap',         name: 'Handmade Soap',   isDefault: true },
     { id: 'candle',       name: 'Candles',         isDefault: true },

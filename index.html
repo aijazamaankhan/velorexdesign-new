@@ -40,6 +40,7 @@
             <a href="#products" class="dropdown-item"><i class="fas fa-th-large text-gradient"></i> All Products</a>
           </div>
         </li>
+        <li><a href="#wellness" class="nav-link nav-wellness"><i class="fas fa-leaf"></i> Velorex Wellness</a></li>
         <li><a href="#services" class="nav-link">Graphic Design</a></li>
         <li class="nav-dropdown">
           <a href="#" class="nav-link">Our Stores <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a>
@@ -301,8 +302,13 @@
 
     <!-- HOME VIEW -->
     <div id="tpl-home">
-      <section class="hero">
-        <div class="hero-bg"></div>
+      <section class="hero" id="heroSection">
+        <div class="hero-bg" id="heroCarousel">
+          <div class="hero-overlay"></div>
+        </div>
+        <button type="button" class="hero-arrow hero-arrow-prev" id="heroPrev" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="hero-arrow hero-arrow-next" id="heroNext" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
+        <div class="hero-dots" id="heroDots"></div>
         <div class="container">
           <div class="hero-content">
             <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art & Design</span></h1>
@@ -323,6 +329,40 @@
             <p class="section-subtitle">Curated collections for your home and brand</p>
           </div>
           <div class="grid" id="homeCategoryGrid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
+        </div>
+      </section>
+
+      <!-- VIJAYSAR WOOD WELLNESS GLASS (teaser) -->
+      <section class="section wellness-section">
+        <div class="container">
+          <div class="wellness-intro">
+            <div class="wellness-intro-media">
+              <img src="vijaysar-glass.png" alt="Vijaysar wood wellness glass (tumbler)"
+                loading="lazy" data-fallback="https://placehold.co/600x600/3c2a1a/d7f5ec?text=Vijaysar+Glass">
+            </div>
+            <div class="wellness-intro-text">
+              <span class="wellness-badge"><i class="fas fa-leaf"></i> Natural · Ayurvedic · Chemical-Free</span>
+              <h2 class="section-title" style="text-align:left; margin:1rem 0 0.75rem;">Vijaysar Wood
+                <span class="wellness-accent">Wellness Glass</span></h2>
+              <p class="section-subtitle" style="text-align:left; margin:0 0 1.25rem;">A traditional Ayurvedic tumbler
+                crafted from the heartwood of the Vijaysar tree</p>
+              <p style="color:var(--text-muted); margin-bottom:1.25rem;">Hand-turned from the heartwood of the Vijaysar
+                tree (<em>Pterocarpus marsupium</em>, the Indian Kino tree), this time-honoured wooden vessel offers a
+                holistic, chemical-free way to support healthy metabolism and balanced blood sugar — simply soak water
+                overnight and drink it in the morning.</p>
+              <ul class="wellness-points" style="margin-bottom:2rem;">
+                <li><i class="fas fa-check"></i> 100% natural wood</li>
+                <li><i class="fas fa-check"></i> Traditionally used to balance blood sugar &amp; aid digestion</li>
+                <li><i class="fas fa-check"></i> Replace every 30–45 days for best results</li>
+              </ul>
+              <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary" data-action="open-product" data-id="w-vijaysar">
+                  <i class="fas fa-circle-info"></i> View Details
+                </button>
+                <a href="#wellness" class="btn btn-secondary"><i class="fas fa-leaf"></i> Explore More Products</a>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -411,6 +451,30 @@
       </section>
     </div>
 
+    <!-- WELLNESS VIEW -->
+    <div id="tpl-wellness">
+      <section class="section wellness-section">
+        <div class="container">
+          <ul class="breadcrumbs">
+            <li class="breadcrumb-item"><a href="#home">Home</a></li>
+            <li class="breadcrumb-item active">Velorex Wellness</li>
+          </ul>
+          <div class="section-header">
+            <span class="wellness-badge"><i class="fas fa-leaf"></i> Natural · Ayurvedic · Chemical-Free</span>
+            <h2 class="section-title">Shop the <span class="wellness-accent">Wellness Range</span></h2>
+            <p class="section-subtitle">Traditional Ayurvedic wood &amp; natural-living essentials — tap any product for
+              details</p>
+          </div>
+
+          <div class="grid" id="wellnessProductsGrid"></div>
+          <div id="wellnessNoProducts" style="display:none; text-align:center; padding:3rem; color:var(--text-muted);">
+            <i class="fas fa-seedling" style="font-size:3rem; margin-bottom:1rem;"></i>
+            <h3>No wellness products available right now.</h3>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <!-- PRODUCT DETAIL VIEW -->
     <div id="tpl-product-detail">
       <section class="section">
@@ -419,6 +483,7 @@
           <button type="button" class="btn btn-secondary" data-action="goto-products" style="margin-bottom: 2rem;"><i
               class="fas fa-arrow-left"></i> Back to Catalog</button>
           <div class="detail-grid" id="productDetailContent"></div>
+          <div id="productExtraContent"></div>
         </div>
       </section>
     </div>
