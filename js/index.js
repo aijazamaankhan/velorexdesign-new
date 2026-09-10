@@ -54,6 +54,7 @@ let PRODUCTS = [];
 
 const DEFAULT_CATS = [
     { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'cat-wood.png' },
+    { id: 'rack',         name: 'MDF Racks & Shelves', icon: 'fas fa-layer-group', image: 'images/products/rack-4tier-1.jpg' },
     { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'cat-wellness.svg' },
     { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'cat-resin.png' },
     { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80' },
@@ -70,6 +71,7 @@ const STATIC_WELLNESS_PRODUCTS = [
     {
         id: 'w-vijaysar',
         name: 'Vijaysar Wood Wellness Glass',
+        tagline: 'Fill it at night, drink it at dawn — the Ayurvedic wooden tumbler that infuses your water while you sleep.',
         price: 599,
         img: 'vijaysar-glass.png',
         images: ['vijaysar-glass.png', 'vijaysar-glass-2.png'],
@@ -82,6 +84,7 @@ const STATIC_WELLNESS_PRODUCTS = [
     {
         id: 'w-neem-comb',
         name: 'Neem Wood Comb',
+        tagline: 'Anti-bacterial neem wood that calms the scalp and tames frizz — no plastic, no static.',
         price: 199,
         img: 'neem-comb.png',
         images: ['neem-comb.png', 'neem-comb-detailes.png'],
@@ -94,6 +97,7 @@ const STATIC_WELLNESS_PRODUCTS = [
     {
         id: 'w-acupressure',
         name: 'Acupressure Wooden Stick',
+        tagline: 'A pocket-sized wooden tool for pressure points — ease knots and tension wherever you are.',
         price: 149,
         img: 'acupressure-stick.png',
         images: ['acupressure-stick.png'],
@@ -105,9 +109,99 @@ const STATIC_WELLNESS_PRODUCTS = [
     }
 ];
 
-/* Rich "deep-dive" content shown on each wellness product's detail page,
-   keyed by a slug. Add an entry here to give a product its own write-up. */
-const WELLNESS_DETAILS = {
+/* ⚠ PLACEHOLDER PRICES (₹) — replace these four numbers with the real prices.
+   They are the only place the starter catalog prices are defined. */
+const PLACEHOLDER_PRICES = {
+    'wd-mango-tray': 1499,
+    'rk-4tier-24':   1299,
+    'rk-2tier-14':    899,
+    'rk-2tier-8':     599
+};
+
+/* Built-in starter products for the main catalog, grouped by type: the Sheesham
+   wood tray sits in 'wood', the three MDF racks in 'rack'. Shown until matching
+   DB products exist (see catalog-seed.sql to make them buyable end-to-end). */
+const STATIC_CATALOG_PRODUCTS = [
+    {
+        id: 'wd-mango-tray',
+        name: 'Mango-Shaped Sheesham Wood Tray',
+        tagline: 'Hand-carved solid Sheesham in a mango silhouette — three screw-in legs turn a platter into a serving stand.',
+        price: PLACEHOLDER_PRICES['wd-mango-tray'],
+        img: 'images/products/mango-tray-1.jpg',
+        images: [
+            'images/products/mango-tray-1.jpg',
+            'images/products/mango-tray-2.jpg',
+            'images/products/mango-tray-3.jpg',
+            'images/products/mango-tray-4.jpg'
+        ],
+        cat: 'wood',
+        desc: 'A hand-carved serving tray in solid Sheesham (Indian rosewood), shaped like a mango / paisley motif. Concentric hand-cut grooves ripple out from a deep scooped well, and the whole edge is finished with a scalloped, hand-chiselled border. Three turned legs screw in and out, so the same piece works as a footed serving stand, a flat platter or a wall display piece. Natural wood grain and tone vary from piece to piece — no two trays are identical.',
+        stock: 25,
+        featured: false,
+        extra: 'mango-tray'
+    },
+    {
+        id: 'rk-4tier-24',
+        name: 'Velorex 4-Tier Wall Mounted Rack — 24" × 24"',
+        tagline: 'Four tiers, 24 inches square — up to 32 spice jars off the counter and onto the wall.',
+        price: PLACEHOLDER_PRICES['rk-4tier-24'],
+        img: 'images/products/rack-4tier-1.jpg',
+        images: [
+            'images/products/rack-4tier-1.jpg',
+            'images/products/rack-4tier-2.jpg',
+            'images/products/rack-4tier-3.jpg',
+            'images/products/rack-4tier-4.jpg'
+        ],
+        cat: 'rack',
+        desc: 'A four-tier wall mounted rack in dark walnut-finish engineered wood (MDF), 24 inches wide by 24 inches tall with a 4 inch deep shelf. Holds 24–32 standard spice jars in the kitchen, or works just as well as a display shelf for books, toys, collectibles and plants. Ships flat as six pre-drilled boards and assembles in minutes.',
+        stock: 30,
+        featured: false,
+        extra: 'rack-4tier'
+    },
+    {
+        id: 'rk-2tier-14',
+        name: 'Velorex Multipurpose 2-Tier Organizer Rack — 14" × 14"',
+        tagline: 'Deep 6-inch tiers with brass fittings — tall bottles, spice jars or a full row of CDs.',
+        price: PLACEHOLDER_PRICES['rk-2tier-14'],
+        img: 'images/products/rack-2tier-14-1.jpg',
+        images: [
+            'images/products/rack-2tier-14-1.jpg',
+            'images/products/rack-2tier-14-2.jpg',
+            'images/products/rack-2tier-14-3.jpg',
+            'images/products/rack-2tier-14-4.jpg',
+            'images/products/rack-2tier-14-5.jpg',
+            'images/products/rack-2tier-14-6.jpg'
+        ],
+        cat: 'rack',
+        desc: 'A two-tier organizer rack in dark walnut-finish engineered wood (MDF), 14 inches wide by 14 inches tall with deep 6 inch trays and brass connector hardware. The extra depth takes tall spice jars, oil and sauce bottles, tea and coffee tins — or a full row of CDs, DVDs and Blu-ray cases. Sits on a counter or desk, or mounts on a wall.',
+        stock: 40,
+        featured: false,
+        extra: 'rack-2tier-14'
+    },
+    {
+        id: 'rk-2tier-8',
+        name: 'Velorex Compact 2-Tier Spice Rack — 14" × 8"',
+        tagline: 'The compact one: 14 by 8 inches of everyday spices, on the counter or inside the cabinet.',
+        price: PLACEHOLDER_PRICES['rk-2tier-8'],
+        img: 'images/products/rack-2tier-8-1.jpg',
+        images: [
+            'images/products/rack-2tier-8-1.jpg',
+            'images/products/rack-2tier-8-2.jpg',
+            'images/products/rack-2tier-8-3.jpg',
+            'images/products/rack-2tier-8-4.jpg'
+        ],
+        cat: 'rack',
+        desc: 'The compact two-tier rack in the same dark walnut-finish engineered wood (MDF) — 14 inches wide, 8 inches tall, 4 inches deep. Sized for a countertop, a kitchen shelf or inside a cabinet, it keeps six to twelve everyday spice jars in easy reach without taking over the worktop. Four flat boards, assembled in minutes.',
+        stock: 50,
+        featured: false,
+        extra: 'rack-2tier-8'
+    }
+];
+
+/* Rich "deep-dive" content shown on a product's detail page, keyed by a slug.
+   Add an entry here to give any product its own write-up. Optional fields:
+   `icon` (badge icon), `specs`, `stepsHeading`, `benefitsHeading`. */
+const PRODUCT_DETAILS = {
     vijaysar: {
         badge: 'Natural · Ayurvedic · Chemical-Free',
         introHeading: 'Heartwood of the Indian Kino Tree',
@@ -173,16 +267,150 @@ const WELLNESS_DETAILS = {
             { icon: 'fas fa-suitcase-rolling', title: 'Easy to Carry', text: 'Lightweight and portable, so you can use it anytime, anywhere.' }
         ],
         disclaimer: 'Traditional wellness practice — not a medical device, and not intended to diagnose, treat or cure any condition. Avoid pressing over injuries; consult a doctor if you are pregnant or have a medical condition.'
+    },
+
+    'mango-tray': {
+        badge: 'Solid Sheesham · Hand-Carved · Detachable Legs',
+        icon: 'fas fa-tree',
+        introHeading: 'Hand-Carved from Solid Sheesham',
+        introText: 'Carved from a single block of Sheesham (<em>Dalbergia sissoo</em>, Indian rosewood) in the mango / paisley shape that runs through Indian folk design. Concentric grooves are cut by hand around a deep scooped well, and the rim is finished with a chiselled scalloped border. Three turned legs thread in and out, so a single piece serves three ways.',
+        points: [
+            'Solid Sheesham hardwood — not veneer or particle board',
+            'Three screw-in turned legs, fitted or removed in seconds',
+            'Hand-cut grooves and scalloped rim — every piece unique'
+        ],
+        specs: [
+            { label: 'Material', value: 'Solid Sheesham (Indian rosewood)' },
+            { label: 'Finish', value: 'Natural wood, hand-polished' },
+            { label: 'Legs', value: '3 detachable turned legs (screw-in)' },
+            { label: 'Shape', value: 'Mango / paisley, hand-carved grooved face' },
+            { label: 'Care', value: 'Wipe with a dry cloth; keep away from standing water' }
+        ],
+        stepsHeading: 'Three Ways to Use It',
+        steps: [
+            { icon: 'fas fa-utensils', title: 'Serve', text: 'Fit the three legs and use it as a <strong>raised serving stand</strong> for dry fruit, snacks or sweets.' },
+            { icon: 'fas fa-cookie-bite', title: 'Present', text: 'Take the legs off for a <strong>flat platter</strong> — a centrepiece tray, catch-all or fruit bowl.' },
+            { icon: 'fas fa-image', title: 'Display', text: 'The carved face doubles as <strong>wall décor</strong>; the grooved relief catches the light beautifully.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-hand-sparkles', title: 'Hand-Carved', text: 'Grooves, well and scalloped rim are cut by hand — no two trays are identical.' },
+            { icon: 'fas fa-tree', title: 'Sheesham Hardwood', text: 'Dense, close-grained Indian rosewood that resists warping and deepens in colour with age.' },
+            { icon: 'fas fa-screwdriver-wrench', title: 'Two Heights', text: 'Legs screw in for a footed stand and out for a flat tray — stores flat either way.' },
+            { icon: 'fas fa-gift', title: 'Gifting Piece', text: 'A ready housewarming, wedding or festival gift that reads as craft rather than mass production.' }
+        ],
+        disclaimer: 'Natural wood: grain, tone and carving detail vary slightly from piece to piece. Not dishwasher safe — hand wipe only, and avoid soaking or prolonged contact with water.'
+    },
+
+    'rack-4tier': {
+        badge: 'Engineered Wood (MDF) · Wall Mounted · Flat-Pack',
+        icon: 'fas fa-layer-group',
+        introHeading: 'Four Tiers, 24 Inches of Wall',
+        introText: 'A four-tier wall mounted rack in dark walnut-finish engineered wood (MDF), 24 inches square with a 4 inch deep shelf. Built for a spice wall in the kitchen — 24 to 32 standard jars across the tiers — and equally at home as a display shelf for books, toys, collectibles and small plants.',
+        points: [
+            'Four tiers — 24 to 32 standard spice jars',
+            'Frees up counter space by going vertical',
+            'Ships flat as six pre-drilled boards'
+        ],
+        specs: [
+            { label: 'Size', value: '24&quot; wide × 24&quot; high × 4&quot; deep' },
+            { label: 'Tiers', value: '4' },
+            { label: 'Material', value: 'Engineered wood (MDF), dark walnut finish' },
+            { label: 'Mounting', value: 'Wall mounted — pre-drilled fixing points' },
+            { label: 'In the box', value: '6 flat boards + fittings + assembly guide' }
+        ],
+        stepsHeading: 'Assembly in 3 Steps',
+        steps: [
+            { icon: 'fas fa-box-open', title: 'Unpack', text: 'Lay out the <strong>six boards</strong> — two sides and four shelves — and check the fittings against the guide.' },
+            { icon: 'fas fa-screwdriver', title: 'Assemble', text: 'Slot each shelf into its pre-drilled side panel and <strong>tighten the connectors</strong> evenly.' },
+            { icon: 'fas fa-thumbtack', title: 'Mount', text: 'Mark the fixing points on the wall, drill and anchor, then <strong>lift the rack onto the screws</strong>.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-jar', title: 'Big Capacity', text: 'Holds roughly 24–32 standard spice jars, or a mix of jars, bottles and tins.' },
+            { icon: 'fas fa-arrows-up-down', title: 'Space-Saving', text: 'Uses vertical wall space instead of the worktop — ideal for compact kitchens.' },
+            { icon: 'fas fa-cubes', title: 'Not Just Spices', text: 'Works as a display shelf for books, toys, plants and collectibles.' },
+            { icon: 'fas fa-screwdriver-wrench', title: 'Easy Assembly', text: 'Flat-pack boards, pre-drilled holes and a step-by-step guide — up in minutes.' }
+        ],
+        disclaimer: 'Wall fixings should be matched to your wall type (brick, concrete or drywall). Mount into solid fixing points and do not exceed a sensible load per shelf.'
+    },
+
+    'rack-2tier-14': {
+        badge: 'Engineered Wood (MDF) · 6&quot; Deep Tiers · Brass Fittings',
+        icon: 'fas fa-layer-group',
+        introHeading: 'Two Deep Tiers for Tall Jars',
+        introText: 'A two-tier organizer in dark walnut-finish engineered wood (MDF), 14 inches wide and 14 inches tall with unusually deep 6 inch trays joined by brass connector hardware. The depth is the point: tall spice jars, oil and sauce bottles, tea and coffee tins all stand upright — and the same trays take a full row of CDs, DVDs or Blu-ray cases.',
+        points: [
+            '6 inch deep tiers — takes tall jars and bottles upright',
+            'Brass connector fittings, dark walnut finish',
+            'Counter, desk, shelf or wall — it works on all four'
+        ],
+        specs: [
+            { label: 'Size', value: '14&quot; wide × 14&quot; high × 6&quot; deep' },
+            { label: 'Tiers', value: '2' },
+            { label: 'Material', value: 'Engineered wood (MDF), dark walnut finish' },
+            { label: 'Hardware', value: 'Brass connector fittings' },
+            { label: 'Placement', value: 'Free-standing on a counter or desk, or wall mounted' },
+            { label: 'In the box', value: '2 side panels + 2 trays + fittings + assembly guide' }
+        ],
+        stepsHeading: 'Assembly in 3 Steps',
+        steps: [
+            { icon: 'fas fa-box-open', title: 'Unpack', text: 'Lay out the <strong>two side panels and two trays</strong> with the brass fittings.' },
+            { icon: 'fas fa-screwdriver', title: 'Assemble', text: 'Seat each tray between the panels and <strong>hand-tighten the brass connectors</strong>.' },
+            { icon: 'fas fa-check', title: 'Place', text: 'Stand it on the counter or desk — or <strong>mount it on the wall</strong> if you would rather free the surface.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-bottle-droplet', title: 'Takes Tall Bottles', text: 'The 6 inch depth holds oil, vinegar, honey and syrup bottles that topple off shallow racks.' },
+            { icon: 'fas fa-compact-disc', title: 'Media Storage', text: 'The same two tiers hold a full row of CDs, DVDs and Blu-ray cases spine-out.' },
+            { icon: 'fas fa-couch', title: 'Any Room', text: 'Kitchen counter, study desk, bathroom shelf or media unit — deliberately generic.' },
+            { icon: 'fas fa-screwdriver-wrench', title: 'Easy Assembly', text: 'Four boards and brass fittings; assembled by hand in minutes.' }
+        ],
+        disclaimer: 'Engineered wood: keep dry and wipe spills promptly. If wall mounted, match the fixings to your wall type.'
+    },
+
+    'rack-2tier-8': {
+        badge: 'Engineered Wood (MDF) · Compact · Counter or Cabinet',
+        icon: 'fas fa-layer-group',
+        introHeading: 'The Compact Everyday Spice Rack',
+        introText: 'The small one in the range — 14 inches wide, 8 inches tall and 4 inches deep, in the same dark walnut-finish engineered wood (MDF). Sized to sit on a countertop, inside a cabinet or on an existing kitchen shelf, keeping the six to twelve spices you actually cook with within arm\'s reach.',
+        points: [
+            'Compact 14&quot; × 8&quot; footprint — fits inside most cabinets',
+            'Holds roughly 6–12 standard spice jars',
+            'Four flat boards, assembled in minutes'
+        ],
+        specs: [
+            { label: 'Size', value: '14&quot; wide × 8&quot; high × 4&quot; deep' },
+            { label: 'Tiers', value: '2' },
+            { label: 'Material', value: 'Engineered wood (MDF), dark walnut finish' },
+            { label: 'Capacity', value: 'About 6–12 standard spice jars' },
+            { label: 'Placement', value: 'Countertop, cabinet or shelf — or wall mounted' },
+            { label: 'In the box', value: '2 side panels + 2 shelf boards + fittings + guide' }
+        ],
+        stepsHeading: 'Assembly in 3 Steps',
+        steps: [
+            { icon: 'fas fa-box-open', title: 'Unpack', text: 'Lay out the <strong>two side panels and two shelf boards</strong>.' },
+            { icon: 'fas fa-screwdriver', title: 'Assemble', text: 'Slot the shelves into the pre-cut joints and <strong>tighten the fittings</strong>.' },
+            { icon: 'fas fa-mug-hot', title: 'Fill', text: 'Load your everyday spices on the lower tier and <strong>keep the top tier for taller jars</strong>.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-maximize', title: 'Fits Small Kitchens', text: 'Small enough for a cabinet interior or a crowded worktop corner.' },
+            { icon: 'fas fa-hand-pointer', title: 'Everything in Reach', text: 'Two open tiers mean no rummaging — you see every jar at a glance.' },
+            { icon: 'fas fa-palette', title: 'Matching Finish', text: 'Same dark walnut finish as the 14&quot; and 24&quot; racks, so the range stacks visually.' },
+            { icon: 'fas fa-screwdriver-wrench', title: 'Easy Assembly', text: 'Four flat boards and simple fittings — no special tools needed.' }
+        ],
+        disclaimer: 'Engineered wood: keep dry and wipe spills promptly. If wall mounted, match the fixings to your wall type.'
     }
 };
 
-/* Map a product to its WELLNESS_DETAILS slug via its `extra` flag or name. */
-function resolveWellnessSlug(product) {
-    if (product.extra && WELLNESS_DETAILS[product.extra]) return product.extra;
+/* Map a product to its PRODUCT_DETAILS slug via its `extra` flag or name, so
+   DB products added from the admin portal pick up the write-up too. */
+function resolveDetailSlug(product) {
+    if (product.extra && PRODUCT_DETAILS[product.extra]) return product.extra;
     const n = (product.name || '').toLowerCase();
     if (/vijaysar/.test(n)) return 'vijaysar';
     if (/neem/.test(n)) return 'neem';
     if (/acupres|accupres|acupress/.test(n)) return 'acupressure';
+    if (/(mango|paisley).*tray|tray.*(mango|paisley)/.test(n)) return 'mango-tray';
+    if (/4[\s-]*tier/.test(n)) return 'rack-4tier';
+    if (/2[\s-]*tier/.test(n)) return /\b8\b|8\s*(inch|")/.test(n) ? 'rack-2tier-8' : 'rack-2tier-14';
     return '';
 }
 
@@ -193,6 +421,35 @@ function ensureWellnessSeed() {
     STATIC_WELLNESS_PRODUCTS.forEach(sp => {
         if (!PRODUCTS.some(p => String(p.id) === String(sp.id))) PRODUCTS.push(sp);
     });
+}
+
+/* Same idea for the tray and rack starters, but matched per product: a real DB
+   row with the same id or name always wins, so running catalog-seed.sql (or
+   adding the product in the admin portal) quietly replaces the built-in copy. */
+function ensureCatalogSeed() {
+    STATIC_CATALOG_PRODUCTS.forEach(sp => {
+        const slug = String(sp.name).trim().toLowerCase();
+        const exists = PRODUCTS.some(p =>
+            String(p.id) === String(sp.id) ||
+            String(p.name || '').trim().toLowerCase() === slug);
+        if (!exists) PRODUCTS.push(sp);
+    });
+}
+
+/* One-line blurb for the hero: an explicit `tagline` if the product has one,
+   otherwise the opening sentence of its description, trimmed to fit. */
+function craftLabel(product) {
+    return product && product.cat === 'rack' ? 'Precision-cut, hand-finished' : '100% Handcrafted';
+}
+
+function shortDetail(product, max = 150) {
+    if (product.tagline) return product.tagline;
+    const desc = String(product.desc || '').replace(/\s+/g, ' ').trim();
+    if (!desc) return '';
+    const first = (desc.match(/^.*?[.!?](?:\s|$)/) || [desc])[0].trim();
+    const text = first.length >= 45 ? first : desc;
+    if (text.length <= max) return text;
+    return text.slice(0, max - 1).replace(/[\s,;:.\u2014-]+\S*$/, '') + '\u2026';
 }
 
 function getCategories() {
@@ -245,7 +502,9 @@ async function loadProducts() {
     }
 
     // Always run — even if the API was unreachable — so the built-in wellness
-    // products exist and their detail pages / Add-to-Cart keep working.
+    // and catalog products exist and their detail pages / Add-to-Cart keep working.
+    // Catalog starters first, so the newest range leads the hero rotation.
+    ensureCatalogSeed();
     ensureWellnessSeed();
 
     const currentHash = window.location.hash || '#home';
@@ -257,6 +516,9 @@ async function loadProducts() {
         app.renderProductDetail(id);
     } else if (currentHash.startsWith('#wellness')) {
         app.renderWellness();
+    } else if (currentHash.startsWith('#home')) {
+        // Home renders before this resolves, so refresh the hero + featured grid.
+        app.renderHome();
     }
 }
 
@@ -673,6 +935,14 @@ const app = {
         `;
     },
 
+    /* Brand-banner CTA: scroll to the home category strip, or open the catalog
+       if we are not on the home view. */
+    gotoCategories() {
+        const strip = document.getElementById('catMarquee');
+        if (!strip) { this.navigate('products'); return; }
+        strip.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    },
+
     renderHome() {
         this.initHeroCarousel();
         this.renderHomeCategories();
@@ -688,83 +958,186 @@ const app = {
         }
     },
 
-    /* Hero banner carousel. Edit HERO_SLIDES below to change the images. */
+    /* Hero product showcase: the featured products (or the newest ones) rotate
+       through the hero with their image, a one-line detail, price and a buy
+       path. Auto-advances, pauses on hover/focus and when the tab is hidden,
+       and honours prefers-reduced-motion. Falls back to the static intro copy
+       written in index.html while the catalog is still empty. */
     initHeroCarousel() {
-        const HERO_SLIDES = [
-            'images/vijaysar-1.jpg',
-            'images/vijaysar-2.jpg',
-            'images/vijaysar-infographic.jpg'
-        ];
-
-        const track = document.getElementById('heroCarousel');
+        const HERO_INTERVAL = 6000;
+        const track    = document.getElementById('heroCarousel');
         const dotsWrap = document.getElementById('heroDots');
-        if (!track || !dotsWrap) return;
+        const content  = document.getElementById('heroContent');
+        const showcase = document.getElementById('heroShowcase');
+        const hero     = document.getElementById('heroSection');
+        const prevBtn  = document.getElementById('heroPrev');
+        const nextBtn  = document.getElementById('heroNext');
+        if (!track || !dotsWrap || !content || !showcase) return;
 
-        // Clear any timer from a previous render so we don't stack intervals.
+        // Clear the timer from a previous render so intervals never stack.
         if (this._heroTimer) { clearInterval(this._heroTimer); this._heroTimer = null; }
+        if (this._heroVisibility) {
+            document.removeEventListener('visibilitychange', this._heroVisibility);
+            this._heroVisibility = null;
+        }
 
         const overlay = track.querySelector('.hero-overlay');
-        // Remove any slides from a previous render, keep the overlay element.
         track.querySelectorAll('.hero-slide').forEach(el => el.remove());
         dotsWrap.innerHTML = '';
 
-        const slides = HERO_SLIDES.map(safeUrl).filter(Boolean);
-        // With one or no images there is nothing to rotate through.
-        if (slides.length <= 1) {
-            dotsWrap.style.display = 'none';
-            const prevBtn = document.getElementById('heroPrev');
-            const nextBtn = document.getElementById('heroNext');
-            if (prevBtn) prevBtn.style.display = 'none';
-            if (nextBtn) nextBtn.style.display = 'none';
-            if (slides.length === 1) {
-                const only = document.createElement('div');
-                only.className = 'hero-slide active';
-                only.style.backgroundImage = `url('${slides[0]}')`;
-                track.insertBefore(only, overlay);
-            }
-            return;
-        }
-        dotsWrap.style.display = 'flex';
+        const featured = PRODUCTS.filter(p => p.featured);
+        const products = (featured.length ? featured : PRODUCTS).slice(0, 5);
 
-        const slideEls = slides.map((src, i) => {
+        // Slide 0 is always the Velorex Design banner; products follow it.
+        const items = [{ brand: true }, ...products];
+
+        showcase.style.display = '';
+        if (hero) hero.classList.add('hero--product');
+
+        // Brand art, then a blurred product photo per product slide.
+        const slideEls = items.map((p, i) => {
             const el = document.createElement('div');
-            el.className = 'hero-slide' + (i === 0 ? ' active' : '');
-            el.style.backgroundImage = `url('${src}')`;
+            el.className = 'hero-slide ' + (p.brand ? 'hero-slide--brand' : 'hero-slide--product')
+                + (i === 0 ? ' active' : '');
+            el.style.backgroundImage = `url('${p.brand ? 'hero.png' : safeUrl(p.img)}')`;
             track.insertBefore(el, overlay);
+            return el;
+        });
 
+        const multiple = items.length > 1;
+        dotsWrap.style.display = multiple ? 'flex' : 'none';
+        if (prevBtn) prevBtn.style.display = multiple ? '' : 'none';
+        if (nextBtn) nextBtn.style.display = multiple ? '' : 'none';
+
+        const dotEls = items.map((p, i) => {
             const dot = document.createElement('button');
             dot.type = 'button';
             dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
-            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.setAttribute('aria-label', p.brand ? 'Show the Velorex Design banner' : `Show ${p.name}`);
+            dot.innerHTML = '<span class="hero-dot-fill"></span>';
             dot.addEventListener('click', () => go(i));
             dotsWrap.appendChild(dot);
-            return el;
+            return dot;
         });
-        const dotEls = Array.from(dotsWrap.children);
+
+        /* The main banner: who Velorex Design is, plus the two ways in. */
+        const paintBrand = () => {
+            const collage = products.slice(0, 4).map(p => `
+                <img src="${escapeAttr(safeUrl(p.img))}" alt="${escapeAttr(p.name)}"
+                     data-action="open-product" data-id="${escapeAttr(p.id)}"
+                     data-fallback="https://placehold.co/400x400/1a1a2e/9890b0?text=Velorex">`).join('');
+            content.innerHTML = `
+                <span class="hero-eyebrow"><i class="fas fa-gem"></i> Velorex Design</span>
+                <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art &amp; Design</span></h1>
+                <p class="hero-desc">Solid-wood serveware, MDF racks and shelves, resin art and Ayurvedic wellness
+                    pieces — made by hand in our own workshop, alongside professional graphic design services.</p>
+                <div class="hero-buttons">
+                    <button type="button" class="btn btn-primary" data-action="goto-categories">
+                        <i class="fas fa-th-large"></i> Shop by Category
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-action="goto-products">
+                        <i class="fas fa-store"></i> All Products
+                    </button>
+                </div>
+                <ul class="hero-meta">
+                    <li><i class="fas fa-hammer"></i> Handmade in India</li>
+                    <li><i class="fas fa-layer-group"></i> ${CATEGORIES.length} collections</li>
+                    <li><i class="fas fa-pen-nib"></i> Design services</li>
+                </ul>`;
+            showcase.innerHTML = collage
+                ? `<div class="hero-collage">${collage}</div>`
+                : '';
+        };
+
+        const paintProduct = (p) => {
+            const price = `\u20b9${Number(p.price || 0).toLocaleString()}`;
+            const cover = escapeAttr(safeUrl(p.img));
+            const fallback = `https://placehold.co/800x800/1a1a2e/9890b0?text=${encodeURIComponent(p.name || 'Product')}`;
+            content.innerHTML = `
+                <span class="hero-eyebrow"><i class="fas fa-certificate"></i> ${escapeHtml(getCatName(p.cat))}</span>
+                <h1 class="hero-title hero-title--product">${escapeHtml(p.name)}</h1>
+                <p class="hero-desc">${escapeHtml(shortDetail(p))}</p>
+                <div class="hero-price">${price}</div>
+                <div class="hero-buttons">
+                    <button type="button" class="btn btn-primary" data-action="open-product" data-id="${escapeAttr(p.id)}">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-action="add-to-cart" data-id="${escapeAttr(p.id)}">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+                <ul class="hero-meta">
+                    <li><i class="fas fa-hammer"></i> ${escapeHtml(craftLabel(p))}</li>
+                    <li><i class="fas fa-truck"></i> Ships in 3&ndash;5 days</li>
+                    <li><i class="fas fa-shield-halved"></i> Secure checkout</li>
+                </ul>`;
+            showcase.innerHTML = `
+                <div class="hero-card" data-action="open-product" data-id="${escapeAttr(p.id)}">
+                    <img src="${cover}" alt="${escapeAttr(p.name)}" data-fallback="${escapeAttr(fallback)}">
+                    <span class="hero-card-tag">${escapeHtml(getCatName(p.cat))}</span>
+                    <span class="hero-card-price">${price}</span>
+                </div>`;
+        };
+
+        const paint = (p) => {
+            if (p.brand) paintBrand(); else paintProduct(p);
+            // Re-trigger the entrance animation on both columns.
+            [content, showcase].forEach(el => {
+                el.classList.remove('is-entering');
+                void el.offsetWidth;
+                el.classList.add('is-entering');
+            });
+        };
 
         let current = 0;
         const go = (i) => {
-            current = (i + slideEls.length) % slideEls.length;
+            current = (i + items.length) % items.length;
             slideEls.forEach((el, idx) => el.classList.toggle('active', idx === current));
             dotEls.forEach((el, idx) => el.classList.toggle('active', idx === current));
+            paint(items[current]);
             restart();
         };
+
+        const reduceMotion = window.matchMedia
+            && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const stop = () => {
+            if (this._heroTimer) { clearInterval(this._heroTimer); this._heroTimer = null; }
+            dotsWrap.classList.add('is-paused');
+        };
         const restart = () => {
-            if (this._heroTimer) clearInterval(this._heroTimer);
-            this._heroTimer = setInterval(() => go(current + 1), 5000);
+            stop();
+            if (!multiple || reduceMotion) return;
+            dotsWrap.classList.remove('is-paused');
+            // Restart the active dot's progress fill in step with the timer.
+            const fill = dotEls[current].querySelector('.hero-dot-fill');
+            if (fill) { fill.style.animation = 'none'; void fill.offsetWidth; fill.style.animation = ''; }
+            this._heroTimer = setInterval(() => go(current + 1), HERO_INTERVAL);
         };
 
-        const prevBtn = document.getElementById('heroPrev');
-        const nextBtn = document.getElementById('heroNext');
-        if (prevBtn) { prevBtn.style.display = ''; prevBtn.onclick = () => go(current - 1); }
-        if (nextBtn) { nextBtn.style.display = ''; nextBtn.onclick = () => go(current + 1); }
+        if (prevBtn) prevBtn.onclick = () => go(current - 1);
+        if (nextBtn) nextBtn.onclick = () => go(current + 1);
 
-        const hero = document.getElementById('heroSection');
         if (hero) {
-            hero.addEventListener('mouseenter', () => { if (this._heroTimer) clearInterval(this._heroTimer); });
-            hero.addEventListener('mouseleave', restart);
+            // Assigned (not added) so repeated renders cannot stack listeners.
+            hero.onmouseenter = stop;
+            hero.onmouseleave = restart;
+            hero.onfocusin = stop;
+            hero.onfocusout = restart;
+            let touchX = 0;
+            hero.ontouchstart = (e) => { touchX = e.changedTouches[0].clientX; stop(); };
+            hero.ontouchend = (e) => {
+                const dx = e.changedTouches[0].clientX - touchX;
+                if (Math.abs(dx) > 45) go(current + (dx < 0 ? 1 : -1));
+                else restart();
+            };
         }
 
+        this._heroVisibility = () => { if (document.hidden) stop(); else restart(); };
+        document.addEventListener('visibilitychange', this._heroVisibility);
+
+        dotsWrap.style.setProperty('--hero-interval', HERO_INTERVAL + 'ms');
+        paint(items[0]);
         restart();
     },
 
@@ -969,11 +1342,40 @@ const app = {
         if (filtered.length > 0) {
             grid.style.display = 'grid';
             noProd.style.display = 'none';
-            grid.innerHTML = filtered.map(p => this.createProductCard(p)).join('');
+            grid.innerHTML = (!catFilter || catFilter === 'all')
+                ? this.catalogByTypeHtml(filtered)
+                : filtered.map(p => this.createProductCard(p)).join('');
         } else {
             grid.style.display = 'none';
             noProd.style.display = 'block';
         }
+    },
+
+    /* The full catalog split into one titled block per category, in the order
+       categories are defined. Products in an unknown category fall to the end. */
+    catalogByTypeHtml(items) {
+        const order = CATEGORIES.map(c => c.id);
+        const groups = new Map();
+        items.forEach(p => {
+            const key = order.includes(p.cat) ? p.cat : '__other';
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(p);
+        });
+        const rank = k => (order.indexOf(k) < 0 ? order.length : order.indexOf(k));
+        return [...groups.keys()].sort((a, b) => rank(a) - rank(b)).map(key => {
+            const cat = CATEGORIES.find(c => c.id === key);
+            const icon = cat ? cat.icon : DEFAULT_CAT_FALLBACK_ICON;
+            const name = key === '__other' ? 'More Products' : getCatName(key);
+            const list = groups.get(key);
+            return `
+                <h3 class="catalog-group-title">
+                    <i class="${escapeAttr(icon)}"></i>
+                    <span>${escapeHtml(name)}</span>
+                    <span class="catalog-group-count">${list.length}</span>
+                </h3>
+                ${list.map(p => this.createProductCard(p)).join('')}
+            `;
+        }).join('');
     },
 
     filterProducts() {
@@ -1029,7 +1431,7 @@ const app = {
 
                 <div style="background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <i class="fas fa-check-circle text-gold"></i> <span>100% Handcrafted</span>
+                        <i class="fas fa-check-circle text-gold"></i> <span>${escapeHtml(craftLabel(product))}</span>
                     </div>
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                         <i class="fas fa-truck text-gold"></i> <span>Ships in 3-5 business days</span>
@@ -1048,13 +1450,14 @@ const app = {
         `;
 
         const extra = document.getElementById('productExtraContent');
-        if (extra) extra.innerHTML = this.wellnessDetailHtml(resolveWellnessSlug(product));
+        if (extra) extra.innerHTML = this.productDeepDiveHtml(resolveDetailSlug(product));
     },
 
-    /* Rich deep-dive shown on a wellness product's detail page, built from
-       WELLNESS_DETAILS. Returns '' for products without a deep-dive entry. */
-    wellnessDetailHtml(slug) {
-        const d = WELLNESS_DETAILS[slug];
+    /* Rich deep-dive shown on a product's detail page, built from
+       PRODUCT_DETAILS. Returns '' for products without a deep-dive entry.
+       Keeps the .wellness-* styles — they are the shared deep-dive skin. */
+    productDeepDiveHtml(slug) {
+        const d = PRODUCT_DETAILS[slug];
         if (!d) return '';
         const steps = d.steps.map((s, i) => `
             <div class="wellness-step">
@@ -1070,17 +1473,26 @@ const app = {
                 <p>${b.text}</p>
             </div>`).join('');
         const points = d.points.map(p => `<li><i class="fas fa-check"></i> ${p}</li>`).join('');
+        const specs = (d.specs || []).map(sp => `
+            <div class="spec-row">
+                <span class="spec-label">${sp.label}</span>
+                <span class="spec-value">${sp.value}</span>
+            </div>`).join('');
         return `
             <section class="wellness-section" style="margin-top:3rem; border:1px solid var(--border); border-radius:var(--radius-lg); padding:2.5rem;">
-                <span class="wellness-badge"><i class="fas fa-leaf"></i> ${d.badge}</span>
+                <span class="wellness-badge"><i class="${d.icon || 'fas fa-leaf'}"></i> ${d.badge}</span>
                 <h3 style="font-size:1.6rem; margin:1rem 0 0.75rem;">${d.introHeading}</h3>
                 <p style="color:var(--text-muted); max-width:760px;">${d.introText}</p>
                 <ul class="wellness-points" style="margin-top:1.25rem;">${points}</ul>
 
-                <h3 class="wellness-subheading" style="margin-top:2.5rem;">How to Use</h3>
+                ${specs ? `
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">Specifications</h3>
+                <div class="spec-table">${specs}</div>` : ''}
+
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.stepsHeading || 'How to Use'}</h3>
                 <div class="grid wellness-steps">${steps}</div>
 
-                <h3 class="wellness-subheading" style="margin-top:2.5rem;">Key Details &amp; Benefits</h3>
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.benefitsHeading || 'Key Details &amp; Benefits'}</h3>
                 <div class="grid wellness-benefits">${benefits}</div>
 
                 ${d.disclaimer ? `<p class="wellness-disclaimer"><i class="fas fa-circle-info"></i> ${d.disclaimer}</p>` : ''}
@@ -1773,6 +2185,7 @@ const ACTION_HANDLERS = {
     'back-to-top':         () => window.scrollTo({ top: 0, behavior: 'smooth' }),
     'toggle-theme':        () => app.toggleTheme(),
     'goto-products':       () => app.navigate('products'),
+    'goto-categories':     () => app.gotoCategories(),
     'goto-services':       () => app.navigate('services'),
     'open-product':        (e, el) => app.navigate('product-detail', { id: el.dataset.id }),
     'open-category':       (e, el) => app.navigate('products', { cat: el.dataset.cat }),

@@ -43,7 +43,7 @@
         <li><a href="#wellness" class="nav-link nav-wellness"><i class="fas fa-leaf"></i> Velorex Wellness</a></li>
         <li><a href="#services" class="nav-link">Graphic Design</a></li>
         <li class="nav-dropdown">
-          <a href="#" class="nav-link">Our Stores <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a>
+          <a href="#" class="nav-link">Our Other Stores <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a>
           <div class="dropdown-menu dropdown-right">
             <a href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer" class="dropdown-item">
               <i class="fas fa-music text-gradient"></i> Velorex Music <span class="external-badge">Store</span>
@@ -310,14 +310,18 @@
         <button type="button" class="hero-arrow hero-arrow-next" id="heroNext" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
         <div class="hero-dots" id="heroDots"></div>
         <div class="container">
-          <div class="hero-content">
-            <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art & Design</span></h1>
-            <p class="hero-desc">Discover unique handcrafted wood items, stunning resin art pieces, and professional
-              graphic design services — all from the Velorex family.</p>
-            <div class="hero-buttons">
-              <button type="button" class="btn btn-primary" data-action="goto-products">Explore Shop</button>
-              <button type="button" class="btn btn-secondary" data-action="goto-services">Our Services</button>
+          <div class="hero-inner">
+            <!-- Replaced by the rotating product copy once the catalog loads -->
+            <div class="hero-content" id="heroContent">
+              <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art & Design</span></h1>
+              <p class="hero-desc">Discover unique handcrafted wood items, stunning resin art pieces, and professional
+                graphic design services — all from the Velorex family.</p>
+              <div class="hero-buttons">
+                <button type="button" class="btn btn-primary" data-action="goto-products">Explore Shop</button>
+                <button type="button" class="btn btn-secondary" data-action="goto-services">Our Services</button>
+              </div>
             </div>
+            <div class="hero-showcase" id="heroShowcase"></div>
           </div>
         </div>
       </section>
