@@ -16,7 +16,8 @@ $base = velorex_base_url();
 $x = function ($v) { return htmlspecialchars((string) $v, ENT_XML1 | ENT_QUOTES, 'UTF-8'); };
 
 $products = [];
-if ($res = $conn->query('SELECT id, name, category, image_url, images, updated_at FROM products ORDER BY id ASC LIMIT 5000')) {
+try { $res = $conn->query('SELECT id, name, category, image_url, images, updated_at FROM products ORDER BY id ASC LIMIT 5000'); } catch (Throwable $e) { $res = false; }
+if ($res) {
     while ($row = $res->fetch_assoc()) $products[] = $row;
 }
 

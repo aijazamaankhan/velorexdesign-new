@@ -93,11 +93,17 @@ $listing = function (array $rows) use ($e, $inr, $base) {
 
 $fetchProducts = function ($where = '', $types = '', $params = []) use ($conn) {
     if (!$conn) return [];
-    $stmt = $conn->prepare('SELECT id, name, category, price, stock, image_url, images, description FROM products ' . $where . ' ORDER BY featured DESC, name ASC LIMIT 200');
-    if (!$stmt) return [];
-    if ($params) $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    // PHP 8 throws on a missing table; the page must still render (the app fills it in).
+    try {
+        $stmt = $conn->prepare('SELECT id, name, category, price, stock, image_url, images, description FROM products ' . $where . ' ORDER BY featured DESC, name ASC LIMIT 200');
+        if (!$stmt) return [];
+        if ($params) $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    } catch (Throwable $e) {
+        error_log('seo-render products query failed: ' . $e->getMessage());
+        return [];
+    }
 };
 
 $wrap = function ($inner) { return '<div class="view active"><section class="section"><div class="container">' . $inner . '</div></section></div>'; };
