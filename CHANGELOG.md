@@ -2,7 +2,17 @@
 
 This file records repository development. Entries under **Unreleased** describe the current local working tree and are not proof of production deployment.
 
-## amazon-storefront branch, 24 November 2026 (live)
+## mobile-polish branch, 24 November 2026 (live)
+
+- Phone menu (three-line button) now opens full screen with every link. The header's blur effect had squeezed it into the 80px bar so only Home showed.
+- Home banner no longer cut off on small phones (320 to 375px).
+- One button size system (46px standard, 36px small, 54px large) with focus rings and a click ripple.
+- Popups match the theme: orange top bar, themed backdrop, rotating close button; they open as bottom sheets on phones. Toasts are small and sit above the phone tab bar.
+- Effects: pointer spotlight on product cards, image fade-in, Amazon button sweep, gallery cross-fade, gentle icon motion. All off for reduced-motion users.
+- Taller, full-width desktop header.
+- Checked 13 pages at 320, 375, 414, 768 and 1024px: nothing cut off or wider than the screen.
+
+## amazon-storefront branch, 24 November 2026
 
 - Amazon-only shop: prices, cart and checkout removed; Buy on Amazon or Ask about this on every product.
 - Redesigned product page and catalog header; breadcrumb structured data and better image alt text.

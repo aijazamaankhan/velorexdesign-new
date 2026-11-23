@@ -6,10 +6,10 @@
 | Host | Hostinger shared hosting, account `u286479481` |
 | Document root | `/home/u286479481/domains/velorexdesign.com/public_html` |
 | Code | GitHub `aijazamaankhan/velorexdesign-new` |
-| Live branch | `amazon-storefront` (Git auto-deploy is on) |
+| Live branch | `mobile-polish` (Git auto-deploy is on) |
 | Database | MariaDB `u286479481_velorexdesign`, user `u286479481_velorexdesig_n`; credentials in `.env` on the server only |
 
-**Pushing to the `amazon-storefront` branch updates the live site within about a minute.** Pushing to `main` does not. To make another branch live, change the branch in hPanel → Websites → velorexdesign.com → Git (or redeploy from that branch).
+**Pushing to the live branch (`mobile-polish`) updates the live site within about a minute.** Pushing to `main` does not. To make another branch live, change the branch in hPanel → Websites → velorexdesign.com → Git (or redeploy from that branch).
 
 ## How the storefront sells
 
@@ -39,6 +39,12 @@ Never delete or overwrite these. They are not in Git.
 ## Deploy
 
 Git auto-deploy pulls the branch and keeps `.env`. Do not use "deploy from archive" or the Hostinger deploy tool with a zip or folder: it replaces the whole folder and **deletes `.env`** (this happened on 24 November 2026 and took the database down).
+
+## Layout check before a release
+
+Every release should pass the overflow sweep: open each main page at 320, 375, 414, 768 and 1024px wide and confirm nothing is cut off and the page never scrolls sideways. Also open the phone menu (three-line button) and the Catalog dropdown inside it.
+
+Known trap: never put `backdrop-filter`, `filter` or `transform` on `.navbar` on phones. Any of them makes the fixed phone menu position against the 80px bar instead of the screen, and the menu collapses to one link.
 
 ## After a deploy
 

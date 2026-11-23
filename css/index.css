@@ -3528,3 +3528,138 @@ html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-
   .navbar.scrolled .nav-brand .brand-emblem { width: 38px; height: 38px; }
   .navbar .nav-links { gap: clamp(1.25rem, 2.4vw, 2.75rem); }
 }
+
+/* Phone menu fix: backdrop-filter on .navbar made it the containing block for
+   the position:fixed menu sheet, squeezing the sheet into the 80px bar so only
+   "Home" showed. The blur now lives on a pseudo-element behind the bar. */
+@media (max-width: 768px) {
+  .navbar { backdrop-filter: none; -webkit-backdrop-filter: none; background: transparent; }
+  .navbar::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+/* Small phones: the hero container is a flex item and grew to its widest child
+   (380px on a 320px screen), cutting off the title and buttons. */
+.hero > .container { min-width: 0; width: 100%; }
+.hero-buttons { flex-wrap: wrap; }
+.hero-title { overflow-wrap: anywhere; }
+@media (max-width: 380px) {
+  .hero-buttons .btn { flex: 1 1 100%; justify-content: center; }
+}
+
+/* ═════════════ Unified buttons (one size system across the site) ═════════════ */
+.btn {
+  min-height: 46px; padding: .7rem 1.4rem; font-size: .95rem; line-height: 1.2;
+  border-radius: 12px; white-space: nowrap; text-decoration: none; cursor: pointer;
+  transition: transform .2s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease, background .25s ease, border-color .25s ease, color .25s ease;
+}
+.btn i { font-size: 1em; }
+.btn-sm { min-height: 36px; padding: .45rem .95rem; font-size: .85rem; border-radius: 10px; }
+.btn-lg { min-height: 54px; padding: .9rem 1.8rem; font-size: 1.05rem; border-radius: 14px; }
+.btn-block { width: 100%; }
+.btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--secondary) 55%, transparent); outline-offset: 2px; }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.btn-secondary:hover, .btn-amazon:hover, .btn-whatsapp:hover { transform: translateY(-2px); }
+.btn-amazon { box-shadow: 0 4px 14px rgba(255, 216, 20, .25); font-weight: 700; }
+.btn-amazon:hover { box-shadow: 0 10px 26px rgba(255, 216, 20, .4); }
+.btn-whatsapp { box-shadow: 0 4px 14px rgba(37, 211, 102, .22); }
+@media (max-width: 480px) {
+  .btn { white-space: normal; text-align: center; }
+}
+
+/* Click ripple (added by js/index.js) */
+.btn .ripple {
+  position: absolute; border-radius: 50%; pointer-events: none; transform: scale(0);
+  background: currentColor; opacity: .25; animation: ripple .6s ease-out forwards;
+}
+@keyframes ripple { to { transform: scale(2.6); opacity: 0; } }
+
+/* ═════════════ Popups matched to the theme ═════════════ */
+.modal-backdrop { background: color-mix(in srgb, var(--bg) 72%, transparent); backdrop-filter: blur(8px); }
+.modal-box {
+  position: relative; border-radius: var(--radius-lg); border: 1px solid var(--border);
+  background: var(--surface); box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset;
+  padding: 2rem 1.75rem 1.75rem;
+}
+.modal-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--orange-gradient); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.modal-box h2, .modal-box h3 { font-family: var(--font-display); }
+.modal-close-btn {
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--text-muted); transition: background .2s, color .2s, transform .2s;
+}
+.modal-close-btn:hover { background: rgba(255,107,53,.12); color: var(--secondary); transform: rotate(90deg); }
+.modal-box .form-control:focus, .modal-box input:focus, .modal-box textarea:focus, .modal-box select:focus {
+  border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(255,107,53,.18); outline: none;
+}
+@media (max-width: 520px) {
+  .modal-backdrop:not(.scrollable) { align-items: flex-end; padding: 0; }
+  .modal-backdrop:not(.scrollable) .modal-box { border-radius: 20px 20px 0 0; max-height: 92vh; }
+  .modal-backdrop:not(.scrollable) .modal-box::before { border-radius: 20px 20px 0 0; }
+}
+
+/* Toasts: small, themed, above the phone tab bar instead of a big centred box */
+.toast-container {
+  top: auto; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+  align-items: center; width: min(92vw, 420px);
+}
+.toast {
+  display: flex; align-items: center; gap: .6rem; width: 100%; min-width: 0; text-align: left;
+  padding: .9rem 1.1rem; border-radius: 14px; font-size: .92rem; font-weight: 500;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-left: 4px solid var(--secondary); box-shadow: 0 14px 40px rgba(0,0,0,.35);
+  animation: toastIn .35s cubic-bezier(.2,.8,.2,1.2);
+  transition: opacity .3s ease, transform .3s ease;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(16px) scale(.97); } }
+@media (max-width: 768px) {
+  .toast-container { bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
+
+/* ═════════════ Effects ═════════════ */
+/* Product cards: soft spotlight that follows the pointer */
+html:not([data-design="living-craft"]) .product-card { position: relative; }
+html:not([data-design="living-craft"]) .product-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: 0;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255,107,53,.14), transparent 60%);
+  transition: opacity .3s ease;
+}
+html:not([data-design="living-craft"]) .product-card:hover::after { opacity: 1; }
+
+/* Images fade in once loaded */
+.product-img img, .pd-main img, .cat-card img { animation: imgIn .6s ease both; }
+@keyframes imgIn { from { opacity: 0; filter: blur(6px); } }
+
+/* Amazon buttons: a light sweep every few seconds draws the eye */
+.btn-amazon { position: relative; overflow: hidden; }
+.btn-amazon::after {
+  content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg);
+  animation: amazonSweep 4.5s ease-in-out infinite;
+}
+@keyframes amazonSweep { 0%, 70% { left: -60%; } 100% { left: 130%; } }
+
+/* Section headings: kicker pills pulse once on reveal */
+.catalog-kicker, .pd-cat, .hero-eyebrow { animation: pillIn .6s cubic-bezier(.2,.8,.2,1.3) both; }
+@keyframes pillIn { from { opacity: 0; transform: translateY(8px) scale(.9); } }
+
+/* Trust strip icons bob gently */
+.trust-item i { animation: bob 3.2s ease-in-out infinite; }
+.trust-item:nth-child(2) i { animation-delay: .4s; }
+.trust-item:nth-child(3) i { animation-delay: .8s; }
+.trust-item:nth-child(4) i { animation-delay: 1.2s; }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+
+/* Product page: gallery image cross-fades when a thumbnail is picked */
+#detailMainImage.swap { animation: swapIn .45s ease both; }
+@keyframes swapIn { from { opacity: 0; transform: scale(.98); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn .ripple, .btn-amazon::after, .trust-item i, .catalog-kicker, .pd-cat, .hero-eyebrow,
+  .product-img img, .pd-main img, .cat-card img, #detailMainImage.swap, .toast { animation: none !important; }
+  .modal-close-btn:hover { transform: none; }
+}

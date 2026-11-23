@@ -3251,3 +3251,41 @@ document.addEventListener('DOMContentLoaded', () => {
     initMegaMenu();
     initUiEffects();
 });
+
+/* Small interaction effects: button ripple, card spotlight, gallery cross-fade.
+   All skipped when the visitor prefers reduced motion. */
+(function () {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest('.btn');
+        if (!btn) return;
+        const r = btn.getBoundingClientRect();
+        const size = Math.max(r.width, r.height);
+        const dot = document.createElement('span');
+        dot.className = 'ripple';
+        dot.style.width = dot.style.height = size + 'px';
+        dot.style.left = (e.clientX - r.left - size / 2) + 'px';
+        dot.style.top = (e.clientY - r.top - size / 2) + 'px';
+        btn.appendChild(dot);
+        setTimeout(() => dot.remove(), 650);
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (e) => {
+        const card = e.target.closest && e.target.closest('.product-card');
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-action="select-detail-img"]')) return;
+        const img = document.getElementById('detailMainImage');
+        if (!img) return;
+        img.classList.remove('swap');
+        void img.offsetWidth; // restart the animation
+        img.classList.add('swap');
+    });
+})();

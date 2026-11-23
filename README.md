@@ -4,7 +4,7 @@ Velorex Design is a PHP and MySQL storefront for handcrafted wood, resin-art, an
 
 ## Current development state
 
-Code lives on GitHub at `aijazamaankhan/velorexdesign-new`. The live site deploys automatically from the `amazon-storefront` branch. The live site is **velorexdesign.com** on Hostinger (account `u286479481`, document root `domains/velorexdesign.com/public_html`). Pushing to `amazon-storefront` updates the live site within a minute; see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Code lives on GitHub at `aijazamaankhan/velorexdesign-new`. The live site deploys automatically from the `mobile-polish` branch. The live site is **velorexdesign.com** on Hostinger (account `u286479481`, document root `domains/velorexdesign.com/public_html`). Pushing to `mobile-polish` updates the live site within a minute; see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed and when.
 
