@@ -34,7 +34,7 @@ Never delete or overwrite these. They are not in Git.
 
 Upload the changed files to `public_html` (hPanel File Manager, FTP, or the Hostinger deploy tool). Upload over the top of the existing files; do not empty the folder first.
 
-The Hostinger deploy tool skips `.env` and replaces the site's contents, so if you use it, restore `.env` from your backup straight afterwards.
+**Warning:** the Hostinger deploy tool (and hPanel "deploy from archive") replaces the whole folder and **deletes `.env`**. This happened on 24 November 2026 and took the database connection down. Either upload files over the top in File Manager, connect Git in hPanel (Git pulls keep `.env`), or recreate `.env` immediately after an archive deploy.
 
 ## After a deploy
 
