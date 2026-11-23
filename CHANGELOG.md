@@ -4,6 +4,14 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ## mobile-polish branch, 24 November 2026 (live)
 
+### Later the same day
+
+- Live database repaired: storefront tables created, admin `owner` added, 8 starter products loaded. Admin login and the product list work again.
+- Phone tab bar has five equal slots (Home, Shop, Search, Wellness, Account) so Search sits in the middle.
+- "Our Other Stores" in the phone menu shows full-width stacked store cards with the IT services card below.
+
+### Earlier
+
 - Phone menu (three-line button) now opens full screen with every link. The header's blur effect had squeezed it into the 80px bar so only Home showed.
 - Home banner no longer cut off on small phones (320 to 375px).
 - One button size system (46px standard, 36px small, 54px large) with focus rings and a click ripple.

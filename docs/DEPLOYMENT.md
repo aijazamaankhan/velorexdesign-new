@@ -40,6 +40,8 @@ Never delete or overwrite these. They are not in Git.
 
 Git auto-deploy pulls the branch and keeps `.env`. Do not use "deploy from archive" or the Hostinger deploy tool with a zip or folder: it replaces the whole folder and **deletes `.env`** (this happened on 24 November 2026 and took the database down).
 
+**Deleting a file in Git does not delete it on the server.** Hostinger's Git deploy copies new and changed files but leaves removed ones in place. To retire a file, replace it with an empty stub (as `api/db-repair.php` is), or delete it in File Manager.
+
 ## Layout check before a release
 
 Every release should pass the overflow sweep: open each main page at 320, 375, 414, 768 and 1024px wide and confirm nothing is cut off and the page never scrolls sideways. Also open the phone menu (three-line button) and the Catalog dropdown inside it.
@@ -52,9 +54,9 @@ Known trap: never put `backdrop-filter`, `filter` or `transform` on `.navbar` on
 2. Open the home page, the catalog, a product page and the secret admin link, and check the browser console for errors.
 3. Check that https://velorexdesign.com/.env returns 403 and https://velorexdesign.com/admin.html returns 404.
 
-## Database state (24 November 2026)
+## Database state
 
-The live database had its original tables renamed to `*_old_backup`, and tables from another app (`users`, `payment_orders`, …) in their place. The storefront needs `admins`, `customers`, `products`, `orders` and `order_items`. Import `velorex-db-fix.sql` (kept outside the repo, next to the project folder) in phpMyAdmin once: it creates the missing tables, the admin login and the wellness products, and leaves every other table alone.
+On 24 November 2026 the live database was repaired. Its original tables had been renamed to `*_old_backup` and tables from another app (`users`, `payment_orders`, …) sat beside them. The repair created the storefront tables (`admins`, `customers`, `customer_addresses`, `products`, `orders`, `order_items`, plus `coupons`, `coupon_redemptions`, `loyalty_config`, `loyalty_ledger`), the admin `owner`, and the 8 starter products from `wellness-seed.sql` and `catalog-seed.sql`. Nothing else was touched; the backup tables can be dropped later once nothing in them is needed (2 admins, 3 customers, no products or orders).
 
 ## Admin access
 
