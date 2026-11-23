@@ -127,18 +127,6 @@ async function checkAuth() {
         return;
     }
 
-    if (res.networkError) {
-        if (user === 'owner' && pass === 'owner123') {
-            localStorage.setItem('velorex_admin_logged', 'true');
-            localStorage.setItem('velorex_admin_email', user);
-            showToast('Server unreachable — offline preview only (writes will fail)', 'info');
-            setTimeout(() => showApp(), 400);
-        } else {
-            showToast('Server unreachable. Default credentials are owner / owner123.', 'error');
-        }
-        return;
-    }
-
     showToast(explainApiFailure(res, 'Login failed'), 'error');
 }
 
@@ -292,8 +280,8 @@ async function updateAdminCredentials() {
         showToast('New password and confirmation do not match', 'error');
         return;
     }
-    if (newPass && !VALIDATORS.minLength(newPass, 6)) {
-        showToast('New password must be at least 6 characters', 'error');
+    if (newPass && !VALIDATORS.minLength(newPass, 8)) {
+        showToast('New password must be at least 8 characters', 'error');
         return;
     }
     if (newPass && !VALIDATORS.maxLength(newPass, 200)) {
@@ -1217,7 +1205,7 @@ async function uploadProductImages(event) {
     }
 
     if (response.status === 401) {
-        showToast('Not logged in to the server. Log in with owner / owner123 against api/login.php to upload files.', 'error');
+        showToast('Not logged in to the server. Please log in again to upload files.', 'error');
         return;
     }
 

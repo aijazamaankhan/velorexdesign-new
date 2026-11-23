@@ -17,7 +17,7 @@ INSERT INTO products (name, category, price, stock, image_url, images, descripti
 (
   'Mango-Shaped Sheesham Wood Tray',
   'wood',
-  1499.00,
+  649.00,
   25,
   'images/products/mango-tray-1.jpg',
   '["images/products/mango-tray-1.jpg","images/products/mango-tray-2.jpg","images/products/mango-tray-3.jpg","images/products/mango-tray-4.jpg"]',
@@ -37,7 +37,7 @@ INSERT INTO products (name, category, price, stock, image_url, images, descripti
 (
   'Velorex Multipurpose 2-Tier Organizer Rack — 14" × 14"',
   'rack',
-  899.00,
+  589.00,
   40,
   'images/products/rack-2tier-14-1.jpg',
   '["images/products/rack-2tier-14-1.jpg","images/products/rack-2tier-14-2.jpg","images/products/rack-2tier-14-3.jpg","images/products/rack-2tier-14-4.jpg","images/products/rack-2tier-14-5.jpg","images/products/rack-2tier-14-6.jpg"]',
@@ -47,7 +47,7 @@ INSERT INTO products (name, category, price, stock, image_url, images, descripti
 (
   'Velorex Compact 2-Tier Spice Rack — 14" × 8"',
   'rack',
-  599.00,
+  439.00,
   50,
   'images/products/rack-2tier-8-1.jpg',
   '["images/products/rack-2tier-8-1.jpg","images/products/rack-2tier-8-2.jpg","images/products/rack-2tier-8-3.jpg","images/products/rack-2tier-8-4.jpg"]',

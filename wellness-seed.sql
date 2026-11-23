@@ -16,17 +16,17 @@ INSERT INTO products (name, category, price, stock, image_url, images, descripti
 (
   'Vijaysar Wood Wellness Glass',
   'wellness',
-  599.00,
+  399.00,
   50,
   'vijaysar-glass.png',
-  '["vijaysar-glass.png","vijaysar-glass-2.png"]',
-  'A traditional Ayurvedic tumbler hand-turned from the heartwood of the Vijaysar tree (Pterocarpus marsupium, the Indian Kino tree). Fill it with drinking water at night and let it sit for 8 to 10 hours; by morning the water turns a light brown colour as the wood''s natural bioactive compounds infuse into it. Drink on an empty stomach to support healthy metabolism and blood sugar balance. 100% natural wood — no paints, chemicals or polishes. Replace every 30 to 45 days of regular use. (Traditional wellness product, not a medicine.)',
+  '["vijaysar-glass.png","images/products/vijaysar/box-front.webp","images/products/vijaysar/box-open.webp","images/products/vijaysar/box-side.webp","images/products/vijaysar/box-back.webp","vijaysar-glass-2.png"]',
+  'A traditional Ayurvedic tumbler hand-turned from the heartwood of the Vijaysar tree (Pterocarpus marsupium, the Indian Kino tree). Fill it with drinking water at night and let it sit for 8 to 10 hours; by morning the water turns a light brown colour as the wood''s natural bioactive compounds infuse into it. Drink on an empty stomach to support healthy metabolism and blood sugar balance. 100% natural wood — no paints, chemicals or polishes. Replace after 30 to 90 days, depending on how often you use it. (Traditional wellness product, not a medicine.)',
   1
 ),
 (
   'Neem Wood Comb',
   'wellness',
-  199.00,
+  169.00,
   100,
   'neem-comb.png',
   '["neem-comb.png","neem-comb-detailes.png"]',

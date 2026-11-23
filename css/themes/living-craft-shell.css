@@ -1,0 +1,933 @@
+/* Living Craft shared storefront shell.
+   This layer translates the concept preview into the real application without
+   duplicating routes, templates, product data, cart, account, or checkout code. */
+
+:root[data-design="living-craft"] .navbar {
+  background: var(--lc-bg);
+  border-bottom: 1px solid var(--lc-surface-strong);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .nav-brand {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+:root[data-design="living-craft"] .nav-brand i {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .nav-link.nav-wellness,
+:root[data-design="living-craft"] .nav-link.nav-wellness:hover,
+:root[data-design="living-craft"] .nav-link.nav-wellness.active {
+  padding: 0.5rem;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--lc-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+:root[data-design="living-craft"] .design-toggle {
+  border: 0;
+  border-radius: 2px;
+  background: var(--lc-surface-strong);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .design-toggle[aria-pressed="true"] {
+  background: var(--lc-accent);
+  color: var(--lc-accent-ink);
+}
+
+:root[data-design="living-craft"] .text-gradient,
+:root[data-design="living-craft"] .text-gold,
+:root[data-design="living-craft"] .wellness-accent {
+  background: none;
+  color: var(--lc-accent);
+  -webkit-text-fill-color: currentColor;
+}
+
+:root[data-design="living-craft"] .container {
+  max-width: 1440px;
+  padding-left: var(--lc-frame);
+  padding-right: var(--lc-frame);
+}
+
+:root[data-design="living-craft"] .hero {
+  min-height: calc(92svh - 80px);
+  background: var(--lc-bg);
+}
+
+:root[data-design="living-craft"] .hero-bg {
+  opacity: 0.28;
+}
+
+:root[data-design="living-craft"] .hero-overlay {
+  background: var(--lc-bg);
+  opacity: 0.72;
+}
+
+:root[data-design="living-craft"] .hero-inner {
+  gap: clamp(2rem, 6vw, 7rem);
+}
+
+:root[data-design="living-craft"] .hero-content {
+  max-width: 680px;
+}
+
+:root[data-design="living-craft"] .hero-eyebrow {
+  color: var(--lc-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:root[data-design="living-craft"] .hero-title {
+  max-width: 9ch;
+  font-size: var(--lc-step-hero);
+  font-weight: 600;
+  line-height: 0.95;
+}
+
+:root[data-design="living-craft"] .hero-title--product {
+  max-width: 12ch;
+}
+
+:root[data-design="living-craft"] .hero-desc {
+  max-width: 48ch;
+  color: var(--lc-ink);
+  font-size: var(--lc-step-lead);
+}
+
+:root[data-design="living-craft"] .hero-meta {
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .hero-card,
+:root[data-design="living-craft"] .hero-collage img {
+  border: 0;
+  border-radius: 2px;
+  background: var(--lc-surface);
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .hero-arrow,
+:root[data-design="living-craft"] .back-to-top {
+  background: var(--lc-surface-strong);
+  color: var(--lc-ink);
+  border: 0;
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .hero-dot {
+  background: var(--lc-surface-strong);
+}
+
+:root[data-design="living-craft"] .hero-dot.active,
+:root[data-design="living-craft"] .hero-dot-fill {
+  background: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .section {
+  padding-top: clamp(4.5rem, 9vw, 9rem);
+  padding-bottom: clamp(4.5rem, 9vw, 9rem);
+}
+
+:root[data-design="living-craft"] .section-title {
+  max-width: 13ch;
+  font-size: var(--lc-step-title);
+  font-weight: 600;
+  line-height: 1;
+}
+
+:root[data-design="living-craft"] .section-subtitle {
+  color: var(--lc-muted);
+  font-size: var(--lc-step-body);
+}
+
+:root[data-design="living-craft"] .btn {
+  min-height: 48px;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .btn-primary {
+  background: var(--lc-accent);
+  color: var(--lc-accent-ink);
+}
+
+:root[data-design="living-craft"] .btn-primary:hover,
+:root[data-design="living-craft"] .btn-secondary:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .btn-secondary {
+  background: var(--lc-surface-strong);
+  border-color: transparent;
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .product-card,
+:root[data-design="living-craft"] .category-card,
+:root[data-design="living-craft"] .wellness-card {
+  border: 0;
+  border-radius: 2px;
+  background: var(--lc-surface);
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .product-card:hover,
+:root[data-design="living-craft"] .category-card:hover,
+:root[data-design="living-craft"] .wellness-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+:root[data-design="living-craft"] .product-card img,
+:root[data-design="living-craft"] .category-card img,
+:root[data-design="living-craft"] .wellness-card img,
+:root[data-design="living-craft"] .wellness-intro-media img,
+:root[data-design="living-craft"] .wellness-banner,
+:root[data-design="living-craft"] .detail-img #detailMainImage {
+  border-radius: 0;
+}
+
+:root[data-design="living-craft"] .wellness-step-img {
+  border: 1px solid var(--border);
+}
+
+:root[data-design="living-craft"] .wellness-section {
+  background: var(--lc-field-wellness);
+}
+
+:root[data-design="living-craft"][data-theme="dark"] .wellness-section {
+  background: var(--lc-surface);
+}
+
+:root[data-design="living-craft"] .wellness-badge {
+  border: 0;
+  border-radius: 2px;
+  background: var(--lc-surface-strong);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .form-control,
+:root[data-design="living-craft"] .search-input {
+  min-height: 48px;
+  background: var(--lc-surface);
+  border: 1px solid var(--lc-surface-strong);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .modal-box,
+:root[data-design="living-craft"] .search-modal-box,
+:root[data-design="living-craft"] .mega-menu {
+  background: var(--lc-bg);
+  border-color: var(--lc-surface-strong);
+}
+
+:root[data-design="living-craft"] .footer {
+  background: var(--lc-surface);
+  border-top: 0;
+}
+
+:root[data-design="living-craft"] .tabbar {
+  background: var(--lc-bg);
+  border-color: var(--lc-surface-strong);
+  backdrop-filter: none;
+}
+
+:root[data-design="living-craft"] .tabbar-item.active {
+  color: var(--lc-accent);
+}
+
+/* Motion layer: quiet material feedback, never required for comprehension. */
+@keyframes lc-rise-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+:root[data-design="living-craft"] .lc-hero,
+:root[data-design="living-craft"] .lc-section,
+:root[data-design="living-craft"] .lc-editorial,
+:root[data-design="living-craft"] .lc-ordering {
+  animation: lc-rise-in 520ms ease both;
+}
+
+:root[data-design="living-craft"] .lc-section:nth-of-type(2) { animation-delay: 70ms; }
+:root[data-design="living-craft"] .lc-section:nth-of-type(3) { animation-delay: 120ms; }
+
+:root[data-design="living-craft"] .btn,
+:root[data-design="living-craft"] .pf-chip,
+:root[data-design="living-craft"] .tabbar-item,
+:root[data-design="living-craft"] .product-card,
+:root[data-design="living-craft"] .lc-category {
+  transition: transform 180ms ease, color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+:root[data-design="living-craft"] .btn:active,
+:root[data-design="living-craft"] .pf-chip:active,
+:root[data-design="living-craft"] .tabbar-item:active {
+  transform: translateY(1px);
+}
+
+:root[data-design="living-craft"] .product-card:hover,
+:root[data-design="living-craft"] .lc-category:hover {
+  transform: translateY(-3px);
+}
+
+:root[data-design="living-craft"] .product-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--lc-surface);
+}
+
+:root[data-design="living-craft"] .product-img {
+  background: var(--lc-surface-strong);
+}
+
+:root[data-design="living-craft"] .product-img img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+:root[data-design="living-craft"] .product-info {
+  padding: 1rem;
+}
+
+:root[data-design="living-craft"] .product-badge,
+:root[data-design="living-craft"] .stock-badge {
+  background: var(--lc-accent);
+  color: var(--lc-accent-ink);
+  border-radius: var(--radius);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+:root[data-design="living-craft"] .catalog-group-title {
+  border-bottom-color: var(--border);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .catalog-group-count {
+  background: var(--lc-surface-strong);
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .wellness-step,
+:root[data-design="living-craft"] .wellness-benefit,
+:root[data-design="living-craft"] .spec-table {
+  background: var(--lc-surface);
+  border-color: var(--border);
+}
+
+:root[data-design="living-craft"] .wellness-step-num,
+:root[data-design="living-craft"] .wellness-benefit i {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .form-control:focus,
+:root[data-design="living-craft"] .search-input:focus {
+  border-color: var(--lc-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lc-focus) 22%, transparent);
+}
+
+/* Alternate Living Craft home composition */
+:root[data-design="living-craft"] .lc-hero {
+  min-height: calc(100svh - 80px);
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 7rem);
+  padding: clamp(4rem, 8vw, 8rem) var(--lc-frame);
+}
+
+:root[data-design="living-craft"] .lc-brand-line {
+  margin-bottom: var(--lc-space-8);
+  font-family: var(--font-display);
+  font-size: var(--lc-step-lead);
+}
+
+:root[data-design="living-craft"] .lc-hero h1 {
+  max-width: 7.4ch;
+  margin-bottom: var(--lc-space-8);
+  font-size: var(--lc-step-hero);
+  font-weight: 600;
+  line-height: 0.95;
+}
+
+:root[data-design="living-craft"] .lc-hero-lead {
+  max-width: 42ch;
+  margin-bottom: var(--lc-space-8);
+  font-size: var(--lc-step-lead);
+}
+
+:root[data-design="living-craft"] .lc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lc-space-3);
+}
+
+:root[data-design="living-craft"] .lc-hero-media {
+  margin: 0;
+}
+
+:root[data-design="living-craft"] .lc-hero-media img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+:root[data-design="living-craft"] .lc-hero-media figcaption {
+  margin-top: var(--lc-space-3);
+  color: var(--lc-muted);
+  font-size: var(--lc-step-small);
+}
+
+:root[data-design="living-craft"] .lc-section {
+  padding: clamp(5rem, 11vw, 10rem) var(--lc-frame);
+}
+
+:root[data-design="living-craft"] .lc-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--lc-space-8);
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+:root[data-design="living-craft"] .lc-section-heading h2,
+:root[data-design="living-craft"] .lc-editorial h2,
+:root[data-design="living-craft"] .lc-ordering h2 {
+  max-width: 13ch;
+  margin: 0;
+  font-size: var(--lc-step-title);
+  font-weight: 600;
+}
+
+:root[data-design="living-craft"] .lc-section-heading p,
+:root[data-design="living-craft"] .lc-editorial-copy p,
+:root[data-design="living-craft"] .lc-ordering p {
+  max-width: 42ch;
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .lc-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.5rem, 1vw, 1rem);
+}
+
+:root[data-design="living-craft"] .lc-category {
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  color: var(--lc-ink);
+  background: var(--lc-surface);
+  border-radius: 2px;
+}
+
+:root[data-design="living-craft"] .lc-category-wide {
+  grid-column: span 2;
+}
+
+:root[data-design="living-craft"] .lc-category-image {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+:root[data-design="living-craft"] .lc-category-wide .lc-category-image {
+  aspect-ratio: 8 / 5;
+}
+
+:root[data-design="living-craft"] .lc-category-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  transition: transform 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root[data-design="living-craft"] .lc-category:hover .lc-category-image img {
+  transform: scale(1.025);
+}
+
+:root[data-design="living-craft"] .lc-category-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--lc-space-4);
+  padding: var(--lc-space-6);
+}
+
+:root[data-design="living-craft"] .lc-category-meta strong {
+  font-family: var(--font-display);
+  font-size: var(--lc-step-lead);
+}
+
+:root[data-design="living-craft"] .lc-category-meta span {
+  color: var(--lc-accent);
+  font-weight: 700;
+}
+
+:root[data-design="living-craft"] .lc-collection {
+  background: var(--lc-surface);
+}
+
+:root[data-design="living-craft"] .lc-product-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.5rem, 1vw, 1rem);
+}
+
+:root[data-design="living-craft"] .lc-catalog-action {
+  margin-top: var(--lc-space-12);
+}
+
+:root[data-design="living-craft"] .lc-empty {
+  grid-column: 1 / -1;
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .lc-editorial {
+  min-height: 86svh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+:root[data-design="living-craft"] .lc-editorial-image {
+  min-height: 620px;
+  overflow: hidden;
+}
+
+:root[data-design="living-craft"] .lc-editorial-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+:root[data-design="living-craft"] .lc-editorial-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(3rem, 8vw, 8rem);
+}
+
+:root[data-design="living-craft"] .lc-editorial-copy h2 {
+  margin-bottom: var(--lc-space-8);
+}
+
+:root[data-design="living-craft"] .lc-storage {
+  background: var(--lc-surface-strong);
+}
+
+:root[data-design="living-craft"] .lc-wellness {
+  background: var(--lc-field-wellness);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .lc-wellness .lc-editorial-copy p {
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .lc-wellness .lc-editorial-copy {
+  gap: 0.25rem;
+}
+
+/* Wellness page header: keep heading centred with its badge and subtitle */
+:root[data-design="living-craft"] .section-header:not([style*="text-align: left"]) .section-title {
+  /* Centred page headers: centre the narrow title block, not just its text */
+  margin-inline: auto;
+  text-align: center;
+}
+
+:root[data-design="living-craft"][data-theme="dark"] .lc-wellness {
+  background: var(--lc-surface);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"][data-theme="dark"] .lc-wellness .lc-editorial-copy p {
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .lc-text-action {
+  align-self: flex-start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+  margin-top: var(--lc-space-6);
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.35rem;
+}
+
+:root[data-design="living-craft"] .lc-ordering {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: clamp(3rem, 8vw, 9rem);
+  background: var(--lc-ink);
+  color: var(--lc-bg);
+}
+
+/* Commerce surfaces: keep the shared templates and actions, but give each
+   route the quieter Living Craft catalogue treatment. */
+:root[data-design="living-craft"] .breadcrumbs {
+  border-bottom-color: var(--border);
+  color: var(--text-muted);
+}
+
+:root[data-design="living-craft"] .breadcrumbs a,
+:root[data-design="living-craft"] .pf-clear,
+:root[data-design="living-craft"] .product-cat {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .pf-bar {
+  background: var(--lc-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  margin: 1.5rem 0 2rem;
+}
+
+:root[data-design="living-craft"] .pf-row {
+  gap: .8rem;
+}
+
+:root[data-design="living-craft"] .pf-search,
+:root[data-design="living-craft"] .pf-select,
+:root[data-design="living-craft"] .pf-chip,
+:root[data-design="living-craft"] .pf-check {
+  border-color: var(--border);
+  border-radius: var(--radius);
+}
+
+:root[data-design="living-craft"] .pf-chip.active,
+:root[data-design="living-craft"] .pf-chip:hover {
+  background: var(--lc-accent);
+  border-color: var(--lc-accent);
+  color: var(--lc-accent-ink);
+}
+
+:root[data-design="living-craft"] .detail-grid,
+:root[data-design="living-craft"] .cart-grid,
+:root[data-design="living-craft"] .profile-container {
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+:root[data-design="living-craft"] .detail-gallery,
+:root[data-design="living-craft"] .detail-info,
+:root[data-design="living-craft"] .cart-summary,
+:root[data-design="living-craft"] .cart-items,
+:root[data-design="living-craft"] .profile-sidebar,
+:root[data-design="living-craft"] .profile-content,
+:root[data-design="living-craft"] .auth-box {
+  background: var(--lc-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+:root[data-design="living-craft"] .detail-info,
+:root[data-design="living-craft"] .cart-summary,
+:root[data-design="living-craft"] .profile-sidebar,
+:root[data-design="living-craft"] .profile-content,
+:root[data-design="living-craft"] .auth-box {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+:root[data-design="living-craft"] .cart-item {
+  border-bottom-color: var(--border);
+}
+
+:root[data-design="living-craft"] .profile-menu-item {
+  border-radius: var(--radius);
+}
+
+:root[data-design="living-craft"] .profile-menu-item.active,
+:root[data-design="living-craft"] .profile-menu-item:hover {
+  background: var(--surface2);
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .empty-cart,
+:root[data-design="living-craft"] #noProducts,
+:root[data-design="living-craft"] #wellnessNoProducts {
+  background: var(--lc-surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+:root[data-design="living-craft"] .footer {
+  background: var(--lc-bg);
+  border-top: 1px solid var(--border);
+}
+
+:root[data-design="living-craft"] .footer-cta {
+  background: var(--lc-surface);
+  border-color: var(--border);
+}
+
+:root[data-design="living-craft"] .footer-links a:hover,
+:root[data-design="living-craft"] .footer-credit a:hover {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .modal-backdrop {
+  background: rgb(10 12 10 / 72%);
+}
+
+:root[data-design="living-craft"] .modal-box,
+:root[data-design="living-craft"] .search-modal-box,
+:root[data-design="living-craft"] .mega-menu {
+  background: var(--lc-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .modal-close-btn {
+  color: var(--lc-muted);
+}
+
+:root[data-design="living-craft"] .modal-close-btn:hover {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .toast {
+  background: var(--lc-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--lc-accent);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .tabbar {
+  background: color-mix(in srgb, var(--lc-surface) 94%, transparent);
+  border-top-color: var(--border);
+}
+
+:root[data-design="living-craft"] .tabbar-item.active {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .detail-img {
+  background: var(--lc-surface-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+:root[data-design="living-craft"] .detail-img img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+:root[data-design="living-craft"] .detail-price,
+:root[data-design="living-craft"] .summary-total {
+  color: var(--lc-accent);
+}
+
+:root[data-design="living-craft"] .cart-remove {
+  color: var(--lc-danger);
+}
+
+:root[data-design="living-craft"] .spec-row {
+  border-bottom-color: var(--border);
+}
+
+@media (max-width: 768px) {
+  :root[data-design="living-craft"] .section {
+    padding-block: 3.5rem;
+  }
+
+  :root[data-design="living-craft"] .pf-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  :root[data-design="living-craft"] .pf-chips {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+    scrollbar-width: thin;
+  }
+
+  :root[data-design="living-craft"] .pf-chip {
+    flex: 0 0 auto;
+  }
+
+  :root[data-design="living-craft"] .detail-grid,
+  :root[data-design="living-craft"] .cart-grid,
+  :root[data-design="living-craft"] .profile-container {
+    grid-template-columns: 1fr;
+  }
+
+  :root[data-design="living-craft"] .cart-summary {
+    position: static;
+  }
+
+  :root[data-design="living-craft"] .profile-sidebar {
+    padding: .75rem;
+  }
+
+  :root[data-design="living-craft"] .profile-menu {
+    display: flex;
+    gap: .5rem;
+    overflow-x: auto;
+  }
+
+  :root[data-design="living-craft"] .profile-menu-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-design="living-craft"] *,
+  :root[data-design="living-craft"] *::before,
+  :root[data-design="living-craft"] *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+:root[data-design="living-craft"] .lc-ordering p {
+  color: var(--lc-bg);
+  opacity: 0.78;
+}
+
+:root[data-design="living-craft"] .lc-order-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:root[data-design="living-craft"] .lc-order-steps li {
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: var(--lc-space-2);
+  padding: var(--lc-space-6);
+  background: var(--lc-bg);
+  color: var(--lc-ink);
+}
+
+:root[data-design="living-craft"] .lc-order-steps strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+}
+
+@media (max-width: 768px) {
+  :root[data-design="living-craft"] .hero {
+    min-height: auto;
+  }
+
+  :root[data-design="living-craft"] .hero-title {
+    font-size: clamp(3.25rem, 15vw, 5.5rem);
+  }
+
+  :root[data-design="living-craft"] .section {
+    padding-top: clamp(4.5rem, 18vw, 7rem);
+    padding-bottom: clamp(4.5rem, 18vw, 7rem);
+  }
+
+  :root[data-design="living-craft"] .nav-links.show {
+    background: var(--lc-bg);
+  }
+
+  :root[data-design="living-craft"] .lc-hero,
+  :root[data-design="living-craft"] .lc-editorial,
+  :root[data-design="living-craft"] .lc-ordering {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  :root[data-design="living-craft"] .lc-hero {
+    padding-top: var(--lc-space-16);
+  }
+
+  :root[data-design="living-craft"] .lc-hero-media {
+    order: -1;
+  }
+
+  :root[data-design="living-craft"] .lc-hero-media img {
+    aspect-ratio: 4 / 5;
+    object-position: 61% center;
+  }
+
+  :root[data-design="living-craft"] .lc-section-heading {
+    display: block;
+  }
+
+  :root[data-design="living-craft"] .lc-section-heading h2 {
+    margin-bottom: var(--lc-space-6);
+  }
+
+  :root[data-design="living-craft"] .lc-category-grid,
+  :root[data-design="living-craft"] .lc-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :root[data-design="living-craft"] .lc-category-wide {
+    grid-column: span 2;
+  }
+
+  :root[data-design="living-craft"] .lc-editorial-image {
+    min-height: 58svh;
+  }
+
+  :root[data-design="living-craft"] .lc-wellness .lc-editorial-image {
+    order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-design="living-craft"] .product-card:hover,
+  :root[data-design="living-craft"] .category-card:hover,
+  :root[data-design="living-craft"] .wellness-card:hover {
+    transform: none;
+  }
+}
+
+/* Velorex on Amazon band in the Living Craft home */
+:root[data-design="living-craft"] .lc-amazon-band {
+  background: var(--lc-surface-strong);
+}
+
+:root[data-design="living-craft"] .amazon-band-media img,
+:root[data-design="living-craft"] .amazon-chip,
+:root[data-design="living-craft"] .amazon-band-kicker {
+  border-radius: 2px;
+}
+
+:root[data-design="living-craft"] .amazon-band-points i {
+  color: var(--lc-accent);
+}
+
+/* Category cards: image pinned to the top, name above the link, equal heights */
+:root[data-design="living-craft"] .lc-category {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+:root[data-design="living-craft"] .lc-category-meta {
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--lc-space-2, 0.4rem);
+}
+
+:root[data-design="living-craft"] .lc-category-meta span {
+  white-space: nowrap;
+}

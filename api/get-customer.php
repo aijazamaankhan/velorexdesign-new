@@ -43,7 +43,7 @@ $wantCust = array_intersect(
 $selectCust = 'SELECT ' . implode(', ', $wantCust) . ' FROM customers WHERE id = ? LIMIT 1';
 $stmt = $conn->prepare($selectCust);
 if (!$stmt) {
-    sendResponse(['error' => 'Customer query failed', 'detail' => $conn->error], 500);
+    error_log('Customer query failed' . ': ' . $conn->error); sendResponse(['error' => 'Customer query failed'], 500);
 }
 $stmt->bind_param('i', $id);
 $stmt->execute();

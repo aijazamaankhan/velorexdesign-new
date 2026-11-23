@@ -48,7 +48,7 @@ $query .= ' ORDER BY c.created_at DESC';
 
 $stmt = $conn->prepare($query);
 if (!$stmt) {
-    sendResponse(['error' => 'Customer query failed', 'detail' => $conn->error], 500);
+    error_log('Customer query failed' . ': ' . $conn->error); sendResponse(['error' => 'Customer query failed'], 500);
 }
 if ($params) {
     $stmt->bind_param($types, ...$params);

@@ -19,6 +19,9 @@ $newEmail = isset($input['new_email']) ? trim($input['new_email']) : '';
 $newPassword = isset($input['new_password']) ? (string)$input['new_password'] : '';
 $newName = isset($input['new_name']) ? trim($input['new_name']) : '';
 
+if (strlen($newEmail) > 150 || strlen($newName) > 150 || strlen($newPassword) > 200) {
+    sendResponse(['error' => 'Value too long'], 422);
+}
 if ($currentPassword === '') {
     sendResponse(['error' => 'Current password is required'], 422);
 }
@@ -35,7 +38,9 @@ if ($result->num_rows === 0) {
 }
 $admin = $result->fetch_assoc();
 
+rateLimitCheck('admin-reauth', 8, 900);
 if (!password_verify($currentPassword, $admin['password_hash'])) {
+    rateLimitHit('admin-reauth', 900);
     sendResponse(['error' => 'Current password is incorrect'], 401);
 }
 
@@ -58,8 +63,8 @@ if ($newEmail !== '' && $newEmail !== $admin['email']) {
 }
 
 if ($newPassword !== '') {
-    if (strlen($newPassword) < 6) {
-        sendResponse(['error' => 'New password must be at least 6 characters'], 422);
+    if (strlen($newPassword) < 8) {
+        sendResponse(['error' => 'New password must be at least 8 characters'], 422);
     }
     $fields[] = 'password_hash = ?';
     $types .= 's';

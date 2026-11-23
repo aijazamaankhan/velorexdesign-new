@@ -52,26 +52,67 @@ register_shutdown_function(function () {
             http_response_code(500);
             header('Content-Type: application/json');
         }
-        echo json_encode([
-            'error' => 'Server error',
-            'detail' => $err['message']
-        ]);
+        // Details go to error.log only. Sending them to the browser would expose
+        // file paths, the DB user and stack traces to anyone who can trigger an error.
+        echo json_encode(['error' => 'Server error']);
     }
 });
 
-$conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+header('X-Content-Type-Options: nosniff');
+// seo-render.php defines VELOREX_SOFT_DB: it serves cacheable HTML pages and must
+// keep working (without product data) even if the database is unreachable.
+$softDb = defined('VELOREX_SOFT_DB');
+if (!$softDb) header('Cache-Control: no-store');
 
-if ($conn->connect_error) {
+// Session cookie hardening. Every endpoint includes this file before calling
+// session_start(), so these settings apply to all of them.
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+ini_set('session.use_strict_mode', 1);
+ini_set('session.use_only_cookies', 1);
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'secure'   => $isHttps,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
+// CSRF defence: a state-changing request must come from this site. Browsers
+// always send Origin on cross-site POSTs, so a mismatch means another site is
+// trying to act with the visitor's session.
+if (in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE'], true)
+    && !empty($_SERVER['HTTP_ORIGIN'])) {
+    $o = parse_url($_SERVER['HTTP_ORIGIN']);
+    $originHost = strtolower(($o['host'] ?? '') . (isset($o['port']) ? ':' . $o['port'] : ''));
+    if ($originHost !== strtolower($_SERVER['HTTP_HOST'] ?? '')) {
+        http_response_code(403);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Cross-site request blocked']);
+        exit();
+    }
+}
+
+$connectError = null;
+try {
+    $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $connectError = $conn->connect_error;
+} catch (Throwable $e) {
+    $connectError = $e->getMessage();
+}
+
+if ($connectError && $softDb) {
+    error_log('DB connection failed (page still served): ' . $connectError);
+    $conn = null;
+} elseif ($connectError) {
+    error_log('DB connection failed: ' . $connectError);
     http_response_code(500);
     header('Content-Type: application/json');
-    echo json_encode([
-        'error' => 'Database connection failed',
-        'hint'  => 'Create a .env file in the project root (next to index.html) with your DB credentials, then visit api/setup.php once.'
-    ]);
+    echo json_encode(['error' => 'Database connection failed']);
     exit();
 }
 
-$conn->set_charset('utf8mb4');
+if ($conn) $conn->set_charset('utf8mb4');
 
 if (!function_exists('sanitize')) {
     function sanitize($data) {
@@ -86,6 +127,46 @@ if (!function_exists('sendResponse')) {
         header('Content-Type: application/json');
         echo json_encode($data);
         exit();
+    }
+}
+
+/* Rate limiting.
+ * Small file-based limiter keyed by bucket + client IP, so it needs no extra
+ * database table. Used to slow down password guessing and order spam.
+ */
+if (!function_exists('rateLimitFile')) {
+    function rateLimitFile($bucket) {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        return sys_get_temp_dir() . '/velorex_rl_' . hash('sha256', $bucket . '|' . $ip) . '.json';
+    }
+    function rateLimitHits($bucket, $windowSec) {
+        $data = @json_decode((string) @file_get_contents(rateLimitFile($bucket)), true);
+        if (!is_array($data)) return [];
+        $cutoff = time() - $windowSec;
+        return array_values(array_filter($data, function ($t) use ($cutoff) { return is_int($t) && $t > $cutoff; }));
+    }
+    /** Stops the request with HTTP 429 once $max hits were recorded inside the window. */
+    function rateLimitCheck($bucket, $max, $windowSec) {
+        if (count(rateLimitHits($bucket, $windowSec)) >= $max) {
+            header('Retry-After: ' . $windowSec);
+            sendResponse(['error' => 'Too many attempts. Please wait a few minutes and try again.'], 429);
+        }
+    }
+    function rateLimitHit($bucket, $windowSec) {
+        $hits = rateLimitHits($bucket, $windowSec);
+        $hits[] = time();
+        @file_put_contents(rateLimitFile($bucket), json_encode($hits), LOCK_EX);
+    }
+    function rateLimitClear($bucket) {
+        @unlink(rateLimitFile($bucket));
+    }
+}
+
+/** Reads a request field as a trimmed string, capped in length. Non-strings become ''. */
+if (!function_exists('strField')) {
+    function strField($source, $key, $maxLen = 255) {
+        if (!is_array($source) || !isset($source[$key]) || !is_scalar($source[$key])) return '';
+        return substr(trim((string) $source[$key]), 0, $maxLen);
     }
 }
 

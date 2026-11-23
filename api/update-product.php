@@ -84,7 +84,7 @@ $stmt = $conn->prepare($query);
 $stmt->bind_param($types, ...$params);
 
 if (!$stmt->execute()) {
-    sendResponse(['error' => 'Product update failed: ' . $stmt->error], 500);
+    sendResponse(['error' => 'Product update failed'], 500);
 }
 
 sendResponse(['success' => true]);

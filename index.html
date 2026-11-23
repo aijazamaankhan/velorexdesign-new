@@ -3,11 +3,39 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Pages are also served from nested addresses such as /product/5-name, so every
+       relative file path (css/, js/, api/, images) must resolve from the site root. -->
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Velorex Design — Premium Art & Services</title>
-  <meta name="description"
-    content="Velorex Design — Premium handcrafted wood items, resin arts, and graphic design services.">
+  <title>Velorex Design | Handcrafted Wood, Resin Art &amp; Wellness</title>
+  <meta name="description" id="metaDescription"
+    content="Handcrafted sheesham wood serveware, MDF racks and shelves, resin art and Ayurvedic wellness products such as the Vijaysar wood glass. Made by hand in India, shipped India-wide.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#1a0a2e">
+  <!-- Canonical URL and og:url are set from the live address by js/index.js -->
+  <link rel="canonical" id="canonicalLink" href="/">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/brand/icon-32.png">
+  <link rel="apple-touch-icon" href="images/brand/icon-192.png">
+  <!-- Lets phones add the shop to the home screen and open it full-screen like an app -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Velorex">
+
+  <!-- Apply the saved/previewed design before styles load to avoid a flash of Classic. -->
+  <script src="js/design-selection.js"></script>
+
+  <!-- Link previews (WhatsApp, Facebook, X) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Velorex Design">
+  <meta property="og:locale" content="en_IN">
+  <meta property="og:title" id="ogTitle" content="Velorex Design | Handcrafted Wood, Resin Art &amp; Wellness">
+  <meta property="og:description" id="ogDescription" content="Handcrafted sheesham wood serveware, MDF racks and shelves, resin art and Ayurvedic wellness products such as the Vijaysar wood glass. Made by hand in India, shipped India-wide.">
+  <meta property="og:image" id="ogImage" content="hero.png">
+  <meta property="og:url" id="ogUrl" content="/">
+  <meta name="twitter:card" content="summary_large_image">
   <!-- Font Awesome 6.5.1 from cdnjs with Subresource Integrity. If a future
        version is pinned in href, update the integrity hash from
        https://cdnjs.com/libraries/font-awesome -->
@@ -19,10 +47,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Zilla+Slab:wght@500;600&display=swap"
     crossorigin="anonymous"
     referrerpolicy="no-referrer">
   <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/themes/living-craft.css">
+  <link rel="stylesheet" href="css/themes/living-craft-shell.css">
   <script src="js/index.js" defer></script>
 </head>
 
@@ -31,30 +61,73 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="container nav-container">
-      <a href="#home" class="nav-brand"><i class="fas fa-gem"></i> <span class="text-gold">Velorex Design</span></a>
+      <a href="#home" class="nav-brand"><img class="brand-emblem" src="images/brand/emblem.webp" width="40" height="40" alt=""> <span class="text-gold">Velorex Design</span></a>
       <ul class="nav-links" id="navLinks">
         <li><a href="#home" class="nav-link">Home</a></li>
-        <li class="nav-dropdown">
-          <a href="#products" class="nav-link">Catalog <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i></a>
-          <div class="dropdown-menu" id="navCategoryDropdown">
-            <a href="#products" class="dropdown-item"><i class="fas fa-th-large text-gradient"></i> All Products</a>
+        <li class="nav-mega" id="navMega">
+          <a href="#products" class="nav-link nav-mega-trigger" id="navMegaTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="navCategoryDropdown">Catalog <i class="fas fa-chevron-down nav-mega-chevron" style="font-size: 0.8em;"></i></a>
+          <!-- Filled by app.renderNavCategories() -->
+          <div class="mega-menu" id="navCategoryDropdown">
+            <a href="#products" class="mega-all">All Products</a>
           </div>
         </li>
         <li><a href="#wellness" class="nav-link nav-wellness"><i class="fas fa-leaf"></i> Velorex Wellness</a></li>
-        <li><a href="#services" class="nav-link">Graphic Design</a></li>
-        <li class="nav-dropdown">
-          <a href="#" class="nav-link">Our Other Stores <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a>
-          <div class="dropdown-menu dropdown-right">
-            <a href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer" class="dropdown-item">
-              <i class="fas fa-music text-gradient"></i> Velorex Music <span class="external-badge">Store</span>
-            </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="dropdown-item">
-              <i class="fas fa-tshirt text-gradient"></i> Velorex Fashion <span class="external-badge">Store</span>
-            </a>
+        <li class="nav-mega" id="navStores">
+          <a href="#" class="nav-link nav-mega-trigger" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="navStoresPanel">Our Other Stores <i class="fas fa-chevron-down nav-mega-chevron" style="font-size: 0.8em;"></i></a>
+          <div class="mega-menu mega-stores" id="navStoresPanel">
+            <div class="mega-inner">
+              <div class="mega-col">
+                <div class="mega-heading">The Velorex family</div>
+                <div class="mega-store-grid">
+                  <a href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer" class="mega-store mega-store-amazon">
+                    <span class="mega-store-icon store-amazon"><i class="fab fa-amazon"></i></span>
+                    <span class="mega-store-text">
+                      <span class="mega-store-name">Velorex on Amazon <i class="fas fa-external-link-alt"></i></span>
+                      <span class="mega-store-desc">Our wellness range, racks and trays on Amazon.</span>
+                      <span class="mega-store-url">amazon.in</span>
+                    </span>
+                  </a>
+                  <a href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer" class="mega-store">
+                    <span class="mega-store-icon store-music"><i class="fas fa-music"></i></span>
+                    <span class="mega-store-text">
+                      <span class="mega-store-name">Velorex Music <i class="fas fa-external-link-alt"></i></span>
+                      <span class="mega-store-desc">Instruments and music gear.</span>
+                      <span class="mega-store-url">velorexmusic.com</span>
+                    </span>
+                  </a>
+                  <div class="mega-store is-soon" aria-disabled="true">
+                    <span class="mega-store-icon store-fashion"><i class="fas fa-tshirt"></i></span>
+                    <span class="mega-store-text">
+                      <span class="mega-store-name">Velorex Fashion</span>
+                      <span class="mega-store-desc">Clothing and accessories.</span>
+                      <span class="mega-store-url">Coming soon</span>
+                    </span>
+                  </div>
+                  <a href="https://velorexstudio.com" target="_blank" rel="noopener noreferrer" class="mega-store">
+                    <span class="mega-store-icon store-studio"><i class="fas fa-laptop-code"></i></span>
+                    <span class="mega-store-text">
+                      <span class="mega-store-name">Velorex Studio <i class="fas fa-external-link-alt"></i></span>
+                      <span class="mega-store-desc">Websites, apps and software.</span>
+                      <span class="mega-store-url">velorexstudio.com</span>
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <button type="button" class="mega-col mega-promo mega-promo-studio" data-action="open-it-modal">
+                <span class="mega-promo-tag"><i class="fas fa-laptop-code"></i> IT Services</span>
+                <span class="mega-promo-title">Need a website, app or software?</span>
+                <span class="mega-promo-text">Tell Velorex Studio what you want to build.</span>
+                <span class="mega-promo-link">Send an enquiry <i class="fas fa-arrow-right"></i></span>
+              </button>
+            </div>
           </div>
         </li>
       </ul>
       <div class="nav-actions">
+        <button type="button" class="nav-search-btn" data-action="open-search" aria-label="Search products" title="Search products ( / )"
+          style="background:none; border:none; cursor: pointer; font-size: 1.1rem; color: var(--text); padding: 0.5rem;">
+          <i class="fas fa-search"></i>
+        </button>
         <button type="button" id="notifBell" data-action="nav-profile"
           style="background:none; border:none; cursor:pointer; font-size:1.2rem; color:var(--text); padding:0.5rem; position:relative; display:none;">
           <i class="fas fa-bell"></i>
@@ -65,8 +138,14 @@
           <i class="fas fa-user-circle"></i>
         </button>
         <button type="button" class="theme-toggle" data-action="toggle-theme"
+          aria-label="Switch light or dark appearance" title="Switch light or dark appearance"
           style="background:none; border:none; cursor: pointer; font-size: 1.2rem; color: var(--text); padding: 0.5rem;">
           <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <button type="button" class="design-toggle" data-action="toggle-design" aria-pressed="false"
+          aria-label="Switch to Living Craft design" title="Switch storefront design">
+          <i class="fas fa-gem" id="designToggleIcon" aria-hidden="true"></i>
+          <span id="designToggleLabel">Classic</span>
         </button>
         <button type="button" class="cart-icon" data-action="nav-cart" style="background:none; border:none;">
           <i class="fas fa-shopping-cart"></i>
@@ -82,12 +161,23 @@
   <!-- APP ROOT (Views rendered here) -->
   <main id="app"></main>
 
+  <!-- Shown only when scripts are off, so the page is never empty -->
+  <noscript>
+    <div style="max-width:720px; margin:120px auto 60px; padding:0 1.5rem;">
+      <h2>Velorex Design: handcrafted wood, resin art and wellness products</h2>
+      <p>Velorex Design makes sheesham wood serveware, MDF racks and shelves, resin art and Ayurvedic
+        wellness pieces such as the Vijaysar wood glass, neem comb and acupressure tools. Everything is
+        made by hand in India and shipped India-wide. Shipping is free above ₹999.</p>
+      <p>This shop needs JavaScript to show products and take orders. Please turn it on and reload the page.</p>
+    </div>
+  </noscript>
+
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <h3 class="text-gold"><i class="fas fa-gem"></i> Velorex Design</h3>
+          <h3 class="footer-logo"><img class="logo-on-dark" src="images/brand/logo-on-dark.webp" width="888" height="429" alt="Velorex Design"><img class="logo-on-light" src="images/brand/logo-on-light.webp" width="887" height="429" alt="Velorex Design"></h3>
           <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Premium handcrafted art pieces and professional
             graphic design services. Crafted with passion, designed with soul.</p>
           <div class="social-links">
@@ -100,7 +190,6 @@
           <h4>Shop</h4>
           <ul id="footerShopLinks">
             <li><a href="#products">All Products</a></li>
-            <li><a href="#services">Design Services</a></li>
           </ul>
         </div>
         <div class="footer-links">
@@ -120,6 +209,7 @@
             <li><a href="#returns">Returns & Refunds</a></li>
             <li><a href="#terms">Terms & Conditions</a></li>
             <li><a href="#privacy">Privacy Policy</a></li>
+            <li><a class="footer-amazon-link" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Velorex on Amazon</a></li>
             <li style="margin-top: 0.5rem;"><a href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer"><i
                   class="fas fa-external-link-alt" style="font-size: 0.8em; margin-right: 5px;"></i>Music Store</a></li>
             <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"
@@ -127,8 +217,25 @@
           </ul>
         </div>
       </div>
+      <!-- IT services call-out: its own band above the copyright bar -->
+      <div class="footer-cta">
+        <div class="footer-cta-icon"><i class="fas fa-laptop-code"></i></div>
+        <div class="footer-cta-text">
+          <h4>Need a website, app or software?</h4>
+          <p>Velorex Studio, the team behind this store, can build it for you.</p>
+        </div>
+        <button type="button" class="btn btn-primary it-services-trigger" data-action="open-it-modal">
+          IT Services <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
       <div class="footer-bottom">
-        &copy; <span id="year"></span> Velorex Design. All rights reserved.
+        <div class="footer-copy">&copy; <span id="year"></span> Velorex Design. All rights reserved.</div>
+        <div class="footer-credit">
+          <span>Powered by <a href="https://velorexstudio.com" target="_blank" rel="noopener noreferrer" class="text-gold">Velorex Studio</a></span>
+          <span class="footer-credit-sep" aria-hidden="true">&middot;</span>
+          <span>Designed &amp; developed by <a href="https://velorexstudio.com" target="_blank" rel="noopener noreferrer" class="text-gold">Velorex Studio</a></span>
+        </div>
       </div>
     </div>
   </footer>
@@ -175,6 +282,82 @@
           <button type="button" class="btn btn-secondary" style="flex:1;" data-action="close-checkout">Cancel</button>
           <button type="submit" id="coSubmitBtn" class="btn btn-primary" style="flex:2;"><i class="fab fa-whatsapp"></i> Place Order</button>
         </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- IT SERVICES MODAL (Velorex Studio enquiry, opened from the footer) -->
+  <div id="itModal" class="modal-backdrop scrollable" data-action="it-modal-backdrop">
+    <div class="modal-box wide" role="dialog" aria-modal="true" aria-labelledby="itModalTitle">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 id="itModalTitle" style="margin:0;"><i class="fas fa-laptop-code text-gold"></i> IT Services by Velorex Studio</h3>
+        <button type="button" class="modal-close-btn" data-action="close-it-modal" aria-label="Close">&times;</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1rem;">Velorex Studio is the team that built this store. We design and build websites, mobile apps and custom software for small businesses and startups. Tell us what you need and we will get back to you with a plan and a quote.</p>
+      <ul class="it-services-points">
+        <li><i class="fas fa-globe"></i> Websites &amp; online stores</li>
+        <li><i class="fas fa-mobile-alt"></i> Android &amp; iOS apps</li>
+        <li><i class="fas fa-cogs"></i> Custom software</li>
+        <li><i class="fas fa-robot"></i> AI &amp; automation</li>
+      </ul>
+      <form id="itForm" data-action="submit-it" novalidate>
+        <!-- Spam trap: hidden from people, bots fill it in. Leave empty. -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="itWebsite">Website</label>
+          <input type="text" id="itWebsite" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label for="itName">Full Name <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="itName" class="form-control" required maxlength="120" autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="itPhone">Mobile Number <span style="color:#ef4444;">*</span></label>
+            <input type="tel" id="itPhone" class="form-control" placeholder="e.g. 9876543210" required maxlength="20" autocomplete="tel">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="itEmail">Email Address <span style="color:#ef4444;">*</span></label>
+          <input type="email" id="itEmail" class="form-control" required maxlength="160" autocomplete="email">
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label for="itService">Service Needed <span style="color:#ef4444;">*</span></label>
+            <select id="itService" class="form-control" required>
+              <option value="">Select a service</option>
+              <option>Website Design &amp; Development</option>
+              <option>E-commerce Store</option>
+              <option>Mobile App (Android / iOS)</option>
+              <option>Custom Software / Web App</option>
+              <option>ERP / CRM / Billing Software</option>
+              <option>UI/UX Design</option>
+              <option>AI Chatbot &amp; Automation</option>
+              <option>SEO &amp; Digital Marketing</option>
+              <option>Domain, Hosting &amp; Business Email</option>
+              <option>Website Maintenance &amp; Support</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="itBudget">Budget (optional)</label>
+            <select id="itBudget" class="form-control">
+              <option value="">Not sure yet</option>
+              <option>Under ₹25,000</option>
+              <option>₹25,000 – ₹75,000</option>
+              <option>₹75,000 – ₹2,00,000</option>
+              <option>Above ₹2,00,000</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="itMessage">Project Details <span style="color:#ef4444;">*</span></label>
+          <textarea id="itMessage" class="form-control" rows="4" required maxlength="2000" placeholder="What do you want to build, and by when?"></textarea>
+        </div>
+        <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" data-action="close-it-modal">Cancel</button>
+          <button type="submit" id="itSubmitBtn" class="btn btn-primary" style="flex:2;"><i class="fas fa-paper-plane"></i> Send Enquiry</button>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.8rem; margin:1rem 0 0; text-align:center;">We reply by email or phone, usually within one working day. More at <a href="https://velorexstudio.com" target="_blank" rel="noopener noreferrer" class="text-gold">velorexstudio.com</a>.</p>
       </form>
     </div>
   </div>
@@ -290,6 +473,15 @@
     </div>
   </div>
 
+  <!-- PHONE TAB BAR (shown only on phones, like an app's bottom navigation) -->
+  <nav class="tabbar" id="tabbar" aria-label="Quick navigation">
+    <a href="#home" class="tabbar-item" data-tab="home"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="#products" class="tabbar-item" data-tab="products"><i class="fas fa-store"></i><span>Shop</span></a>
+    <button type="button" class="tabbar-item tabbar-search" data-action="open-search" aria-label="Search products"><i class="fas fa-search"></i><span>Search</span></button>
+    <a href="#cart" class="tabbar-item" data-tab="cart"><i class="fas fa-shopping-cart"></i><span>Cart</span><b class="tabbar-badge" id="tabbarCartCount" hidden>0</b></a>
+    <a href="#profile" class="tabbar-item" data-tab="profile"><i class="fas fa-user"></i><span>Account</span></a>
+  </nav>
+
   <!-- BACK TO TOP -->
   <button type="button" class="back-to-top" id="backToTop" data-action="back-to-top" style="background:var(--orange-gradient); border:none;">
     <i class="fas fa-arrow-up"></i>
@@ -318,13 +510,21 @@
                 graphic design services — all from the Velorex family.</p>
               <div class="hero-buttons">
                 <button type="button" class="btn btn-primary" data-action="goto-products">Explore Shop</button>
-                <button type="button" class="btn btn-secondary" data-action="goto-services">Our Services</button>
               </div>
             </div>
             <div class="hero-showcase" id="heroShowcase"></div>
           </div>
         </div>
       </section>
+
+      <div class="trust-strip" aria-label="Why shop with Velorex">
+        <div class="container trust-strip-inner">
+          <div class="trust-item"><i class="fas fa-hand-sparkles"></i><span><strong>Handmade in India</strong>Made in our Meerut studio</span></div>
+          <div class="trust-item"><i class="fas fa-tree"></i><span><strong>Real wood</strong>Sheesham, mango, neem, vijaysar</span></div>
+          <div class="trust-item"><i class="fas fa-lock"></i><span><strong>Secure checkout</strong>Your details stay private</span></div>
+          <div class="trust-item"><i class="fab fa-amazon"></i><span><strong>Also on Amazon</strong>Buy wherever you prefer</span></div>
+        </div>
+      </div>
 
       <section class="section">
         <div class="container">
@@ -341,9 +541,15 @@
       <!-- VIJAYSAR WOOD WELLNESS GLASS (teaser) -->
       <section class="section wellness-section">
         <div class="container">
+          <picture>
+            <source media="(max-width: 640px)" srcset="images/products/vijaysar/banner-mobile.webp" width="900" height="783">
+            <img class="wellness-banner" src="images/products/vijaysar/banner.webp" width="1800" height="738"
+              alt="Vijaysar Wood Glass, Ayurvedic wellness, with its Velorex box" loading="lazy"
+              data-action="open-product" data-id="w-vijaysar">
+          </picture>
           <div class="wellness-intro">
             <div class="wellness-intro-media" data-action="open-product" data-id="w-vijaysar" style="cursor:pointer;">
-              <img src="vijaysar-glass.png" alt="Vijaysar wood wellness glass (tumbler)"
+              <img class="wellness-box-img" src="images/products/vijaysar/box-front.webp" alt="Velorex Vijaysar wood glass box"
                 loading="lazy" data-fallback="https://placehold.co/600x600/3c2a1a/d7f5ec?text=Vijaysar+Glass">
             </div>
             <div class="wellness-intro-text">
@@ -359,13 +565,15 @@
               <ul class="wellness-points" style="margin-bottom:2rem;">
                 <li><i class="fas fa-check"></i> 100% natural wood</li>
                 <li><i class="fas fa-check"></i> Traditionally used to balance blood sugar &amp; aid digestion</li>
-                <li><i class="fas fa-check"></i> Replace every 30–45 days for best results</li>
+                <li><i class="fas fa-check"></i> 90 ml, packed in a Velorex gift box</li>
+                <li><i class="fas fa-check"></i> Replace after 30–90 days, depending on daily use</li>
               </ul>
               <div style="display:flex; gap:1rem; flex-wrap:wrap;">
                 <button type="button" class="btn btn-primary" data-action="open-product" data-id="w-vijaysar">
                   <i class="fas fa-circle-info"></i> View Details
                 </button>
                 <a href="#wellness" class="btn btn-secondary"><i class="fas fa-leaf"></i> Explore More Products</a>
+                <a href="https://www.amazon.in/dp/B0H3QK8K7S" target="_blank" rel="noopener noreferrer sponsored" class="btn btn-amazon"><i class="fab fa-amazon"></i> Buy on Amazon</a>
               </div>
             </div>
           </div>
@@ -381,6 +589,26 @@
           <div class="grid" id="homeFeaturedGrid"></div>
           <div style="text-align: center; margin-top: 3rem;">
             <button type="button" class="btn btn-secondary" data-action="goto-products">View Full Catalog</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VELOREX ON AMAZON -->
+      <section class="amazon-band" aria-labelledby="amazonBandTitle">
+        <div class="container amazon-band-inner">
+          <div class="amazon-band-copy">
+            <span class="amazon-band-kicker"><i class="fab fa-amazon"></i> Also on Amazon</span>
+            <h2 id="amazonBandTitle">Shop Velorex Design on Amazon</h2>
+            <p>Prefer Amazon checkout and delivery? Our Vijaysar glass, neem comb, wellness combo kit, spice racks and sheesham tray are listed in the Velorex Design store on Amazon.</p>
+            <ul class="amazon-band-points">
+              <li><i class="fas fa-check"></i> Same handmade products</li>
+              <li><i class="fas fa-check"></i> Amazon payment &amp; delivery</li>
+              <li><i class="fas fa-check"></i> Reviews from real buyers</li>
+            </ul>
+            <a class="btn btn-amazon" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Visit our Amazon store</a>
+          </div>
+          <div class="amazon-band-media">
+            <img src="images/products/combo/combo-kit.webp" width="1200" height="947" loading="lazy" alt="Velorex natural wellness combo kit: Vijaysar glass, neem comb and acupressure stick">
           </div>
         </div>
       </section>
@@ -432,6 +660,93 @@
       </section>
     </div>
 
+    <!-- LIVING CRAFT HOME VIEW (same store data and actions, alternate composition) -->
+    <div id="tpl-home-living-craft">
+      <section class="lc-hero" aria-labelledby="lcHeroTitle">
+        <div class="lc-hero-copy">
+          <p class="lc-brand-line">Velorex Design</p>
+          <h1 id="lcHeroTitle">Objects shaped to be kept.</h1>
+          <p class="lc-hero-lead">Handcrafted wood, home and wellness pieces made in India, presented with the calm and clarity each material deserves.</p>
+          <div class="lc-actions">
+            <button type="button" class="btn btn-primary" data-action="goto-products">Explore the collection</button>
+            <button type="button" class="btn btn-secondary" data-action="goto-categories">Choose a material</button>
+          </div>
+        </div>
+        <figure class="lc-hero-media">
+          <img src="images/themes/living-craft/hero-mango-tray-v1.png" width="1536" height="1024" alt="Carved dark wood serving tray displayed on a charcoal stone table.">
+          <figcaption>Carved mango wood · serving collection</figcaption>
+        </figure>
+      </section>
+
+      <section class="lc-section lc-materials" aria-labelledby="lcMaterialsTitle">
+        <div class="lc-section-heading">
+          <h2 id="lcMaterialsTitle">Choose a material</h2>
+          <p>One collection, distinct ways of living with natural materials.</p>
+        </div>
+        <div class="lc-category-grid" id="lcCategoryGrid"></div>
+      </section>
+
+      <section class="lc-section lc-collection" aria-labelledby="lcCollectionTitle">
+        <div class="lc-section-heading">
+          <h2 id="lcCollectionTitle">Objects for daily rituals</h2>
+          <p>Real products, useful dimensions and material details from the working catalogue.</p>
+        </div>
+        <div class="grid lc-product-grid" id="lcFeaturedGrid"></div>
+        <button type="button" class="btn btn-secondary lc-catalog-action" data-action="goto-products">View the full catalogue</button>
+      </section>
+
+      <!-- VELOREX ON AMAZON -->
+      <section class="amazon-band lc-amazon-band" aria-labelledby="lcAmazonBandTitle">
+        <div class="container amazon-band-inner">
+          <div class="amazon-band-copy">
+            <span class="amazon-band-kicker"><i class="fab fa-amazon"></i> Also on Amazon</span>
+            <h2 id="lcAmazonBandTitle">Shop Velorex Design on Amazon</h2>
+            <p>Prefer Amazon checkout and delivery? Our Vijaysar glass, neem comb, wellness combo kit, spice racks and sheesham tray are listed in the Velorex Design store on Amazon.</p>
+            <ul class="amazon-band-points">
+              <li><i class="fas fa-check"></i> Same handmade products</li>
+              <li><i class="fas fa-check"></i> Amazon payment &amp; delivery</li>
+              <li><i class="fas fa-check"></i> Reviews from real buyers</li>
+            </ul>
+            <a class="btn btn-amazon" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Visit our Amazon store</a>
+          </div>
+          <div class="amazon-band-media">
+            <img src="images/products/combo/combo-kit.webp" width="1200" height="947" loading="lazy" alt="Velorex natural wellness combo kit: Vijaysar glass, neem comb and acupressure stick">
+          </div>
+        </div>
+      </section>
+
+      <section class="lc-editorial lc-storage" aria-labelledby="lcStorageTitle">
+        <div class="lc-editorial-image"><img src="images/themes/living-craft/category-storage-v1.png" width="1122" height="1402" loading="lazy" alt="Four-tier dark wood wall rack styled with books, plants and small decor."></div>
+        <div class="lc-editorial-copy">
+          <h2 id="lcStorageTitle">Storage that holds the room together.</h2>
+          <p>Simple frames, useful proportions and enough breathing room for the things worth seeing.</p>
+          <button type="button" class="lc-text-action" data-action="open-category" data-cat="rack">Browse storage <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
+
+      <section class="lc-editorial lc-wellness" aria-labelledby="lcWellnessTitle">
+        <div class="lc-editorial-copy">
+          <h2 id="lcWellnessTitle">A quieter morning, shaped in wood.</h2>
+          <p>Traditional materials presented without exaggerated claims: tactile objects for familiar daily routines.</p>
+          <button type="button" class="lc-text-action" data-action="open-product" data-id="w-vijaysar">See the Vijaysar glass <span aria-hidden="true">→</span></button>
+          <a class="lc-text-action" href="#wellness">Explore wellness <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="lc-editorial-image"><img src="images/themes/living-craft/category-wellness-v1.png" width="1536" height="1024" loading="lazy" alt="Vijaysar wooden glass and neem wood comb arranged on a dark stone surface."></div>
+      </section>
+
+      <section class="lc-section lc-ordering" aria-labelledby="lcOrderingTitle">
+        <div>
+          <h2 id="lcOrderingTitle">A considered way to order.</h2>
+          <p>Review your selection, share delivery details and confirm directly with the store on WhatsApp.</p>
+        </div>
+        <ol class="lc-order-steps">
+          <li><strong>Choose</strong><span>Compare materials, dimensions and stock.</span></li>
+          <li><strong>Review</strong><span>Check your cart and delivery information.</span></li>
+          <li><strong>Confirm</strong><span>Continue to WhatsApp with your order reference.</span></li>
+        </ol>
+      </section>
+    </div>
+
     <!-- PRODUCTS VIEW -->
     <div id="tpl-products">
       <section class="section">
@@ -443,15 +758,46 @@
               <h2 class="section-title" id="catalogTitle">Our <span class="text-gradient">Catalog</span></h2>
               <p class="section-subtitle">Browse our handcrafted items</p>
             </div>
-            <div>
-              <select id="catFilter" class="form-control" data-action="cat-filter"
-                style="width: 200px; padding: 0.5rem;"></select>
+          </div>
+
+          <!-- Search, filters and sorting for the product grid -->
+          <div class="pf-bar" role="search" aria-label="Filter products">
+            <div class="pf-row">
+              <label class="pf-search">
+                <i class="fas fa-search"></i>
+                <input type="search" id="pfSearch" data-action="pf-search" placeholder="Search in this list" maxlength="80" autocomplete="off" aria-label="Search products">
+              </label>
+              <select id="catFilter" class="form-control pf-select" data-action="cat-filter" aria-label="Category"></select>
+              <select id="pfSort" class="form-control pf-select" data-action="pf-sort" aria-label="Sort by">
+                <option value="featured">Sort: Featured</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="name">Name: A to Z</option>
+                <option value="newest">Newest first</option>
+              </select>
+            </div>
+            <div class="pf-row">
+              <div class="pf-chips" role="group" aria-label="Price range">
+                <button type="button" class="pf-chip" data-action="pf-price" data-price="all">Any price</button>
+                <button type="button" class="pf-chip" data-action="pf-price" data-price="0-500">Under ₹500</button>
+                <button type="button" class="pf-chip" data-action="pf-price" data-price="500-1000">₹500 – ₹1,000</button>
+                <button type="button" class="pf-chip" data-action="pf-price" data-price="1000-">Above ₹1,000</button>
+              </div>
+              <label class="pf-check">
+                <input type="checkbox" id="pfStock" data-action="pf-stock"> In stock only
+              </label>
+              <div class="pf-summary">
+                <span id="pfCount" aria-live="polite"></span>
+                <button type="button" class="pf-clear" id="pfClear" data-action="pf-clear" hidden><i class="fas fa-times"></i> Clear filters</button>
+              </div>
             </div>
           </div>
+
           <div class="grid" id="productsGrid"></div>
           <div id="noProducts" style="display:none; text-align: center; padding: 3rem; color: var(--text-muted);">
             <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-            <h3>No products found in this category.</h3>
+            <h3 id="noProductsText">No products found in this category.</h3>
+            <button type="button" class="btn btn-secondary" id="noProductsClear" data-action="pf-clear" style="margin-top:1rem;" hidden>Clear filters</button>
           </div>
         </div>
       </section>
@@ -470,6 +816,17 @@
             <h2 class="section-title">Shop the <span class="wellness-accent">Wellness Range</span></h2>
             <p class="section-subtitle">Traditional Ayurvedic wood &amp; natural-living essentials — tap any product for
               details</p>
+          </div>
+
+          <div class="amazon-strip">
+            <div>
+              <strong>Wellness Combo Kit on Amazon</strong>
+              <span>Vijaysar glass, neem comb and acupressure stick together in one 3-piece kit.</span>
+            </div>
+            <div class="amazon-strip-actions">
+              <a href="https://www.amazon.in/dp/B0H1KJ7Z8F" target="_blank" rel="noopener noreferrer sponsored" class="btn btn-amazon"><i class="fab fa-amazon"></i> Buy the combo</a>
+              <a href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Velorex store on Amazon</a>
+            </div>
           </div>
 
           <div class="grid" id="wellnessProductsGrid"></div>
@@ -507,7 +864,7 @@
             <p class="section-subtitle">Click a service below to explore packages &amp; pricing</p>
           </div>
 
-          <div id="servicesTypeGrid" class="grid" style="grid-template-columns: 1fr 1fr;"></div>
+          <div id="servicesTypeGrid" class="grid services-type-grid"></div>
           <div id="serviceDetailPanel" style="display:none; margin-top: 2.5rem;"></div>
           <div id="servicesProceedBar" style="display:none;"></div>
 
@@ -613,7 +970,7 @@
             <li class="breadcrumb-item"><a href="#home">Home</a></li>
             <li class="breadcrumb-item active">About Us</li>
           </ul>
-          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+          <div class="grid split-grid" style="align-items: center;">
             <div>
               <h2 class="section-title">Our <span class="text-gradient">Story</span></h2>
               <div class="prose">
@@ -628,9 +985,8 @@
                   that inspire creativity and bring joy to our customers' lives.</p>
               </div>
             </div>
-            <div
-              style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem; text-align: center;">
-              <i class="fas fa-gem text-gold" style="font-size: 4rem; margin-bottom: 2rem;"></i>
+            <div class="split-card" style="text-align: center;">
+              <img class="about-logo logo-on-dark" src="images/brand/logo-on-dark.webp" width="888" height="429" alt="Velorex Design"><img class="about-logo logo-on-light" src="images/brand/logo-on-light.webp" width="887" height="429" alt="Velorex Design">
               <h3>The Velorex Family</h3>
               <p style="color: var(--text-muted); margin-top: 1rem;">We are proud to be part of a larger family of
                 premium brands, including Velorex Music and Velorex Garments. Excellence is in our DNA.</p>
@@ -652,9 +1008,8 @@
             <h2 class="section-title">Get in <span class="text-gold">Touch</span></h2>
             <p class="section-subtitle">We'd love to hear from you. Send us a message!</p>
           </div>
-          <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 4rem;">
-            <div
-              style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem;">
+          <div class="grid split-grid">
+            <div class="split-card">
               <form data-action="submit-contact" novalidate>
                 <div class="form-group">
                   <label for="contactName">Your Name</label>
@@ -686,22 +1041,21 @@
                 <i class="fas fa-map-marker-alt text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
                 <div>
                   <h4 style="margin-bottom: 0.5rem;">Our Studio</h4>
-                  <p id="contactAddress" style="color: var(--text-muted);">123 Artisan Valley,<br>Design District, Mumbai 400001<br>India
-                  </p>
+                  <p id="contactAddress" style="color: var(--text-muted);">Meerut, Uttar Pradesh 250002<br>India</p>
                 </div>
               </div>
               <div style="display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 2rem;">
                 <i class="fas fa-phone-alt text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
                 <div>
                   <h4 style="margin-bottom: 0.5rem;">Phone / WhatsApp</h4>
-                  <p id="contactPhone" style="color: var(--text-muted);">+91 98765 43210<br>(Mon-Sat, 10am - 6pm IST)</p>
+                  <p id="contactPhone" style="color: var(--text-muted);">+91 98765 43210<br>(Mon–Fri, 10am – 6pm IST)</p>
                 </div>
               </div>
               <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
                 <i class="fas fa-envelope text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
                 <div>
                   <h4 style="margin-bottom: 0.5rem;">Email</h4>
-                  <p id="contactEmail" style="color: var(--text-muted);">hello@velorexdesign.com</p>
+                  <p id="contactEmail" style="color: var(--text-muted);"><a href="mailto:velorexdesign@gmail.com">velorexdesign@gmail.com</a></p>
                 </div>
               </div>
             </div>
@@ -962,7 +1316,7 @@
                 </div>
                 <div style="margin-bottom: 2rem;">
                   <label for="regPass" style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Password</label>
-                  <input type="password" id="regPass" class="form-control auth-input-dark" placeholder="••••••••" required minlength="6" maxlength="200" autocomplete="new-password">
+                  <input type="password" id="regPass" class="form-control auth-input-dark" placeholder="••••••••" required minlength="8" maxlength="200" autocomplete="new-password">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Create
                   Account</button>

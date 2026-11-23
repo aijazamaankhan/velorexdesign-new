@@ -1,0 +1,135 @@
+/* Living Craft design foundation.
+   Every rule is opt-in through data-design so Classic remains the safe default. */
+:root[data-design="living-craft"] {
+  --lc-step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --lc-step-body: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+  --lc-step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --lc-step-title: clamp(2.25rem, 1.45rem + 3.4vw, 4.75rem);
+  --lc-step-hero: clamp(3.25rem, 1.6rem + 7vw, 8rem);
+
+  --lc-space-1: 0.25rem;
+  --lc-space-2: 0.5rem;
+  --lc-space-3: 0.75rem;
+  --lc-space-4: 1rem;
+  --lc-space-6: 1.5rem;
+  --lc-space-8: 2rem;
+  --lc-space-12: 3rem;
+  --lc-space-16: 4rem;
+  --lc-space-24: 6rem;
+  --lc-space-32: 8rem;
+  --lc-frame: clamp(1rem, 2.2vw, 2rem);
+
+  /* The storefront's unlabelled appearance is dark for backwards compatibility. */
+  --lc-bg: #1e211d;
+  --lc-surface: #2b302a;
+  --lc-surface-strong: #373d35;
+  --lc-ink: #f0eee9;
+  --lc-muted: #b8b3aa;
+  --lc-accent: #8ac39d;
+  --lc-accent-ink: #12251a;
+  --lc-danger: #f08a82;
+  --lc-success: #8ac39d;
+  --lc-focus: #8db8ff;
+  --lc-field-wood: #4b4137;
+  --lc-field-resin: #344245;
+  --lc-field-wellness: #354438;
+  --lc-field-stone: #403f3b;
+
+  --primary: var(--lc-surface);
+  --secondary: var(--lc-accent);
+  --accent: var(--lc-accent);
+  --bg: var(--lc-bg);
+  --surface: var(--lc-surface);
+  --surface2: var(--lc-surface-strong);
+  --card-bg: var(--lc-surface);
+  --text: var(--lc-ink);
+  --text-muted: var(--lc-muted);
+  --border: var(--lc-surface-strong);
+  --success: var(--lc-success);
+  --danger: var(--lc-danger);
+  --glass: var(--lc-surface);
+  --gold-gradient: var(--lc-accent);
+  --orange-gradient: var(--lc-accent);
+  --font-display: "Zilla Slab", Georgia, serif;
+  --font-body: "DM Sans", Arial, sans-serif;
+  --radius: 2px;
+  --radius-lg: 8px;
+  --transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+:root[data-design="living-craft"][data-theme="dark"] {
+  --lc-bg: #1e211d;
+  --lc-surface: #2b302a;
+  --lc-surface-strong: #373d35;
+  --lc-ink: #f0eee9;
+  --lc-muted: #b8b3aa;
+  --lc-accent: #8ac39d;
+  --lc-accent-ink: #12251a;
+  --lc-danger: #f08a82;
+  --lc-success: #8ac39d;
+  --lc-focus: #8db8ff;
+}
+
+:root[data-design="living-craft"][data-theme="light"] {
+  --lc-bg: #e7e4df;
+  --lc-surface: #d8d3cb;
+  --lc-surface-strong: #c8c2b8;
+  --lc-ink: #252521;
+  --lc-muted: #59564f;
+  --lc-accent: #1e6546;
+  --lc-accent-ink: #ffffff;
+  --lc-danger: #9a342f;
+  --lc-success: #1e6546;
+  --lc-focus: #0e5cc7;
+  --lc-field-wood: #c8b39d;
+  --lc-field-resin: #bdcacc;
+  --lc-field-wellness: #c5d0c0;
+  --lc-field-stone: #cbc6bd;
+}
+
+:root[data-design="living-craft"] body {
+  font-size: var(--lc-step-body);
+  line-height: 1.6;
+}
+
+:root[data-design="living-craft"] h1,
+:root[data-design="living-craft"] h2,
+:root[data-design="living-craft"] h3 {
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+:root[data-design="living-craft"] :focus-visible {
+  outline: 3px solid var(--lc-focus);
+  outline-offset: 3px;
+}
+
+:root[data-design="living-craft"] ::selection {
+  background: var(--lc-accent);
+  color: var(--lc-accent-ink);
+}
+
+:root[data-design="living-craft"] .btn,
+:root[data-design="living-craft"] .form-control,
+:root[data-design="living-craft"] select,
+:root[data-design="living-craft"] textarea {
+  border-radius: 2px;
+}
+
+:root[data-design="living-craft"] .modal-box,
+:root[data-design="living-craft"] .search-modal-box {
+  border-radius: 8px;
+}
+
+:root[data-design="living-craft"] .product-price,
+:root[data-design="living-craft"] .cart-item-price,
+:root[data-design="living-craft"] .cart-total {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-design="living-craft"] {
+    --transition: none;
+  }
+}

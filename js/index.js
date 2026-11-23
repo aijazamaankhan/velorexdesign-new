@@ -25,6 +25,263 @@ function safeUrl(url) {
     return s;
 }
 
+/* ──────────────────────────────────────────────────────────────
+   ROUTING: real URLs (/product/5-name, /category/wood, /about …)
+   so each page can be indexed and shared on its own. The server
+   (seo-render.php) answers the same addresses with the page already
+   filled in; this code then takes over without reloading.
+   slugify() and routeToPath() must match api/seo-lib.php.
+   ────────────────────────────────────────────────────────────── */
+
+const ROUTE_PAGES = ['products', 'wellness', 'services', 'cart', 'profile', 'about', 'contact', 'terms', 'privacy', 'faq', 'shipping', 'returns', 'process', 'auth'];
+
+function slugify(text) {
+    let s = String(text || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (s.length > 60) s = s.slice(0, 60).replace(/-+$/, '');
+    return s;
+}
+
+function routeToPath(view, params = {}) {
+    const p = Object.assign({}, params);
+    let path;
+    if (!view || view === 'home') {
+        path = '/';
+    } else if (view === 'product-detail') {
+        const id = String(p.id == null ? '' : p.id);
+        delete p.id;
+        const product = PRODUCTS.find(x => String(x.id) === id);
+        // Database products have numeric ids and get a readable slug. The built-in
+        // starter products have text ids and are addressed by that id alone.
+        const slug = /^\d+$/.test(id) && product ? slugify(product.name) : '';
+        path = '/product/' + encodeURIComponent(id) + (slug ? '-' + slug : '');
+    } else if (view === 'products' && p.cat && p.cat !== 'all') {
+        path = '/category/' + encodeURIComponent(p.cat);
+        delete p.cat;
+    } else {
+        if (view === 'products') delete p.cat;
+        path = '/' + view;
+    }
+    const qs = new URLSearchParams(p).toString();
+    return path + (qs ? '?' + qs : '');
+}
+
+// Reads the current address into { view, params }. Unknown addresses give view '' .
+function parseLocation(loc = window.location) {
+    const params = new URLSearchParams(loc.search);
+    const path = decodeURIComponent(loc.pathname).replace(/\/+$/, '') || '/';
+    let m;
+    if (path === '/' || path === '/index.html') return { view: 'home', params };
+    if ((m = path.match(/^\/product\/(\d+)(?:-.*)?$/))) { params.set('id', m[1]); return { view: 'product-detail', params }; }
+    if ((m = path.match(/^\/product\/(.+)$/)))            { params.set('id', m[1]); return { view: 'product-detail', params }; }
+    if ((m = path.match(/^\/category\/([^/]+)$/)))        { params.set('cat', m[1]); return { view: 'products', params }; }
+    if ((m = path.match(/^\/([a-z-]+)$/)) && ROUTE_PAGES.includes(m[1])) return { view: m[1], params };
+    return { view: '', params };
+}
+
+// Turns an old-style "#view?x=1" reference into its real path ('' if it is not one).
+function hashToPath(hash) {
+    const m = String(hash || '').match(/^#([a-z-]+)(?:\?(.*))?$/);
+    if (!m) return '';
+    const view = m[1];
+    if (view !== 'home' && view !== 'product-detail' && !ROUTE_PAGES.includes(view)) return '';
+    return routeToPath(view, Object.fromEntries(new URLSearchParams(m[2] || '')));
+}
+
+// Links in the page are written as "#view" for brevity. Give each its real
+// address so search engines can follow it and "open in new tab" works.
+function upgradeLinks(root) {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll('a[href^="#"]').forEach(a => {
+        const path = hashToPath(a.getAttribute('href'));
+        if (path) a.setAttribute('href', path);
+    });
+}
+
+function initRouting() {
+    // Old bookmarks and shared links (/#product-detail?id=5) move to the real address.
+    if (window.location.hash) {
+        const path = hashToPath(window.location.hash);
+        if (path) history.replaceState(null, '', path);
+    }
+
+    upgradeLinks(document);
+    new MutationObserver(muts => {
+        muts.forEach(m => m.addedNodes.forEach(n => {
+            if (n.nodeType !== 1) return;
+            if (n.matches && n.matches('a[href^="#"]')) upgradeLinks(n.parentNode);
+            else upgradeLinks(n);
+        }));
+    }).observe(document.body, { childList: true, subtree: true });
+
+    // Follow internal links without reloading the page.
+    document.addEventListener('click', (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const a = e.target.closest('a[href]');
+        if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+        const raw = a.getAttribute('href');
+        if (raw === '#') { e.preventDefault(); return; }       // placeholder links go nowhere
+        let url;
+        try { url = new URL(a.href, window.location.href); } catch (_) { return; }
+        if (url.origin !== window.location.origin) return;
+        if (raw.startsWith('#')) {
+            const path = hashToPath(raw);
+            if (!path) return;
+            url = new URL(path, window.location.origin);
+        }
+        if (!parseLocation(url).view) return;                   // a real file such as /admin.html
+        e.preventDefault();
+        const next = url.pathname + url.search;
+        if (next !== window.location.pathname + window.location.search) history.pushState(null, '', next);
+        app.handleRoute();
+    });
+
+    window.addEventListener('popstate', () => app.handleRoute());
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SEO: page title, description, canonical URL and structured data.
+   Search engines read these to decide what the page is about and
+   how to show it in results.
+   ────────────────────────────────────────────────────────────── */
+
+const SEO_DEFAULT = {
+    title: 'Velorex Design | Handcrafted Wood, Resin Art & Wellness',
+    description: 'Handcrafted sheesham wood serveware, MDF racks and shelves, resin art and Ayurvedic wellness products such as the Vijaysar wood glass. Made by hand in India, shipped India-wide.'
+};
+const VIJAYSAR_OG_IMAGE = 'images/products/vijaysar/og-vijaysar.jpg';
+
+/* Store WhatsApp number in international format, digits only (e.g. 919876543210).
+   Every visitor uses this; the admin panel setting, if saved, overrides it.
+   Leave empty to hide the WhatsApp order buttons. */
+const STORE_WHATSAPP_DEFAULT = '';
+
+function storeWhatsAppNumber() {
+    let saved = '';
+    try { saved = (JSON.parse(localStorage.getItem('velorex_store_settings')) || {}).whatsapp || ''; } catch (e) { /* ignore */ }
+    return String(saved || STORE_WHATSAPP_DEFAULT).replace(/\D/g, '');
+}
+
+function whatsAppOrderUrl(product) {
+    const n = storeWhatsAppNumber();
+    if (!n || !product) return '';
+    const link = window.location.origin + routeToPath('product-detail', { id: product.id });
+    const text = `Hi Velorex Design! I would like to order:
+
+*${product.name}*
+Price: ₹${Number(product.price || 0).toLocaleString('en-IN')}
+Quantity: 1
+
+${link}
+
+Please share payment and delivery details.`;
+    return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
+}
+
+/* Amazon listings, matched by product name so database rows pick them up too. */
+const AMAZON_LINKS = [
+    { match: /combo/i, url: 'https://www.amazon.in/dp/B0H1KJ7Z8F' },
+    { match: /vijaysar/i, url: 'https://www.amazon.in/dp/B0H3QK8K7S' },
+    { match: /neem.*comb/i, url: 'https://www.amazon.in/dp/B0H8NDDTVH' },
+    { match: /compact 2-tier spice rack/i, url: 'https://www.amazon.in/dp/B0GXJ42Y4S' },
+    { match: /multipurpose 2-tier/i, url: 'https://www.amazon.in/dp/B0HK2CY3C6' },
+    { match: /mango.*tray/i, url: 'https://www.amazon.in/dp/B0HHFSJTH9' }
+];
+function amazonUrlFor(product) {
+    const hit = AMAZON_LINKS.find(l => l.match.test(String((product && product.name) || '')));
+    return hit ? hit.url : '';
+}
+
+const SEO_VIEWS = {
+    home:     SEO_DEFAULT,
+    products: { title: 'Shop All Handcrafted Products | Velorex Design', description: 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Free shipping above ₹999.' },
+    wellness: { title: 'Velorex Wellness | Vijaysar Glass, Neem Comb & Acupressure', description: 'Traditional Ayurvedic wood products made by hand: Vijaysar wood glass, neem wood comb and acupressure tools. 100% natural, no paint or polish.', image: VIJAYSAR_OG_IMAGE },
+    services: { title: 'Graphic Design Services | Velorex Design', description: 'Logo, branding, social media and print design from Velorex Design. Pick a package and message us on WhatsApp.' },
+    about:    { title: 'About Us | Velorex Design', description: 'Velorex Design is an Indian workshop making handcrafted wood items, resin art and wellness products.' },
+    process:  { title: 'How We Make It | Velorex Design', description: 'How Velorex Design products go from raw wood and resin to a finished, hand-checked piece.' },
+    contact:  { title: 'Contact Us | Velorex Design', description: 'Questions about an order or a custom piece? Contact Velorex Design by WhatsApp, phone or email.' },
+    faq:      { title: 'FAQ | Velorex Design', description: 'Answers about ordering, payment, shipping, returns and custom work at Velorex Design.' },
+    shipping: { title: 'Shipping & Delivery | Velorex Design', description: 'Delivery times and shipping charges for Velorex Design orders across India. Free shipping above ₹999.' },
+    returns:  { title: 'Returns & Refunds | Velorex Design', description: 'When and how Velorex Design accepts returns and issues refunds.' },
+    terms:    { title: 'Terms & Conditions | Velorex Design', description: 'Terms that apply when you buy from Velorex Design.' },
+    privacy:  { title: 'Privacy Policy | Velorex Design', description: 'What personal information Velorex Design collects and how it is used.' }
+};
+
+function setSeo({ title, description, image, noindex } = {}) {
+    const t = title || SEO_DEFAULT.title;
+    const d = String(description || SEO_DEFAULT.description).replace(/\s+/g, ' ').trim().slice(0, 300);
+    document.title = t;
+    const set = (id, attr, value) => { const el = document.getElementById(id); if (el) el.setAttribute(attr, value); };
+    const origin = window.location.origin;
+    const pageUrl = origin + window.location.pathname;
+    set('metaDescription', 'content', d);
+    set('ogTitle', 'content', t);
+    set('ogDescription', 'content', d);
+    set('canonicalLink', 'href', pageUrl);
+    set('ogUrl', 'content', pageUrl);
+    set('ogImage', 'content', new URL(image || 'hero.png', window.location.origin + '/').href);
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.setAttribute('content', noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large');
+}
+
+// Adds or replaces one block of schema.org data in the page head.
+function setStructuredData(id, data) {
+    let el = document.getElementById(id);
+    if (!data) { if (el) el.remove(); return; }
+    if (!el) {
+        el = document.createElement('script');
+        el.type = 'application/ld+json';
+        el.id = id;
+        document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify(data);
+}
+
+function productSchema(p) {
+    const pageUrl = window.location.origin + '/';
+    return {
+        '@type': 'Product',
+        name: p.name,
+        description: String(p.desc || '').slice(0, 500),
+        image: (p.images && p.images.length ? p.images : [p.img]).filter(Boolean).map(u => new URL(u, pageUrl).href),
+        category: getCatName(p.cat),
+        brand: { '@type': 'Brand', name: 'Velorex Design' },
+        offers: {
+            '@type': 'Offer',
+            url: window.location.origin + routeToPath('product-detail', { id: p.id }),
+            priceCurrency: 'INR',
+            price: Number(p.price || 0).toFixed(2),
+            availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+        }
+    };
+}
+
+// Shop-wide data: who the shop is, plus the product list once it has loaded.
+function setShopStructuredData() {
+    const pageUrl = window.location.origin + '/';
+    setStructuredData('ldShop', {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'OnlineStore',
+                '@id': pageUrl + '#store',
+                name: 'Velorex Design',
+                url: pageUrl,
+                logo: new URL('favicon.svg', pageUrl).href,
+                image: new URL('hero.png', pageUrl).href,
+                description: SEO_DEFAULT.description,
+                areaServed: 'IN'
+            },
+            { '@type': 'WebSite', '@id': pageUrl + '#website', name: 'Velorex Design', url: pageUrl, publisher: { '@id': pageUrl + '#store' } }
+        ]
+    });
+    setStructuredData('ldProducts', PRODUCTS.length ? {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Velorex Design products',
+        itemListElement: PRODUCTS.slice(0, 50).map((p, i) => ({ '@type': 'ListItem', position: i + 1, item: productSchema(p) }))
+    } : null);
+}
+
 const VALIDATORS = {
     required: v => String(v == null ? '' : v).trim().length > 0,
     email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v || '').trim()),
@@ -55,7 +312,7 @@ let PRODUCTS = [];
 const DEFAULT_CATS = [
     { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'cat-wood.png' },
     { id: 'rack',         name: 'MDF Racks & Shelves', icon: 'fas fa-layer-group', image: 'images/products/rack-4tier-1.jpg' },
-    { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'cat-wellness.svg' },
+    { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'images/products/combo/category-wellness.webp' },
     { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'cat-resin.png' },
     { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80' },
     { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80' },
@@ -72,11 +329,11 @@ const STATIC_WELLNESS_PRODUCTS = [
         id: 'w-vijaysar',
         name: 'Vijaysar Wood Wellness Glass',
         tagline: 'Fill it at night, drink it at dawn — the Ayurvedic wooden tumbler that infuses your water while you sleep.',
-        price: 599,
+        price: 399,
         img: 'vijaysar-glass.png',
-        images: ['vijaysar-glass.png', 'vijaysar-glass-2.png'],
+        images: ['vijaysar-glass.png', 'images/products/vijaysar/box-front.webp', 'images/products/vijaysar/box-open.webp', 'images/products/vijaysar/box-side.webp', 'images/products/vijaysar/box-back.webp', 'images/products/vijaysar/infographic.webp', 'images/products/vijaysar/leaflet-how-to-use.webp', 'vijaysar-glass-2.png'],
         cat: 'wellness',
-        desc: 'A traditional Ayurvedic tumbler hand-turned from the heartwood of the Vijaysar tree (Pterocarpus marsupium, the Indian Kino tree). Fill it with drinking water at night and let it sit for 8–10 hours; by morning the water turns light brown as the wood’s natural bioactive compounds infuse into it. Drink on an empty stomach to support healthy metabolism and blood sugar balance. 100% natural wood — no paints, chemicals or polishes. Replace every 30–45 days of regular use. (Traditional wellness product, not a medicine.)',
+        desc: 'A traditional Ayurvedic tumbler hand-turned from the heartwood of the Vijaysar tree (Pterocarpus marsupium, the Indian Kino tree). Fill it with drinking water at night and let it sit for 8–10 hours; by morning the water turns light brown as the wood’s natural bioactive compounds infuse into it. Drink on an empty stomach to support healthy metabolism and blood sugar balance. 100% natural wood — no paints, chemicals or polishes. Replace after 30 to 90 days, depending on how often you use it. (Traditional wellness product, not a medicine.)',
         stock: 50,
         featured: false,
         extra: 'vijaysar'
@@ -85,7 +342,7 @@ const STATIC_WELLNESS_PRODUCTS = [
         id: 'w-neem-comb',
         name: 'Neem Wood Comb',
         tagline: 'Anti-bacterial neem wood that calms the scalp and tames frizz — no plastic, no static.',
-        price: 199,
+        price: 169,
         img: 'neem-comb.png',
         images: ['neem-comb.png', 'neem-comb-detailes.png'],
         cat: 'wellness',
@@ -106,16 +363,29 @@ const STATIC_WELLNESS_PRODUCTS = [
         stock: 100,
         featured: false,
         extra: 'acupressure'
+    },
+    {
+        id: 'w-combo-kit',
+        name: 'Natural Wellness Combo Kit',
+        tagline: 'The Vijaysar glass, neem comb and acupressure stick together, a complete daily ritual and an easy gift.',
+        price: 499,
+        img: 'images/products/combo/combo-kit.webp',
+        images: ['images/products/combo/combo-kit.webp', 'images/products/combo/glass.webp', 'images/products/combo/comb.webp', 'images/products/combo/stick.webp', 'images/products/combo/leaflet-more-from-velorex.webp'],
+        cat: 'wellness',
+        desc: 'A 3-piece set of traditional wood wellness tools: a Vijaysar wooden glass (Pterocarpus marsupium) for overnight infused water, a neem wood comb that detangles gently and reduces static, and a ridged wooden acupressure stick for pressure points on the scalp and body. Made in India by Velorex Design.',
+        stock: 50,
+        featured: false,
+        extra: 'combo'
     }
 ];
 
-/* ⚠ PLACEHOLDER PRICES (₹) — replace these four numbers with the real prices.
-   They are the only place the starter catalog prices are defined. */
+/* Starter catalog prices (₹). The tray and 2-tier racks match their Amazon.in
+   listings; the 4-tier rack has no Amazon listing yet. */
 const PLACEHOLDER_PRICES = {
-    'wd-mango-tray': 1499,
+    'wd-mango-tray':  649,
     'rk-4tier-24':   1299,
-    'rk-2tier-14':    899,
-    'rk-2tier-8':     599
+    'rk-2tier-14':    589,
+    'rk-2tier-8':     439
 };
 
 /* Built-in starter products for the main catalog, grouped by type: the Sheesham
@@ -211,18 +481,48 @@ const PRODUCT_DETAILS = {
             'Traditionally used to balance blood sugar &amp; aid digestion',
             'Simple overnight ritual — just water and time'
         ],
+        specs: [
+            { label: 'Material', value: 'Vijaysar heartwood (Pterocarpus marsupium)' },
+            { label: 'Sourcing', value: 'Heartwood from the forests of South India' },
+            { label: 'Capacity', value: '90 ml' },
+            { label: 'Finish', value: 'Natural wood, no paint, chemicals or polish' },
+            { label: 'Use', value: 'Soak drinking water 8 to 10 hours, drink in the morning' },
+            { label: 'Replace', value: 'After 90, 45 or 30 days if used 1, 2 or 3 times a day' },
+            { label: 'Packaging', value: 'Velorex printed gift box' },
+            { label: 'Made in', value: 'India, hand-turned' }
+        ],
         steps: [
-            { icon: 'fas fa-fill-drip', title: 'Soak', text: 'Fill the wooden glass with drinking water at night and let it sit for <strong>8 to 10 hours</strong>.' },
-            { icon: 'fas fa-mug-hot', title: 'Drink', text: 'By morning the water turns a <strong>light brown</strong> colour as the wood\'s natural bioactive compounds infuse into it.' },
-            { icon: 'fas fa-sun', title: 'Routine', text: 'Drink the infused water on an <strong>empty stomach</strong> first thing in the morning.' }
+            { icon: 'fas fa-fill-drip', img: 'images/products/vijaysar/step-fill.webp', title: 'Fill', text: 'Rinse the glass well before first use. Fill the wooden glass with drinking water at night and let it sit for <strong>8 to 10 hours</strong>.' },
+            { icon: 'fas fa-mug-hot', img: 'images/products/vijaysar/step-soak.webp', title: 'Soak', text: 'By morning the water turns a <strong>light brown</strong> colour as the wood\'s natural bioactive compounds infuse into it.' },
+            { icon: 'fas fa-sun', img: 'images/products/vijaysar/step-drink.webp', title: 'Drink', text: 'Drink the infused water on an <strong>empty stomach</strong> first thing in the morning.' }
         ],
         benefits: [
             { icon: 'fas fa-seedling', title: 'Wellness Support', text: 'Widely used in Ayurveda to help balance blood sugar, aid digestion and detoxify the body.' },
             { icon: 'fas fa-tree', title: 'Natural Material', text: 'Made from 100% natural wood without any artificial paints, chemicals or polishes.' },
             { icon: 'fas fa-hourglass-half', title: 'Lifespan', text: 'The leaching properties of the wood gradually diminish with regular use over time.' },
-            { icon: 'fas fa-calendar-alt', title: 'Replace Regularly', text: 'Most tumblers should be replaced every <strong>30 to 45 days</strong> of regular use.' }
+            { icon: 'fas fa-calendar-alt', title: 'Replace Regularly', text: 'Replace after <strong>30 to 90 days</strong>, depending on how often you use it (see the schedule above).' }
         ],
-        disclaimer: 'Traditional Ayurvedic wellness product. Not a medicine and not intended to diagnose, treat or cure any condition. Consult your doctor before making changes to diabetes care.'
+        firstUse: 'rinse with plain water, fill it once and throw that water away. Start from the next fill.',
+        care: [
+            'Rinse with plain water only',
+            'No soap, detergent or dishwasher',
+            'Don’t keep water in it for over 12 hours',
+            'Dry upside down in an airy place',
+            'Not for microwave, fridge or hot liquids'
+        ],
+        goodToKnow: [
+            'Brown water is the wood’s natural colour',
+            'The colour gets lighter as the glass ages',
+            'Use one glass per person',
+            'Store dry, away from damp and sunlight',
+            'Stop using if you see mould or cracks'
+        ],
+        replaceSchedule: [
+            { days: 90, use: '1 time daily' },
+            { days: 45, use: '2 times daily' },
+            { days: 30, use: '3 times daily' }
+        ],
+        disclaimer: 'Traditional Ayurvedic wellness product, not a medicine. If you have diabetes or take medication, ask your doctor before use.'
     },
     neem: {
         badge: 'Natural · Ayurvedic · Plastic-Free',
@@ -232,6 +532,14 @@ const PRODUCT_DETAILS = {
             '100% natural neem wood — no plastic',
             'Anti-bacterial &amp; anti-fungal — soothes the scalp',
             'Reduces dandruff, frizz and static'
+        ],
+        specs: [
+            { label: 'Material', value: 'Natural neem wood, smooth polished finish' },
+            { label: 'Teeth', value: 'Fine, rounded teeth, gentle on the scalp' },
+            { label: 'Use', value: 'Hair, beard and moustache' },
+            { label: 'Hair types', value: 'Straight, wavy, curly and coily; fine to thick' },
+            { label: 'Weight', value: '40 g, slim enough for a pocket or bag' },
+            { label: 'Made in', value: 'India' }
         ],
         steps: [
             { icon: 'fas fa-wind', title: 'Detangle', text: 'Start at the ends and work upward in small sections to gently remove knots.' },
@@ -245,6 +553,37 @@ const PRODUCT_DETAILS = {
             { icon: 'fas fa-hand-holding-droplet', title: 'Care &amp; Lifespan', text: 'Keep dry and oil occasionally with a little coconut oil; lasts for years with care.' }
         ],
         disclaimer: 'Natural wood grain, tone and engraving may vary slightly from piece to piece — each comb is unique.'
+    },
+    combo: {
+        badge: 'Natural · Ayurvedic · 3-Piece Set',
+        icon: 'fas fa-gift',
+        introHeading: 'Three Traditional Tools, One Kit',
+        introText: 'A curated set of the three Velorex wellness pieces: the Vijaysar wooden glass for overnight infused water, the neem wood comb for gentle detangling, and the ridged acupressure stick for pressure points. Each piece is finished by hand from natural wood, and the set makes a thoughtful gift for anyone who likes nature-inspired self-care.',
+        points: [
+            'Vijaysar glass + neem comb + acupressure stick',
+            'All natural wood, no plastic or paint',
+            'Ready to gift'
+        ],
+        specs: [
+            { label: 'In the box', value: '1 Vijaysar wooden glass, 1 neem wood comb, 1 wooden acupressure stick' },
+            { label: 'Pieces', value: '3' },
+            { label: 'Weight', value: 'About 250 g' },
+            { label: 'Package size', value: '15.2 × 12.7 × 15.2 cm' },
+            { label: 'Made in', value: 'India, by Velorex Design' }
+        ],
+        stepsHeading: 'A Simple Daily Routine',
+        steps: [
+            { icon: 'fas fa-glass-water', title: 'Night', text: 'Fill the <strong>Vijaysar glass</strong> with drinking water and leave it for 8 to 10 hours.' },
+            { icon: 'fas fa-sun', title: 'Morning', text: 'Drink the infused water on an empty stomach, then <strong>comb</strong> with the neem comb.' },
+            { icon: 'fas fa-hand-sparkles', title: 'Anytime', text: 'Use the <strong>acupressure stick</strong> on palms, feet or scalp to ease tension.' }
+        ],
+        benefits: [
+            { icon: 'fas fa-seedling', title: 'Vijaysar Glass', text: 'Traditionally used in Ayurveda to support healthy blood sugar and digestion.' },
+            { icon: 'fas fa-leaf', title: 'Neem Comb', text: 'Detangles gently, reduces static and keeps the scalp comfortable.' },
+            { icon: 'fas fa-hand-holding-heart', title: 'Acupressure Stick', text: 'Textured nodules stimulate pressure points for soothing relief.' },
+            { icon: 'fas fa-gift', title: 'Gift Ready', text: 'A meaningful present for family who value traditional self-care.' }
+        ],
+        disclaimer: 'Traditional wellness products. Not medicines and not intended to diagnose, treat or cure any condition. Natural wood tone varies from piece to piece.'
     },
     acupressure: {
         badge: 'Natural · Wellness · Chemical-Free',
@@ -405,6 +744,7 @@ const PRODUCT_DETAILS = {
 function resolveDetailSlug(product) {
     if (product.extra && PRODUCT_DETAILS[product.extra]) return product.extra;
     const n = (product.name || '').toLowerCase();
+    if (/combo/.test(n)) return 'combo';
     if (/vijaysar/.test(n)) return 'vijaysar';
     if (/neem/.test(n)) return 'neem';
     if (/acupres|accupres|acupress/.test(n)) return 'acupressure';
@@ -414,12 +754,17 @@ function resolveDetailSlug(product) {
     return '';
 }
 
-/* Add the starter products to PRODUCTS when no real wellness products exist yet,
-   so their detail pages and Add-to-Cart work through the normal flow. */
+/* Add the starter wellness products to PRODUCTS unless the database already has
+   them, so their detail pages and Add-to-Cart work through the normal flow. */
 function ensureWellnessSeed() {
-    if (PRODUCTS.some(p => p.cat === 'wellness')) return;
+    // Matched per product (by id or name) so a newly added starter, such as the
+    // combo kit, still appears when the database already has other wellness rows.
     STATIC_WELLNESS_PRODUCTS.forEach(sp => {
-        if (!PRODUCTS.some(p => String(p.id) === String(sp.id))) PRODUCTS.push(sp);
+        const slug = String(sp.name).trim().toLowerCase();
+        const exists = PRODUCTS.some(p =>
+            String(p.id) === String(sp.id) ||
+            String(p.name || '').trim().toLowerCase() === slug);
+        if (!exists) PRODUCTS.push(sp);
     });
 }
 
@@ -459,7 +804,8 @@ function getCategories() {
         return {
             ...d,
             icon:  override.icon  || d.icon,
-            image: override.image || d.image
+            // The old cartoon wellness graphic was replaced by a real photo; ignore saved copies of it.
+            image: (override.image && override.image !== 'cat-wellness.svg') ? override.image : d.image
         };
     });
     const extras = custom
@@ -507,18 +853,23 @@ async function loadProducts() {
     ensureCatalogSeed();
     ensureWellnessSeed();
 
-    const currentHash = window.location.hash || '#home';
-    if (currentHash.startsWith('#products')) {
-        const cat = new URLSearchParams(currentHash.split('?')[1] || '').get('cat');
-        app.renderProducts(cat);
-    } else if (currentHash.startsWith('#product-detail')) {
-        const id = new URLSearchParams(currentHash.split('?')[1] || '').get('id');
-        app.renderProductDetail(id);
-    } else if (currentHash.startsWith('#wellness')) {
+    // Product counts and the featured column in the Catalog mega menu need the product list.
+    app.renderNavCategories();
+    setShopStructuredData();
+
+    const route = parseLocation();
+    if (route.view === 'products') {
+        app.renderProducts(route.params.get('cat'));
+    } else if (route.view === 'product-detail') {
+        // The slug in the address may be missing or stale (old link): show the current one.
+        const canonical = routeToPath('product-detail', { id: route.params.get('id') });
+        if (canonical !== window.location.pathname) history.replaceState(null, '', canonical);
+        app.renderProductDetail(route.params.get('id'));
+    } else if (route.view === 'wellness') {
         app.renderWellness();
-    } else if (currentHash.startsWith('#home')) {
+    } else if (route.view === 'home') {
         // Home renders before this resolves, so refresh the hero + featured grid.
-        app.renderHome();
+        app.renderActiveHome();
     }
 }
 
@@ -590,29 +941,32 @@ const app = {
     init() {
         this.updateCartBadge();
         this.updateAuthNav();
+        this.syncDesignToggle();
         this.restoreSession();
         this.renderNavCategories();
         this.renderFooterCategories();
         loadProducts();
+        initRouting();
         this.handleRoute();
-        window.addEventListener('hashchange', () => this.handleRoute());
 
         window.addEventListener('storage', (e) => {
             if (e.key === 'velorex_store_categories') {
                 CATEGORIES = getCategories();
                 this.renderNavCategories();
                 this.renderFooterCategories();
-                if ((window.location.hash || '#home').startsWith('#home')) this.renderHome();
+                if (parseLocation().view === 'home') this.renderActiveHome();
+            }
+            if (e.key === 'velorex_design_variant' && window.VelorexDesignSelection) {
+                const nextDesign = window.VelorexDesignSelection.normalizeDesign(e.newValue) || 'classic';
+                window.VelorexDesignSelection.setDesign(window, nextDesign, { persist: false, clearPreview: false });
             }
         });
 
-        window.addEventListener('hashchange', () => {
-            const hash = window.location.hash.split('?')[0] || '#home';
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === hash) link.classList.add('active');
-            });
+        window.addEventListener('velorex:designchange', () => {
+            this.syncDesignToggle();
+            if (parseLocation().view === 'home') this.handleRoute();
         });
+
 
         const savedTheme = localStorage.getItem('velorex_design_theme') || 'dark';
         if (savedTheme === 'light') this.setTheme('light');
@@ -642,6 +996,33 @@ const app = {
         }
     },
 
+    toggleDesign() {
+        if (!window.VelorexDesignSelection) return;
+        const current = document.documentElement.getAttribute('data-design') || 'classic';
+        const nextDesign = current === 'living-craft' ? 'classic' : 'living-craft';
+        window.VelorexDesignSelection.setDesign(window, nextDesign);
+        this.syncDesignToggle();
+    },
+
+    syncDesignToggle() {
+        const button = document.querySelector('[data-action="toggle-design"]');
+        const label = document.getElementById('designToggleLabel');
+        const icon = document.getElementById('designToggleIcon');
+        if (!button) return;
+
+        const livingCraft = document.documentElement.getAttribute('data-design') === 'living-craft';
+        const currentName = livingCraft ? 'Living Craft' : 'Classic';
+        const nextName = livingCraft ? 'Classic' : 'Living Craft';
+        button.setAttribute('aria-pressed', String(livingCraft));
+        button.setAttribute('aria-label', `Current design: ${currentName}. Switch to ${nextName}.`);
+        if (label) label.textContent = currentName;
+        if (icon) icon.className = livingCraft ? 'fas fa-seedling' : 'fas fa-gem';
+    },
+
+    isLivingCraft() {
+        return document.documentElement.getAttribute('data-design') === 'living-craft';
+    },
+
     applyStoreSettings() {
         const s = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
         const addr  = document.getElementById('contactAddress');
@@ -656,38 +1037,54 @@ const app = {
             });
         }
         if (phone && s.phone) {
-            phone.replaceChildren(document.createTextNode(s.phone), document.createElement('br'), document.createTextNode('(Mon-Sat, 10am - 6pm IST)'));
+            phone.replaceChildren(document.createTextNode(s.phone), document.createElement('br'), document.createTextNode('(Mon–Fri, 10am – 6pm IST)'));
         }
         if (email && s.email) email.textContent = s.email;
-        if (waLink && s.whatsapp) {
-            const cleaned = String(s.whatsapp).replace(/\D/g, '');
+        const cleaned = storeWhatsAppNumber();
+        if (waLink && cleaned) {
             waLink.href = `https://wa.me/${encodeURIComponent(cleaned)}?text=Hi%20Velorex%20Design,%20I%20am%20interested%20in%20your%20graphic%20design%20services.`;
         }
     },
 
     navigate(view, params = {}) {
-        let hash = '#' + view;
-        if (Object.keys(params).length > 0) {
-            const qs = new URLSearchParams(params).toString();
-            hash += '?' + qs;
-        }
-        window.location.hash = hash;
+        const next = routeToPath(view, params);
+        if (next !== window.location.pathname + window.location.search) history.pushState(null, '', next);
+        this.handleRoute();
     },
 
     handleRoute() {
-        const fullHash = window.location.hash || '#home';
-        const [hashStr, qs] = fullHash.split('?');
-        const view = hashStr.replace('#', '');
-        const params = new URLSearchParams(qs);
+        const { view, params } = parseLocation();
+
+        // Mark the matching link in the top navigation.
+        const here = routeToPath(view === 'product-detail' ? 'products' : view);
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === here);
+        });
+        window.dispatchEvent(new Event('velorex:route'));
 
         const appRoot = document.getElementById('app');
-        const template = document.getElementById('tpl-' + view);
+        const templateId = view === 'home' && this.isLivingCraft()
+            ? 'tpl-home-living-craft'
+            : 'tpl-' + view;
+        const template = document.getElementById(templateId);
 
         if (template) {
             appRoot.innerHTML = '<div class="view active">' + template.innerHTML + '</div>';
             window.scrollTo(0, 0);
 
-            if (view === 'home') this.renderHome();
+            // Highlight the matching tab on the phone tab bar.
+            const tabFor = { home: 'home', products: 'products', 'product-detail': 'products', wellness: 'products', cart: 'cart', profile: 'profile', auth: 'profile' }[view];
+            document.querySelectorAll('.tabbar-item[data-tab]').forEach(tab => {
+                const on = tab.dataset.tab === tabFor;
+                tab.classList.toggle('active', on);
+                if (on) tab.setAttribute('aria-current', 'page'); else tab.removeAttribute('aria-current');
+            });
+
+            // Page title and description for this view (product pages set their own below).
+            setSeo(SEO_VIEWS[view] || { noindex: ['cart', 'profile', 'auth'].includes(view) });
+            setStructuredData('ldProduct', null);
+
+            if (view === 'home') this.renderActiveHome();
             if (view === 'products') {
                 if (PRODUCTS.length === 0) {
                     loadProducts().then(() => this.renderProducts(params.get('cat')));
@@ -841,7 +1238,7 @@ const app = {
         const res = await apiCall('api/customer-session.php');
         if (res.ok && res.data && res.data.authenticated) {
             this.setCurrentUser(res.data.user);
-            if (window.location.hash.startsWith('#profile')) this.renderProfile();
+            if (parseLocation().view === 'profile') this.renderProfile();
         } else if (res.ok && res.data && res.data.authenticated === false) {
             if (this.currentUser) this.setCurrentUser(null);
         }
@@ -857,7 +1254,7 @@ const app = {
             { test: VALIDATORS.required, value: name,  message: 'Please enter your full name' },
             { test: v => VALIDATORS.maxLength(v, 120), value: name, message: 'Name is too long' },
             { test: VALIDATORS.email,    value: email, message: 'Please enter a valid email address' },
-            { test: v => VALIDATORS.minLength(v, 6),  value: pass, message: 'Password must be at least 6 characters' },
+            { test: v => VALIDATORS.minLength(v, 8),  value: pass, message: 'Password must be at least 8 characters' },
             { test: v => VALIDATORS.maxLength(v, 200),value: pass, message: 'Password is too long' }
         ]);
         if (err) { this.showToast(err, 'error'); return; }
@@ -920,12 +1317,13 @@ const app = {
         return `
             <div class="product-card">
                 <div class="product-img" data-action="open-product" data-id="${escapeAttr(product.id)}" style="cursor:pointer;">
-                    <img src="${img}" alt="${escapeAttr(product.name)}" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
+                    <img src="${img}" alt="${escapeAttr(product.name)}" loading="lazy" decoding="async" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
                     ${product.featured ? '<span class="product-badge">Featured</span>' : ''}
+                    ${amazonUrlFor(product) ? '<span class="amazon-chip"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
                 </div>
                 <div class="product-info">
                     <div class="product-cat">${cat}</div>
-                    <h3 class="product-title" data-action="open-product" data-id="${escapeAttr(product.id)}">${name}</h3>
+                    <h3 class="product-title"><a href="${escapeAttr(routeToPath('product-detail', { id: product.id }))}">${name}</a></h3>
                     <div class="product-price">₹${Number(product.price || 0).toLocaleString()}</div>
                     <button type="button" class="btn btn-primary btn-block" data-action="add-to-cart" data-id="${escapeAttr(product.id)}">
                         <i class="fas fa-cart-plus"></i> Add to Cart
@@ -938,9 +1336,14 @@ const app = {
     /* Brand-banner CTA: scroll to the home category strip, or open the catalog
        if we are not on the home view. */
     gotoCategories() {
-        const strip = document.getElementById('catMarquee');
+        const strip = document.getElementById('catMarquee') || document.getElementById('lcCategoryGrid');
         if (!strip) { this.navigate('products'); return; }
         strip.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    },
+
+    renderActiveHome() {
+        if (this.isLivingCraft()) this.renderLivingCraftHome();
+        else this.renderHome();
     },
 
     renderHome() {
@@ -955,6 +1358,48 @@ const app = {
             grid.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:2rem; grid-column:1/-1;">No products yet. Add some from the admin panel.</p>`;
         } else {
             grid.innerHTML = featured.map(p => this.createProductCard(p)).join('');
+        }
+    },
+
+    renderLivingCraftHome() {
+        this.stopHeroCarousel();
+
+        const categoryGrid = document.getElementById('lcCategoryGrid');
+        if (categoryGrid) {
+            CATEGORIES = getCategories();
+            categoryGrid.innerHTML = CATEGORIES.slice(0, 4).map(category => {
+                const image = escapeAttr(safeUrl(category.image) || DEFAULT_CAT_FALLBACK_IMAGE);
+                return `
+                    <button type="button" class="lc-category"
+                            data-action="open-category" data-cat="${escapeAttr(category.id)}">
+                        <span class="lc-category-image"><img src="${image}" alt="" loading="lazy" data-fallback="${escapeAttr(DEFAULT_CAT_FALLBACK_IMAGE)}"></span>
+                        <span class="lc-category-meta"><strong>${escapeHtml(category.name)}</strong><span>View collection →</span></span>
+                    </button>`;
+            }).join('');
+        }
+
+        const productGrid = document.getElementById('lcFeaturedGrid');
+        if (!productGrid) return;
+        let featured = PRODUCTS.filter(product => product.featured);
+        if (featured.length < 4) featured = PRODUCTS.slice(0, 4);
+        else featured = featured.slice(0, 4);
+        productGrid.innerHTML = featured.length
+            ? featured.map(product => this.createProductCard(product)).join('')
+            : '<p class="lc-empty">No products are available yet.</p>';
+    },
+
+    stopHeroCarousel() {
+        if (this._heroTimer) {
+            clearInterval(this._heroTimer);
+            this._heroTimer = null;
+        }
+        if (this._heroVisibility) {
+            document.removeEventListener('visibilitychange', this._heroVisibility);
+            this._heroVisibility = null;
+        }
+        if (this._heroCleanup) {
+            this._heroCleanup();
+            this._heroCleanup = null;
         }
     },
 
@@ -1141,15 +1586,129 @@ const app = {
         restart();
     },
 
+    // Catalog mega menu: search box, categories with photo and item count, a side
+    // column (search results, recently viewed, or popular products) and a wellness
+    // promo. Re-rendered when products finish loading.
     renderNavCategories() {
         const dd = document.getElementById('navCategoryDropdown');
         if (!dd) return;
         CATEGORIES = getCategories();
-        dd.innerHTML =
-            `<a href="#products" class="dropdown-item"><i class="fas fa-th-large text-gradient"></i> All Products</a>` +
-            CATEGORIES.map(c =>
-                `<a href="#products?cat=${encodeURIComponent(c.id)}" class="dropdown-item"><i class="${escapeAttr(c.icon || DEFAULT_CAT_FALLBACK_ICON)} text-gradient"></i> ${escapeHtml(c.name)}</a>`
-            ).join('');
+        const loaded = PRODUCTS.length > 0;
+
+        // Keep whatever the visitor already typed if the panel is rebuilt mid-search.
+        const oldInput = document.getElementById('megaSearch');
+        const query = oldInput ? oldInput.value : '';
+        const hadFocus = oldInput && document.activeElement === oldInput;
+
+        const catTiles = CATEGORIES.map(c => {
+            const count = PRODUCTS.filter(p => p.cat === c.id).length;
+            const meta = !loaded ? '' : (count ? `${count} item${count === 1 ? '' : 's'}` : 'Coming soon');
+            const img = escapeAttr(safeUrl(c.image) || DEFAULT_CAT_FALLBACK_IMAGE);
+            return `
+                <a href="#products?cat=${encodeURIComponent(c.id)}" class="mega-cat">
+                    <span class="mega-cat-thumb">
+                        <img src="${img}" alt="" loading="lazy" data-fallback="${escapeAttr(DEFAULT_CAT_FALLBACK_IMAGE)}">
+                        <i class="${escapeAttr(c.icon || DEFAULT_CAT_FALLBACK_ICON)}"></i>
+                    </span>
+                    <span class="mega-cat-text">
+                        <span class="mega-cat-name">${escapeHtml(c.name)}</span>
+                        <span class="mega-cat-meta">${escapeHtml(meta)}</span>
+                    </span>
+                </a>`;
+        }).join('');
+
+        dd.innerHTML = `
+            <div class="mega-search">
+                <i class="fas fa-search"></i>
+                <input type="search" id="megaSearch" placeholder="Search products, e.g. spice rack" autocomplete="off" maxlength="80" aria-label="Search products">
+                <kbd title="Press / anywhere to search">/</kbd>
+            </div>
+            <div class="mega-inner">
+                <div class="mega-col mega-cats">
+                    <div class="mega-heading">Shop by category</div>
+                    <div class="mega-cat-grid">${catTiles}</div>
+                    <a href="#products" class="mega-all">View all products <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="mega-col mega-featured" id="megaSide" aria-live="polite"></div>
+                <a href="#wellness" class="mega-col mega-promo">
+                    <span class="mega-promo-tag"><i class="fas fa-leaf"></i> Velorex Wellness</span>
+                    <span class="mega-promo-title">Ayurvedic wood, made by hand</span>
+                    <span class="mega-promo-text">Vijaysar glass, neem comb and acupressure tools.</span>
+                    <span class="mega-promo-link">Explore the range <i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+            <div class="mega-foot">
+                <span><i class="fas fa-truck"></i> Free shipping above ₹999</span>
+                <span><i class="fas fa-hand-sparkles"></i> Handmade in India</span>
+                <span><i class="fab fa-whatsapp"></i> Order on WhatsApp</span>
+            </div>`;
+
+        const input = document.getElementById('megaSearch');
+        if (input) {
+            input.value = query;
+            if (hadFocus) input.focus();
+        }
+        this.renderMegaSide(query);
+    },
+
+    // Products the visitor opened recently, newest first (ids kept in this browser only).
+    getRecentlyViewed() {
+        let ids = [];
+        try { ids = JSON.parse(localStorage.getItem('velorex_recent_products')) || []; } catch (_) {}
+        if (!Array.isArray(ids)) return [];
+        return ids.map(id => PRODUCTS.find(p => String(p.id) === String(id))).filter(Boolean);
+    },
+
+    trackRecentlyViewed(id) {
+        let ids = [];
+        try { ids = JSON.parse(localStorage.getItem('velorex_recent_products')) || []; } catch (_) {}
+        if (!Array.isArray(ids)) ids = [];
+        ids = [String(id)].concat(ids.filter(x => String(x) !== String(id))).slice(0, 6);
+        try { localStorage.setItem('velorex_recent_products', JSON.stringify(ids)); } catch (_) {}
+        this.renderMegaSide((document.getElementById('megaSearch') || {}).value || '');
+    },
+
+    // Side column of the mega menu. With a query it lists matching products;
+    // otherwise recently viewed products, or popular ones for a first-time visitor.
+    renderMegaSide(query) {
+        const side = document.getElementById('megaSide');
+        if (!side) return;
+        const inr = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+        const row = p => `
+            <button type="button" class="mega-product" data-action="open-product" data-id="${escapeAttr(p.id)}">
+                <img src="${escapeAttr(safeUrl(p.img) || '')}" alt="" loading="lazy" data-fallback="https://placehold.co/120x120/1a1a2e/9890b0?text=+">
+                <span class="mega-product-text">
+                    <span class="mega-product-name">${escapeHtml(p.name)}</span>
+                    <span class="mega-product-price">${inr(p.price)}${p.stock <= 0 ? ' <span class="mega-product-out">Out of stock</span>' : ''}</span>
+                </span>
+            </button>`;
+
+        const q = String(query || '').trim().toLowerCase();
+        let heading, items, empty = '';
+        if (q) {
+            // Every word typed must appear in the name, description or category.
+            const words = q.split(/\s+/);
+            items = PRODUCTS.filter(p => {
+                const hay = `${p.name} ${p.desc} ${getCatName(p.cat)}`.toLowerCase();
+                return words.every(w => hay.includes(w));
+            }).slice(0, 5);
+            heading = items.length ? `${items.length} result${items.length === 1 ? '' : 's'}` : 'No results';
+            if (!items.length) empty = `<p class="mega-empty">Nothing matches “${escapeHtml(query.trim())}”. Try a shorter word, or browse a category.</p>`;
+        } else {
+            const recent = this.getRecentlyViewed().slice(0, 3);
+            if (recent.length) {
+                heading = 'Recently viewed';
+                items = recent;
+            } else {
+                heading = 'Popular right now';
+                items = PRODUCTS.filter(p => p.featured).concat(PRODUCTS.filter(p => !p.featured)).slice(0, 3);
+            }
+            if (!items.length) empty = '<p class="mega-empty">Loading products…</p>';
+        }
+        const seeAll = (q && items.length)
+            ? `<a href="#products?q=${encodeURIComponent(query.trim())}" class="mega-all">See all results <i class="fas fa-arrow-right"></i></a>`
+            : '';
+        side.innerHTML = `<div class="mega-heading">${heading}</div>${items.map(row).join('')}${empty}${seeAll}`;
     },
 
     renderFooterCategories() {
@@ -1161,8 +1720,7 @@ const app = {
         ).join('');
         ul.innerHTML =
             `<li><a href="#products">All Products</a></li>` +
-            catLinks +
-            `<li><a href="#services">Design Services</a></li>`;
+            catLinks;
     },
 
     renderHomeCategories() {
@@ -1273,9 +1831,8 @@ const app = {
     proceedService(serviceId, pkgIdx) {
         const svc = SERVICES_DATA.find(s => s.id === serviceId);
         const pkg = svc.packages[pkgIdx];
-        const storeSettings = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
-        const waNumber = String(storeSettings.whatsapp || '').replace(/\D/g, '');
-        if (!waNumber) { this.showToast('WhatsApp number not configured by admin.', 'error'); return; }
+        const waNumber = storeWhatsAppNumber();
+        if (!waNumber) { this.showToast('WhatsApp ordering is not available yet. Please use the contact page.', 'error'); return; }
         const features = pkg.features.map(f => '• ' + f).join('\n');
         const text = `Hi Velorex Design! I would like to order the following service:\n\n*Service:* ${svc.name}\n*Package:* ${pkg.name}\n*Price:* ₹${pkg.price.toLocaleString()}\n\n*What's included:*\n${features}\n\nPlease let me know the next steps!`;
         window.open(`https://wa.me/${encodeURIComponent(waNumber)}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
@@ -1321,10 +1878,12 @@ const app = {
             });
         }
 
-        let filtered = PRODUCTS;
         if (catFilter && catFilter !== 'all') {
-            filtered = PRODUCTS.filter(p => p.cat === catFilter);
             title.innerHTML = `${escapeHtml(getCatName(catFilter))} <span class="text-gradient">Collection</span>`;
+            setSeo({
+                title: `${getCatName(catFilter)} | Velorex Design`,
+                description: `Shop handcrafted ${getCatName(catFilter)} from Velorex Design. Made by hand in India, free shipping above ₹999.`
+            });
         } else {
             title.innerHTML = `Our <span class="text-gradient">Catalog</span>`;
         }
@@ -1339,15 +1898,110 @@ const app = {
             bc.innerHTML = bcHtml;
         }
 
-        if (filtered.length > 0) {
+        // Filter state. Search, price and stock reset when the category changes;
+        // the chosen sort order is kept. A search can also arrive in the URL (?q=).
+        const f = this.productFilters;
+        const cat = (catFilter && catFilter !== 'all') ? catFilter : 'all';
+        const urlQ = parseLocation().params.get('q');
+        if (f.cat !== cat) { f.q = ''; f.price = 'all'; f.inStock = false; }
+        if (urlQ !== null) f.q = urlQ.slice(0, 80);
+        f.cat = cat;
+
+        const search = document.getElementById('pfSearch');
+        if (search && search.value !== f.q) search.value = f.q;
+        const sort = document.getElementById('pfSort');
+        if (sort) sort.value = f.sort;
+        const stock = document.getElementById('pfStock');
+        if (stock) stock.checked = f.inStock;
+
+        this.applyProductFilters();
+    },
+
+    productFilters: { cat: 'all', q: '', price: 'all', inStock: false, sort: 'featured' },
+
+    setProductFilter(key, value) {
+        this.productFilters[key] = value;
+        this.applyProductFilters();
+    },
+
+    clearProductFilters() {
+        Object.assign(this.productFilters, { q: '', price: 'all', inStock: false, sort: 'featured' });
+        const search = document.getElementById('pfSearch');
+        if (search) search.value = '';
+        const sort = document.getElementById('pfSort');
+        if (sort) sort.value = 'featured';
+        const stock = document.getElementById('pfStock');
+        if (stock) stock.checked = false;
+        this.applyProductFilters();
+    },
+
+    // Redraws only the grid, so the search box keeps focus while typing.
+    applyProductFilters() {
+        const grid = document.getElementById('productsGrid');
+        const noProd = document.getElementById('noProducts');
+        if (!grid || !noProd) return;
+        const f = this.productFilters;
+
+        let list = f.cat === 'all' ? PRODUCTS.slice() : PRODUCTS.filter(p => p.cat === f.cat);
+        const inCategory = list.length;
+
+        const q = f.q.trim().toLowerCase();
+        if (q) {
+            const words = q.split(/\s+/);
+            list = list.filter(p => {
+                const hay = `${p.name} ${p.desc} ${getCatName(p.cat)}`.toLowerCase();
+                return words.every(w => hay.includes(w));
+            });
+        }
+        if (f.price !== 'all') {
+            const [min, max] = f.price.split('-');
+            const lo = Number(min) || 0;
+            const hi = max === '' || max === undefined ? Infinity : Number(max);
+            list = list.filter(p => p.price >= lo && (hi === Infinity ? true : p.price < hi));
+        }
+        if (f.inStock) list = list.filter(p => p.stock > 0);
+
+        const sorters = {
+            'price-asc':  (x, y) => x.price - y.price,
+            'price-desc': (x, y) => y.price - x.price,
+            'name':       (x, y) => String(x.name).localeCompare(String(y.name)),
+            'newest':     (x, y) => (Number(y.id) || 0) - (Number(x.id) || 0)
+        };
+        if (sorters[f.sort]) list.sort(sorters[f.sort]);
+
+        const narrowed = !!q || f.price !== 'all' || f.inStock;
+        const active = narrowed || f.sort !== 'featured';
+
+        // Toolbar state
+        document.querySelectorAll('.pf-chip').forEach(chip => {
+            const on = chip.dataset.price === f.price;
+            chip.classList.toggle('active', on);
+            chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        const count = document.getElementById('pfCount');
+        if (count) {
+            count.textContent = narrowed
+                ? `${list.length} of ${inCategory} product${inCategory === 1 ? '' : 's'}`
+                : `${list.length} product${list.length === 1 ? '' : 's'}`;
+        }
+        const clear = document.getElementById('pfClear');
+        if (clear) clear.hidden = !active;
+
+        if (list.length > 0) {
             grid.style.display = 'grid';
             noProd.style.display = 'none';
-            grid.innerHTML = (!catFilter || catFilter === 'all')
-                ? this.catalogByTypeHtml(filtered)
-                : filtered.map(p => this.createProductCard(p)).join('');
+            // The full, unfiltered catalog is grouped by category; any filter or
+            // sort shows one flat list so the order the visitor asked for is clear.
+            grid.innerHTML = (f.cat === 'all' && !active)
+                ? this.catalogByTypeHtml(list)
+                : list.map(p => this.createProductCard(p)).join('');
         } else {
             grid.style.display = 'none';
             noProd.style.display = 'block';
+            const text = document.getElementById('noProductsText');
+            if (text) text.textContent = narrowed ? 'No products match these filters.' : 'No products found in this category.';
+            const btn = document.getElementById('noProductsClear');
+            if (btn) btn.hidden = !narrowed;
         }
     },
 
@@ -1390,8 +2044,18 @@ const app = {
 
         if (!product) {
             container.innerHTML = `<h2>Product not found.</h2>`;
+            // Products are still loading on a first visit, so only call it missing once they are in.
+            if (PRODUCTS.length) setSeo({ title: 'Product not found | Velorex Design', noindex: true });
             return;
         }
+
+        this.trackRecentlyViewed(product.id);
+        setSeo({
+            title: `${product.name} | Velorex Design`,
+            description: product.desc || `${product.name} from Velorex Design, handcrafted in India.`,
+            image: /vijaysar/i.test(product.name || '') ? VIJAYSAR_OG_IMAGE : product.img
+        });
+        setStructuredData('ldProduct', Object.assign({ '@context': 'https://schema.org' }, productSchema(product)));
 
         const bc = document.getElementById('bc-detail');
         if (bc) {
@@ -1410,7 +2074,7 @@ const app = {
         const thumbsHtml = gallery.length > 1 ? `
             <div class="detail-thumbs" style="display:flex; gap:0.6rem; margin-top:0.9rem; flex-wrap:wrap;">
                 ${gallery.map((src, i) => `
-                    <div data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" style="width:74px; height:74px; border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid ${i === 0 ? 'var(--secondary)' : 'var(--border)'}; transition:border-color 0.2s; background:#000;">
+                    <div data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" style="width:74px; height:74px; border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid ${i === 0 ? 'var(--secondary)' : 'var(--border)'}; transition:border-color 0.2s; background:var(--surface);">
                         <img src="${escapeAttr(safeUrl(src))}" data-broken-opacity="1" style="width:100%; height:100%; object-fit:cover;" alt="">
                     </div>
                 `).join('')}
@@ -1446,6 +2110,15 @@ const app = {
                         <i class="fas fa-cart-plus"></i> Add to Cart
                     </button>
                 </div>
+                ${(whatsAppOrderUrl(product) || amazonUrlFor(product)) ? `
+                <div class="buy-alt">
+                    <p class="buy-alt-label">Or order another way</p>
+                    <div class="buy-alt-buttons">
+                        ${whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
+                        ${amazonUrlFor(product) ? `<a class="btn btn-amazon" href="${escapeAttr(amazonUrlFor(product))}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>` : ''}
+                    </div>
+                    <p class="amazon-note">${whatsAppOrderUrl(product) ? 'Message us to order directly. ' : ''}${amazonUrlFor(product) ? 'Also sold by Velorex Design on Amazon.' : ''}</p>
+                </div>` : ''}
             </div>
         `;
 
@@ -1462,7 +2135,7 @@ const app = {
         const steps = d.steps.map((s, i) => `
             <div class="wellness-step">
                 <span class="wellness-step-num">0${i + 1}</span>
-                <i class="${s.icon}"></i>
+                ${s.img ? `<img class="wellness-step-img" src="${s.img}" alt="${s.title}" loading="lazy">` : `<i class="${s.icon}"></i>`}
                 <h4>${s.title}</h4>
                 <p>${s.text}</p>
             </div>`).join('');
@@ -1473,6 +2146,19 @@ const app = {
                 <p>${b.text}</p>
             </div>`).join('');
         const points = d.points.map(p => `<li><i class="fas fa-check"></i> ${p}</li>`).join('');
+        const list = items => (items || []).map(t => `<li><i class="fas fa-check"></i> ${t}</li>`).join('');
+        const careBlock = (d.care || d.goodToKnow) ? `
+                <div class="care-grid">
+                    ${d.care ? `<div><h4 class="care-title">Care</h4><ul class="wellness-points">${list(d.care)}</ul></div>` : ''}
+                    ${d.goodToKnow ? `<div><h4 class="care-title">Good to Know</h4><ul class="wellness-points">${list(d.goodToKnow)}</ul></div>` : ''}
+                </div>` : '';
+        const replaceBlock = d.replaceSchedule ? `
+                <div class="replace-card">
+                    <div class="replace-card-head">When to Replace Your Glass</div>
+                    <div class="replace-card-body">
+                        ${d.replaceSchedule.map(r => `<div><strong>${r.days}</strong><span>days</span><em>${r.use}</em></div>`).join('')}
+                    </div>
+                </div>` : '';
         const specs = (d.specs || []).map(sp => `
             <div class="spec-row">
                 <span class="spec-label">${sp.label}</span>
@@ -1491,6 +2177,13 @@ const app = {
 
                 <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.stepsHeading || 'How to Use'}</h3>
                 <div class="grid wellness-steps">${steps}</div>
+
+                ${d.firstUse ? `<p class="first-use-note"><strong>Before first use:</strong> ${d.firstUse}</p>` : ''}
+
+                ${careBlock || replaceBlock ? `
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">Care &amp; Replacement</h3>
+                ${careBlock}
+                ${replaceBlock}` : ''}
 
                 <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.benefitsHeading || 'Key Details &amp; Benefits'}</h3>
                 <div class="grid wellness-benefits">${benefits}</div>
@@ -1516,6 +2209,7 @@ const app = {
 
         const existing = this.cart.find(item => String(item.id) === String(id));
         if (existing) {
+            if (existing.qty >= 20) { this.showToast('You can order up to 20 of one item. Message us for bulk orders.'); return; }
             existing.qty += 1;
         } else {
             this.cart.push({ ...product, qty: 1 });
@@ -1523,13 +2217,13 @@ const app = {
 
         this.saveCart();
         this.showToast(`Added ${product.name} to cart!`);
-        if (window.location.hash.includes('cart')) this.renderCart();
+        if (parseLocation().view === 'cart') this.renderCart();
     },
 
     updateQty(id, change) {
         const item = this.cart.find(i => String(i.id) === String(id));
         if (item) {
-            item.qty += Number(change) || 0;
+            item.qty = Math.min(20, item.qty + (Number(change) || 0));
             if (item.qty <= 0) {
                 this.cart = this.cart.filter(i => String(i.id) !== String(id));
             }
@@ -1545,6 +2239,9 @@ const app = {
 
     updateCartBadge() {
         const count = this.cart.reduce((sum, item) => sum + (parseInt(item.qty, 10) || 0), 0);
+        // Same count on the phone tab bar
+        const tabBadge = document.getElementById('tabbarCartCount');
+        if (tabBadge) { tabBadge.textContent = count > 99 ? '99+' : count; tabBadge.hidden = count === 0; }
         const badge = document.getElementById('cartCount');
         if (!badge) return;
         badge.textContent = count;
@@ -1739,8 +2436,7 @@ const app = {
 
             loadProducts();
 
-            const storeSettings = JSON.parse(localStorage.getItem('velorex_store_settings')) || {};
-            const waNumber = String(storeSettings.whatsapp || '').replace(/\D/g, '');
+            const waNumber = storeWhatsAppNumber();
             const finalText = text + `\n\n*Order Reference:* ${orderCode}`;
             if (waNumber) {
                 window.open(`https://wa.me/${encodeURIComponent(waNumber)}?text=${encodeURIComponent(finalText)}`, '_blank', 'noopener,noreferrer');
@@ -2131,6 +2827,62 @@ const app = {
         document.getElementById('contactMessage').value = '';
     },
 
+    openItModal() {
+        const modal = document.getElementById('itModal');
+        if (!modal) return;
+        modal.classList.add('open');
+        const first = document.getElementById('itName');
+        if (first) first.focus();
+    },
+
+    closeItModal() {
+        const modal = document.getElementById('itModal');
+        if (modal) modal.classList.remove('open');
+    },
+
+    // Velorex Studio IT-services enquiry: emailed to the studio inbox by
+    // api/it-enquiry.php (the inbox address is kept on the server).
+    async submitItEnquiry() {
+        const val = id => document.getElementById(id).value.trim();
+        const name = val('itName'), phone = val('itPhone'), email = val('itEmail');
+        const service = val('itService'), budget = val('itBudget'), message = val('itMessage');
+
+        const err = validateForm([
+            { test: VALIDATORS.required, value: name,    message: 'Please enter your name' },
+            { test: VALIDATORS.phone,    value: phone,   message: 'Please enter a valid mobile number' },
+            { test: VALIDATORS.email,    value: email,   message: 'Please enter a valid email' },
+            { test: VALIDATORS.required, value: service, message: 'Please select a service' },
+            { test: VALIDATORS.required, value: message, message: 'Please describe your project' },
+            { test: v => VALIDATORS.maxLength(v, 2000),  value: message, message: 'Message is too long' }
+        ]);
+        if (err) { this.showToast(err, 'error'); return; }
+
+        const btn = document.getElementById('itSubmitBtn');
+        const btnHtml = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…'; }
+
+        let ok = false, errorMsg = 'We could not send your enquiry. Please check your connection and try again.';
+        try {
+            const res = await fetch('api/it-enquiry.php', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, email, service, budget, message, website: val('itWebsite') })
+            });
+            const data = await res.json().catch(() => null);
+            ok = res.ok && data && data.success;
+            if (!ok && data && data.error) errorMsg = data.error;
+        } catch (_) { /* network error: keep the default message */ }
+
+        if (btn) { btn.disabled = false; btn.innerHTML = btnHtml; }
+
+        if (!ok) { this.showToast(errorMsg, 'error'); return; }  // keep the form so nothing is lost
+
+        document.getElementById('itForm').reset();
+        this.closeItModal();
+        this.showToast(`Thanks ${name}! Your enquiry has been sent. We will reply by email or phone.`, 'success');
+    },
+
     showToast(msg, type = 'info') {
         const container = document.getElementById('toastContainer');
         if (!container) return;
@@ -2184,6 +2936,7 @@ const ACTION_HANDLERS = {
     'nav-toggle':          () => { const n = document.getElementById('navLinks'); if (n) n.classList.toggle('show'); },
     'back-to-top':         () => window.scrollTo({ top: 0, behavior: 'smooth' }),
     'toggle-theme':        () => app.toggleTheme(),
+    'toggle-design':       () => app.toggleDesign(),
     'goto-products':       () => app.navigate('products'),
     'goto-categories':     () => app.gotoCategories(),
     'goto-services':       () => app.navigate('services'),
@@ -2194,6 +2947,12 @@ const ACTION_HANDLERS = {
     'checkout':            () => app.checkout(),
     'close-checkout':      () => app.closeCheckoutModal(),
     'close-addr-modal':    () => app.hideAddressForm(),
+    'open-it-modal':       () => app.openItModal(),
+    'open-search':         () => { if (app.openSearch) app.openSearch(); },
+    'pf-price':            (e, el) => app.setProductFilter('price', el.dataset.price),
+    'pf-clear':            () => app.clearProductFilters(),
+    'close-it-modal':      () => app.closeItModal(),
+    'it-modal-backdrop':   (e, el) => { if (e.target === el) app.closeItModal(); },
     'edit-address':        (e, el) => app.showAddressForm(el.dataset.id),
     'delete-address':      (e, el) => app.deleteAddress(el.dataset.id),
     'default-address':     (e, el) => app.setDefaultAddress(el.dataset.id),
@@ -2229,7 +2988,14 @@ function wireDelegatedEvents() {
     document.addEventListener('change', (e) => {
         const trigger = e.target.closest('[data-action]');
         if (!trigger) return;
-        if (trigger.dataset.action === 'cat-filter') app.filterProducts();
+        const action = trigger.dataset.action;
+        if (action === 'cat-filter') app.filterProducts();
+        else if (action === 'pf-sort') app.setProductFilter('sort', trigger.value);
+        else if (action === 'pf-stock') app.setProductFilter('inStock', trigger.checked);
+    });
+
+    document.addEventListener('input', (e) => {
+        if (e.target.dataset && e.target.dataset.action === 'pf-search') app.setProductFilter('q', e.target.value);
     });
 
     document.addEventListener('submit', (e) => {
@@ -2243,7 +3009,12 @@ function wireDelegatedEvents() {
         else if (action === 'save-address') app.saveAddress();
         else if (action === 'submit-checkout') app.submitCheckout();
         else if (action === 'submit-contact')  app.submitContact();
+        else if (action === 'submit-it')       app.submitItEnquiry();
         else if (action === 'subscribe-newsletter') app.subscribeNewsletter(e);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') app.closeItModal();
     });
 
     // Broken-image fallback (replaces inline onerror)
@@ -2260,9 +3031,216 @@ function wireDelegatedEvents() {
     }, true);
 }
 
+/* ──────────────────────────────────────────────────────────────
+   UI EFFECTS: scroll progress bar, navbar state, reveal on scroll
+   ────────────────────────────────────────────────────────────── */
+
+/* ──────────────────────────────────────────────────────────────
+   MEGA MENU: open/close behaviour for the Catalog panel.
+   Desktop: opens on hover or keyboard focus, closes on Escape,
+   outside click, or after picking a link. Phone: the Catalog row
+   becomes a tap-to-expand section inside the hamburger menu.
+   ────────────────────────────────────────────────────────────── */
+
+function initMegaMenu() {
+    const items = [...document.querySelectorAll('.nav-mega')];
+    if (!items.length) return;
+
+    const isPhone = () => window.matchMedia('(max-width: 768px)').matches;
+    const isTouch = () => isPhone() || window.matchMedia('(hover: none)').matches;
+    const timers = new Map();
+
+    const setOpen = (item, open) => {
+        clearTimeout(timers.get(item));
+        if (open) items.forEach(other => { if (other !== item) setOpen(other, false); });
+        item.classList.toggle('open', open);
+        const trigger = item.querySelector('.nav-mega-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    const closeAll = () => items.forEach(item => setOpen(item, false));
+
+    items.forEach(item => {
+        const trigger = item.querySelector('.nav-mega-trigger');
+        const panel = item.querySelector('.mega-menu');
+        if (!trigger || !panel) return;
+        // A trigger with href="#" has no page of its own, so a click only toggles the panel.
+        const toggleOnly = (trigger.getAttribute('href') || '#') === '#';
+
+        // Short delay so the pointer can cross the gap between the link and the panel.
+        // Do not close under someone who is typing in the search box.
+        const closeSoon = () => {
+            clearTimeout(timers.get(item));
+            timers.set(item, setTimeout(() => {
+                if (!panel.contains(document.activeElement)) setOpen(item, false);
+            }, 180));
+        };
+
+        item.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && !isPhone()) setOpen(item, true); });
+        item.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && !isPhone()) closeSoon(); });
+
+        trigger.addEventListener('click', (e) => {
+            if (toggleOnly || isTouch()) {
+                // On phones and touch screens the first tap expands the menu instead of navigating.
+                e.preventDefault();
+                setOpen(item, isTouch() ? !item.classList.contains('open') : true);
+            } else {
+                setOpen(item, false);
+            }
+        });
+
+        trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === ' ' || (toggleOnly && e.key === 'Enter')) {
+                e.preventDefault();
+                setOpen(item, true);
+                const first = panel.querySelector('input, a, button');
+                if (first) first.focus();
+            }
+        });
+        item.addEventListener('focusin', () => { if (!isPhone()) setOpen(item, true); });
+        item.addEventListener('focusout', (e) => { if (!isPhone() && !item.contains(e.relatedTarget)) setOpen(item, false); });
+
+        // Picking anything inside the panel closes it (and the phone menu).
+        panel.addEventListener('click', (e) => {
+            if (!e.target.closest('a, button')) return;
+            setOpen(item, false);
+            const navLinks = document.getElementById('navLinks');
+            if (navLinks) navLinks.classList.remove('show');
+            if (document.activeElement && panel.contains(document.activeElement)) document.activeElement.blur();
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.nav-mega, [data-action="open-search"]')) return;
+        closeAll();
+    });
+    window.addEventListener('velorex:route', closeAll);
+
+    /* ── Product search inside the Catalog panel ── */
+    const catalog = document.getElementById('navMega');
+    const catalogPanel = document.getElementById('navCategoryDropdown');
+    const openSearch = () => {
+        if (!catalog) return;
+        if (isPhone()) {
+            const navLinks = document.getElementById('navLinks');
+            if (navLinks) navLinks.classList.add('show');
+        }
+        setOpen(catalog, true);
+        // Wait a frame: the panel has to be visible before the box can take focus.
+        requestAnimationFrame(() => {
+            const input = document.getElementById('megaSearch');
+            if (input) { input.focus(); input.select(); }
+        });
+    };
+    app.openSearch = openSearch;
+
+    if (catalogPanel) {
+        // The panel's contents are rebuilt by renderNavCategories(), so listen on the panel itself.
+        catalogPanel.addEventListener('input', (e) => {
+            if (e.target.id === 'megaSearch') app.renderMegaSide(e.target.value);
+        });
+        catalogPanel.addEventListener('keydown', (e) => {
+            if (e.target.id !== 'megaSearch') return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const first = catalogPanel.querySelector('#megaSide .mega-product');
+                if (first) first.click();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const first = catalogPanel.querySelector('#megaSide .mega-product');
+                if (first) first.focus();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const open = items.find(item => item.classList.contains('open'));
+            if (open) {
+                setOpen(open, false);
+                const trigger = open.querySelector('.nav-mega-trigger');
+                if (trigger && !isPhone()) trigger.blur();
+            }
+            return;
+        }
+        // "/" opens search from anywhere, unless the visitor is typing in a field.
+        const t = e.target;
+        const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+        if (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            e.preventDefault();
+            openSearch();
+        }
+    });
+}
+
+function initUiEffects() {
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Scroll progress bar + compact navbar. One rAF-throttled scroll listener.
+    const bar = document.createElement('div');
+    bar.className = 'scroll-progress';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+    const navbar = document.querySelector('.navbar');
+    let ticking = false;
+    const onScroll = () => {
+        ticking = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+        if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 24);
+    };
+    window.addEventListener('scroll', () => {
+        if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    onScroll();
+
+    // Reveal on scroll. Views are re-rendered on navigation and product grids
+    // arrive after the API responds, so watch #app for new elements.
+    if (reduced || !('IntersectionObserver' in window)) return;
+    const SELECTOR = '.product-card, .feature-item, .cat-card, .section-header, .service-card, .address-card, .faq-item, .trust-item, .split-card, .amazon-band-inner, .wellness-banner, .care-card';
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            el.classList.add('in');
+            io.unobserve(el);
+            // Drop the helper classes once the fade is done so the element's own
+            // hover transition (card lift, etc.) is not slowed by the reveal timing.
+            setTimeout(() => {
+                el.classList.remove('reveal', 'in');
+                el.style.removeProperty('--reveal-delay');
+                el.dataset.revealed = '1';
+            }, 1100);
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    const register = (root) => {
+        if (!root || !root.querySelectorAll) return;
+        const found = root.matches && root.matches(SELECTOR) ? [root] : [];
+        found.push(...root.querySelectorAll(SELECTOR));
+        let i = 0;
+        found.forEach(el => {
+            if (el.classList.contains('reveal') || el.dataset.revealed || el.closest('.cat-marquee-track')) return;
+            // Small stagger so a row of cards comes in one after another.
+            el.style.setProperty('--reveal-delay', (i++ % 4) * 70 + 'ms');
+            el.classList.add('reveal');
+            io.observe(el);
+        });
+    };
+
+    const appRoot = document.getElementById('app');
+    register(appRoot);
+    if (appRoot) {
+        new MutationObserver(muts => {
+            muts.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) register(n); }));
+        }).observe(appRoot, { childList: true, subtree: true });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
     wireDelegatedEvents();
     app.init();
+    initMegaMenu();
+    initUiEffects();
 });

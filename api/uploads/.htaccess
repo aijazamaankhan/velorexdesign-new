@@ -1,0 +1,9 @@
+# Uploaded files are served as plain images only. Anything that is not an
+# image is refused, so a script can never be run from this folder.
+Options -Indexes
+<FilesMatch "^.*$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "\.(?i:jpe?g|png|webp|gif)$">
+    Require all granted
+</FilesMatch>

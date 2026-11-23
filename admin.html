@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Velorex Admin | Premium Dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
     <!-- Font Awesome 6.5.1 from cdnjs with Subresource Integrity. If a future
          version is pinned in href, update the integrity hash from
          https://cdnjs.com/libraries/font-awesome -->
@@ -29,7 +30,7 @@
     <div id="authScreen">
         <div class="auth-card">
             <div class="logo" style="justify-content: center; margin-bottom: 2rem; font-size: 2.2rem;">
-                <i class="fas fa-gem"></i> Velorex <span>Admin</span>
+                <img src="images/brand/emblem.webp" width="36" height="36" alt="" style="width:36px;height:36px;padding:2px;border-radius:50%;background:#fbf6ea;vertical-align:middle;"> Velorex <span>Admin</span>
             </div>
             <p style="color: var(--text-muted); margin-bottom: 2rem;">Please enter your administrative credentials</p>
 
@@ -55,7 +56,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <a href="index.html" class="logo" rel="noopener">
-            <i class="fas fa-gem"></i> <span>Velorex</span>
+            <img src="images/brand/emblem.webp" width="28" height="28" alt="" style="width:28px;height:28px;padding:2px;border-radius:50%;background:#fbf6ea;vertical-align:middle;"> <span>Velorex</span>
         </a>
         <nav class="nav-menu">
             <a href="#inventory" class="nav-link active" data-action="set-tab" data-tab="inventory">
@@ -345,7 +346,7 @@
                         </div>
                         <div class="form-group">
                             <label for="adminNewPass">New Password <span style="color:var(--text-muted); font-size:0.78rem;">(min 6 characters)</span></label>
-                            <input type="password" id="adminNewPass" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current" maxlength="200" minlength="6">
+                            <input type="password" id="adminNewPass" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current" maxlength="200" minlength="8">
                         </div>
                         <div class="form-group">
                             <label for="adminNewPassConfirm">Confirm New Password</label>

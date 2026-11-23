@@ -31,7 +31,7 @@ if ($check->get_result()->num_rows === 0) {
 $stmt = $conn->prepare('DELETE FROM customers WHERE id = ?');
 $stmt->bind_param('i', $id);
 if (!$stmt->execute()) {
-    sendResponse(['error' => 'Failed to delete customer: ' . $stmt->error], 500);
+    sendResponse(['error' => 'Failed to delete customer'], 500);
 }
 
 sendResponse(['success' => true, 'id' => $id]);

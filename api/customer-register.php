@@ -9,10 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) $input = $_POST;
 
-$name = isset($input['name']) ? trim($input['name']) : '';
-$email = isset($input['email']) ? trim(strtolower($input['email'])) : '';
-$password = isset($input['password']) ? (string)$input['password'] : '';
-$phone = isset($input['phone']) ? trim($input['phone']) : '';
+$name = strField($input, 'name', 150);
+$email = strtolower(strField($input, 'email', 150));
+$password = isset($input['password']) && is_string($input['password']) ? $input['password'] : '';
+$phone = strField($input, 'phone', 30);
+
+// At most 10 sign-up attempts per hour from one IP address.
+rateLimitCheck('customer-register', 10, 3600);
+rateLimitHit('customer-register', 3600);
 
 if ($name === '' || $email === '' || $password === '') {
     sendResponse(['error' => 'Name, email, and password are required'], 422);
@@ -20,8 +24,8 @@ if ($name === '' || $email === '' || $password === '') {
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     sendResponse(['error' => 'Please enter a valid email address'], 422);
 }
-if (strlen($password) < 6) {
-    sendResponse(['error' => 'Password must be at least 6 characters'], 422);
+if (strlen($password) < 8 || strlen($password) > 200) {
+    sendResponse(['error' => 'Password must be 8 to 200 characters'], 422);
 }
 
 $stmt = $conn->prepare('SELECT id, password_hash FROM customers WHERE email = ? LIMIT 1');
@@ -37,19 +41,18 @@ if ($existing->num_rows === 1) {
     if (!empty($row['password_hash'])) {
         sendResponse(['error' => 'An account with this email already exists. Please sign in.'], 409);
     }
-    // Claim guest customer row that was created by a previous checkout.
-    $customerId = intval($row['id']);
-    if ($phone !== '') {
-        $upd = $conn->prepare('UPDATE customers SET name = ?, phone = ?, password_hash = ?, updated_at = NOW() WHERE id = ?');
-        $upd->bind_param('sssi', $name, $phone, $hash, $customerId);
-    } else {
-        $upd = $conn->prepare('UPDATE customers SET name = ?, password_hash = ?, updated_at = NOW() WHERE id = ?');
-        $upd->bind_param('ssi', $name, $hash, $customerId);
-    }
-    if (!$upd->execute()) {
+    // A guest checkout used this email before. Nothing proves the person signing
+    // up owns that inbox, so they must not see the guest's orders and address.
+    // Detach the old guest record (it stays in admin with its orders) and create
+    // a fresh account below.
+    $guestId = intval($row['id']);
+    $detach = $conn->prepare('UPDATE customers SET email = NULL WHERE id = ? AND password_hash IS NULL');
+    $detach->bind_param('i', $guestId);
+    if (!$detach->execute()) {
         sendResponse(['error' => 'Failed to create account'], 500);
     }
-} else {
+}
+{
     $ins = $conn->prepare('INSERT INTO customers (name, email, phone, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())');
     $ins->bind_param('ssss', $name, $email, $phone, $hash);
     if (!$ins->execute()) {
@@ -58,6 +61,7 @@ if ($existing->num_rows === 1) {
     $customerId = $ins->insert_id;
 }
 
+session_regenerate_id(true);
 $_SESSION['customer_id'] = $customerId;
 $_SESSION['customer_email'] = $email;
 $_SESSION['customer_name'] = $name;

@@ -1,10 +1,8 @@
 -- Velorex Design MySQL Schema
 -- ─────────────────────────────────────────────────────────────────────────────
--- Easiest path: after uploading files & creating an empty DB, visit
---   https://your-domain/api/setup.php
--- once. It creates every table below and seeds the admin (owner / owner123).
---
--- If you prefer phpMyAdmin / MySQL CLI, run this whole file inside your DB.
+-- After creating an empty database, import this file through phpMyAdmin or run
+-- it with the MySQL CLI. Then create the first admin using the template at the
+-- end of this file; no default admin credentials are installed automatically.
 -- ─────────────────────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS admins (
@@ -92,7 +90,7 @@ CREATE TABLE IF NOT EXISTS order_items (
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Seed the admin user (only if you skipped api/setup.php).
--- Replace <PASSWORD_HASH> with the result of:
---   php -r "echo password_hash('owner123', PASSWORD_BCRYPT);"
--- INSERT INTO admins (name, email, password_hash) VALUES ('Owner', 'owner', '<PASSWORD_HASH>');
+-- Create the first admin after replacing all placeholders. Generate the hash with:
+--   php -r "echo password_hash('replace-with-a-strong-password', PASSWORD_BCRYPT), PHP_EOL;"
+-- INSERT INTO admins (name, email, password_hash)
+-- VALUES ('Store Owner', 'admin-username', '<PASSWORD_HASH>');

@@ -9,8 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) $input = $_POST;
 
-$email = isset($input['email']) ? trim(strtolower($input['email'])) : '';
-$password = isset($input['password']) ? (string)$input['password'] : '';
+$email = strtolower(strField($input, 'email', 150));
+$password = isset($input['password']) && is_string($input['password']) ? $input['password'] : '';
+
+// At most 10 failed customer logins per 15 minutes from one IP address.
+rateLimitCheck('customer-login', 10, 900);
 
 if ($email === '' || $password === '') {
     sendResponse(['error' => 'Email and password are required'], 422);
@@ -21,14 +24,17 @@ $stmt->bind_param('s', $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows === 0) {
+$customer = $result->num_rows === 1 ? $result->fetch_assoc() : null;
+$hash = ($customer && !empty($customer['password_hash']))
+    ? $customer['password_hash']
+    : '$2y$10$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
+if (!password_verify($password, $hash) || !$customer || empty($customer['password_hash'])) {
+    rateLimitHit('customer-login', 900);
     sendResponse(['error' => 'Invalid email or password'], 401);
 }
 
-$customer = $result->fetch_assoc();
-if (empty($customer['password_hash']) || !password_verify($password, $customer['password_hash'])) {
-    sendResponse(['error' => 'Invalid email or password'], 401);
-}
+rateLimitClear('customer-login');
+session_regenerate_id(true);
 
 $_SESSION['customer_id'] = intval($customer['id']);
 $_SESSION['customer_email'] = $customer['email'];

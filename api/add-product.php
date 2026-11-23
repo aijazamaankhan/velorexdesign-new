@@ -37,7 +37,7 @@ if (!$name || !$category || $price <= 0) {
 $stmt = $conn->prepare('INSERT INTO products (name, category, price, stock, image_url, description, featured, images, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
 $stmt->bind_param('ssdissis', $name, $category, $price, $stock, $image_url, $description, $featured, $imagesJson);
 if (!$stmt->execute()) {
-    sendResponse(['error' => 'Database insert failed: ' . $stmt->error], 500);
+    sendResponse(['error' => 'Database insert failed'], 500);
 }
 
 $productId = $stmt->insert_id;

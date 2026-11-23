@@ -62,6 +62,17 @@ foreach ($files as $file) {
         $skipped[] = $file['name'] . ' (over 5MB)';
         continue;
     }
+    // The type and extension above come from the browser and can be faked.
+    // Check the file's real contents: it must decode as one of the allowed images.
+    $info = @getimagesize($file['tmp_name']);
+    if ($info === false || !in_array($info['mime'], $validTypes, true)) {
+        $skipped[] = $file['name'] . ' (not a real image)';
+        continue;
+    }
+    if (count($urls) >= 20) {
+        $skipped[] = $file['name'] . ' (limit of 20 files per upload)';
+        continue;
+    }
 
     $filename = bin2hex(random_bytes(16)) . '.' . $extension;
     $destination = $uploadDir . '/' . $filename;

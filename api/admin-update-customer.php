@@ -107,11 +107,11 @@ $params[] = $id;
 
 $upd = $conn->prepare($query);
 if (!$upd) {
-    sendResponse(['error' => 'Update query failed to prepare', 'detail' => $conn->error], 500);
+    error_log('Update query failed to prepare' . ': ' . $conn->error); sendResponse(['error' => 'Update query failed to prepare'], 500);
 }
 $upd->bind_param($types, ...$params);
 if (!$upd->execute()) {
-    sendResponse(['error' => 'Failed to update customer', 'detail' => $upd->error], 500);
+    error_log('Failed to update customer' . ': ' . $upd->error); sendResponse(['error' => 'Failed to update customer'], 500);
 }
 
 sendResponse([
