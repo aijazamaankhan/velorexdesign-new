@@ -201,6 +201,51 @@ function buyButtonHtml(product, extraClass = '') {
     return `<a class="btn btn-secondary ${extraClass}" href="${escapeAttr(mail)}"><i class="fas fa-envelope"></i> Ask about this</a>`;
 }
 
+/* Hero campaign banners. Each one can point at a product (by name match), the
+   Amazon store, WhatsApp or a page. Edit here to change the home carousel. */
+const HERO_PROMOS = [
+    {
+        key: 'vijaysar', eyebrow: 'Ayurvedic wellness', icon: 'fas fa-leaf',
+        title: 'Fill it at night.<br><span class="text-gradient">Drink it at dawn.</span>',
+        desc: 'The Vijaysar heartwood glass, hand-turned in Meerut. Natural wood, no polish, packed in a Velorex gift box.',
+        bg: 'images/products/vijaysar/banner.webp', art: 'images/products/vijaysar/box-front.webp',
+        product: /vijaysar/i, badge: 'Bestseller'
+    },
+    {
+        key: 'combo', eyebrow: 'Gift set', icon: 'fas fa-gift',
+        title: 'Natural Wellness <span class="text-gradient">Combo Kit</span>',
+        desc: 'Vijaysar glass, neem wood comb and acupressure stick in one box. A thoughtful gift for parents and grandparents.',
+        bg: 'images/products/combo/combo-kit.webp', art: 'images/products/combo/combo-kit.webp',
+        product: /combo/i, badge: '3 in 1'
+    },
+    {
+        key: 'racks', eyebrow: 'Kitchen & home storage', icon: 'fas fa-layer-group',
+        title: 'Racks that <span class="text-gradient">clear the counter</span>',
+        desc: 'Compact spice racks, two-tier organisers and a four-tier wall rack, precision-cut and hand-finished.',
+        bg: 'images/products/rack-4tier-1.webp', art: 'images/products/rack-2tier-14-1.webp',
+        category: 'rack', badge: '3 sizes'
+    },
+    {
+        key: 'buy', eyebrow: 'Two easy ways to buy', icon: 'fas fa-bag-shopping',
+        title: 'Buy on <span class="text-gradient">Amazon</span> or order on WhatsApp',
+        desc: 'Amazon delivery and returns, or message us directly at +91 79060 27807 for gifting and bulk orders.',
+        bg: 'images/hero.webp', art: 'images/products/combo/leaflet-more-from-velorex.webp',
+        buy: true, badge: 'Fast replies'
+    }
+];
+
+const BADGES = {
+    bestseller: { label: 'Bestseller', icon: 'fas fa-fire' },
+    new: { label: 'New', icon: 'fas fa-star' },
+    limited: { label: 'Limited stock', icon: 'fas fa-hourglass-half' },
+    gift: { label: 'Gift idea', icon: 'fas fa-gift' }
+};
+function productBadgeHtml(p) {
+    const b = BADGES[p.badge];
+    if (b) return `<span class="product-badge badge-${p.badge}"><i class="${b.icon}"></i> ${b.label}</span>`;
+    return p.featured ? '<span class="product-badge">Featured</span>' : '';
+}
+
 function amazonUrlFor(product) {
     // A link set in admin wins; the name table below covers built-in products.
     if (product && /^https:\/\/([a-z0-9-]+\.)*(amazon\.in|amzn\.in|amzn\.to)\//i.test(product.amazonUrl || '')) return product.amazonUrl;
@@ -325,7 +370,7 @@ const DEFAULT_CATS = [
     { id: 'rack',         name: 'MDF Racks & Shelves', icon: 'fas fa-layer-group', image: 'images/products/rack-4tier-1.jpg' },
     { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'images/products/combo/category-wellness.webp' },
     { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'images/categories/resin.webp' },
-    { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'images/categories/soap.webp' },
+    { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'images/categories/soap.svg' },
     { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'images/categories/candle.webp' },
     { id: 'raw_material', name: 'Raw Materials', icon: 'fas fa-box',       image: 'images/categories/raw.webp' }
 ];
@@ -852,7 +897,9 @@ async function loadProducts() {
                 desc: p.description || '',
                 stock: parseInt(p.stock, 10) || 0,
                 featured: p.featured === '1' || p.featured === 1 || p.featured === true,
-                amazonUrl: p.amazon_url || ''
+                amazonUrl: p.amazon_url || '',
+                badge: p.badge || '',
+                createdAt: p.created_at || ''
             };
         });
     } catch (error) {
@@ -1330,7 +1377,7 @@ const app = {
             <div class="product-card">
                 <div class="product-img" data-action="open-product" data-id="${escapeAttr(product.id)}" style="cursor:pointer;">
                     <img src="${img}" alt="${escapeAttr(product.name)}" loading="lazy" decoding="async" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
-                    ${product.featured ? '<span class="product-badge">Featured</span>' : ''}
+                    ${productBadgeHtml(product)}
                     ${amazonUrlFor(product) ? '<span class="amazon-chip"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
                 </div>
                 <div class="product-info">
@@ -1361,6 +1408,7 @@ const app = {
     renderHome() {
         this.initHeroCarousel();
         this.renderHomeCategories();
+        this.renderHomeCollections();
         const grid = document.getElementById('homeFeaturedGrid');
         if (!grid) return;
         let featured = PRODUCTS.filter(p => p.featured);
@@ -1370,6 +1418,44 @@ const app = {
             grid.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:2rem; grid-column:1/-1;">No products yet. Add some from the admin panel.</p>`;
         } else {
             grid.innerHTML = featured.map(p => this.createProductCard(p)).join('');
+        }
+    },
+
+    /* Bestsellers, New arrivals and Coming soon rows on the Classic home page.
+       Admin badges decide the first two; without badges they fall back to
+       featured products and the newest additions. */
+    renderHomeCollections() {
+        const best = document.getElementById('homeBestGrid');
+        const fresh = document.getElementById('homeNewGrid');
+        const soon = document.getElementById('homeSoonGrid');
+        const card = p => this.createProductCard(p);
+        if (best) {
+            let list = PRODUCTS.filter(p => p.badge === 'bestseller');
+            if (!list.length) list = PRODUCTS.filter(p => p.featured);
+            if (!list.length) list = PRODUCTS.slice();
+            best.innerHTML = list.slice(0, 4).map(card).join('');
+            best.closest('section').hidden = !list.length;
+        }
+        if (fresh) {
+            const ts = p => Date.parse(String(p.createdAt || '').replace(' ', 'T')) || Number(p.id) || 0;
+            let list = PRODUCTS.filter(p => p.badge === 'new');
+            if (!list.length) list = PRODUCTS.slice().sort((a, b) => ts(b) - ts(a));
+            fresh.innerHTML = list.slice(0, 4).map(card).join('');
+            fresh.closest('section').hidden = !list.length;
+        }
+        if (soon) {
+            const wa = storeWhatsAppNumber();
+            const empty = CATEGORIES.filter(c => !PRODUCTS.some(p => p.cat === c.id));
+            soon.innerHTML = empty.map(c => `
+                <div class="soon-card">
+                    <div class="soon-img"><img src="${escapeAttr(safeUrl(c.image))}" alt="${escapeAttr(c.name)}" loading="lazy"><span class="soon-tag"><i class="fas fa-clock"></i> Coming soon</span></div>
+                    <div class="soon-body">
+                        <h3>${escapeHtml(c.name)}</h3>
+                        <p>New pieces are being made in our Meerut studio.</p>
+                        ${wa ? `<a class="btn btn-secondary btn-sm" href="https://wa.me/${wa}?text=${encodeURIComponent('Hi Velorex Design! Please tell me when ' + c.name + ' is available.')}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Notify me</a>` : ''}
+                    </div>
+                </div>`).join('');
+            soon.closest('section').hidden = !empty.length;
         }
     },
 
@@ -1445,8 +1531,15 @@ const app = {
         const featured = PRODUCTS.filter(p => p.featured);
         const products = (featured.length ? featured : PRODUCTS).slice(0, 5);
 
-        // Slide 0 is always the Velorex Design banner; products follow it.
-        const items = [{ brand: true }, ...products];
+        // Slide 0 is the Velorex Design banner; campaign banners and featured
+        // products alternate after it so the carousel never feels repetitive.
+        const promos = HERO_PROMOS.map(p => Object.assign({ promo: true }, p));
+        const items = [{ brand: true }];
+        const longest = Math.max(promos.length, products.length);
+        for (let i = 0; i < longest; i++) {
+            if (promos[i]) items.push(promos[i]);
+            if (products[i]) items.push(products[i]);
+        }
 
         showcase.style.display = '';
         if (hero) hero.classList.add('hero--product');
@@ -1456,7 +1549,8 @@ const app = {
             const el = document.createElement('div');
             el.className = 'hero-slide ' + (p.brand ? 'hero-slide--brand' : 'hero-slide--product')
                 + (i === 0 ? ' active' : '');
-            el.style.backgroundImage = `url('${p.brand ? 'images/hero.webp' : safeUrl(p.img)}')`;
+            el.style.backgroundImage = `url('${p.brand ? 'images/hero.webp' : safeUrl(p.promo ? p.bg : p.img)}')`;
+            if (p.promo) el.classList.add('hero-slide--promo');
             track.insertBefore(el, overlay);
             return el;
         });
@@ -1470,7 +1564,7 @@ const app = {
             const dot = document.createElement('button');
             dot.type = 'button';
             dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
-            dot.setAttribute('aria-label', p.brand ? 'Show the Velorex Design banner' : `Show ${p.name}`);
+            dot.setAttribute('aria-label', p.brand ? 'Show the Velorex Design banner' : `Show ${p.promo ? p.eyebrow : p.name}`);
             dot.innerHTML = '<span class="hero-dot-fill"></span>';
             dot.addEventListener('click', () => go(i));
             dotsWrap.appendChild(dot);
@@ -1531,8 +1625,39 @@ const app = {
                 </div>`;
         };
 
+        /* Campaign banner: headline, short pitch, the matching buy buttons and art. */
+        const paintPromo = (p) => {
+            const product = p.product ? PRODUCTS.find(x => p.product.test(x.name || '')) : null;
+            let buttons = '';
+            if (product) {
+                buttons = `${buyButtonHtml(product)}
+                    <button type="button" class="btn btn-secondary" data-action="open-product" data-id="${escapeAttr(product.id)}"><i class="fas fa-eye"></i> View Details</button>`;
+            } else if (p.category) {
+                buttons = `<button type="button" class="btn btn-primary" data-action="open-category" data-cat="${escapeAttr(p.category)}"><i class="fas fa-layer-group"></i> See the collection</button>`;
+            } else if (p.buy) {
+                const wa = storeWhatsAppNumber();
+                buttons = `<a class="btn btn-amazon" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Amazon store</a>
+                    ${wa ? `<a class="btn btn-whatsapp" href="https://wa.me/${wa}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp us</a>` : ''}`;
+            }
+            content.innerHTML = `
+                <span class="hero-eyebrow"><i class="${escapeAttr(p.icon)}"></i> ${escapeHtml(p.eyebrow)}</span>
+                <h1 class="hero-title hero-title--product">${p.title}</h1>
+                <p class="hero-desc">${escapeHtml(p.desc)}</p>
+                <div class="hero-buttons">${buttons}</div>
+                <ul class="hero-meta">
+                    <li><i class="fas fa-hammer"></i> Handmade in India</li>
+                    <li><i class="fab fa-amazon"></i> On Amazon</li>
+                    <li><i class="fab fa-whatsapp"></i> WhatsApp orders</li>
+                </ul>`;
+            showcase.innerHTML = `
+                <div class="hero-card hero-card--promo"${product ? ` data-action="open-product" data-id="${escapeAttr(product.id)}"` : ''}>
+                    <img src="${escapeAttr(safeUrl(p.art))}" alt="${escapeAttr(p.eyebrow)}">
+                    ${p.badge ? `<span class="hero-card-tag hero-card-badge">${escapeHtml(p.badge)}</span>` : ''}
+                </div>`;
+        };
+
         const paint = (p) => {
-            if (p.brand) paintBrand(); else paintProduct(p);
+            if (p.brand) paintBrand(); else if (p.promo) paintPromo(p); else paintProduct(p);
             // Re-trigger the entrance animation on both columns.
             [content, showcase].forEach(el => {
                 el.classList.remove('is-entering');

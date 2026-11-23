@@ -203,7 +203,8 @@ async function loadData() {
                     images: imagesArr.length ? imagesArr : (cover ? [cover] : []),
                     desc: p.description || p.desc || '',
                     featured: p.featured === '1' || p.featured === 1 || p.featured === true,
-                    amazonUrl: p.amazon_url || ''
+                    amazonUrl: p.amazon_url || '',
+                    badge: p.badge || ''
                 };
             });
         }
@@ -378,6 +379,7 @@ async function saveProduct(e) {
     formData.append('category', category);
     formData.append('price', price === '' ? '0' : price);
     formData.append('amazon_url', amazonUrl);
+    formData.append('badge', document.getElementById('pBadge').value);
     formData.append('stock', stock);
     formData.append('image_url', cover);
     formData.append('images', JSON.stringify(currentImages));
@@ -1068,6 +1070,7 @@ function editProduct(id) {
     document.getElementById('pCat').value = p.cat;
     document.getElementById('pPrice').value = p.price || '';
     document.getElementById('pAmazon').value = p.amazonUrl || '';
+    document.getElementById('pBadge').value = p.badge || '';
     document.getElementById('pStock').value = p.stock || 0;
     document.getElementById('pImg').value = p.img;
     document.getElementById('pDesc').value = p.desc || '';

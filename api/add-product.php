@@ -45,6 +45,12 @@ if (!$stmt->execute()) {
 }
 
 $productId = $stmt->insert_id;
+$badge = products_clean_badge($_POST['badge'] ?? '');
+if ($badge !== false && $badge !== '') {
+    $bq = $conn->prepare('UPDATE products SET badge = ? WHERE id = ?');
+    $bq->bind_param('si', $badge, $productId);
+    $bq->execute();
+}
 if ($amazon !== '') {
     $a = $conn->prepare('UPDATE products SET amazon_url = ? WHERE id = ?');
     $a->bind_param('si', $amazon, $productId);

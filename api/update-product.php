@@ -43,6 +43,14 @@ if (isset($_POST['amazon_url'])) {
     $types .= 's';
     $params[] = $amazon === '' ? null : $amazon;
 }
+if (isset($_POST['badge'])) {
+    $badge = products_clean_badge($_POST['badge']);
+    if ($badge === false) sendResponse(['error' => 'Unknown badge'], 422);
+    products_ensure_columns($conn);
+    $fields[] = 'badge = ?';
+    $types .= 's';
+    $params[] = $badge === '' ? null : $badge;
+}
 if (isset($_POST['stock'])) {
     $fields[] = 'stock = ?';
     $types .= 'i';

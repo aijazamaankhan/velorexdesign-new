@@ -6,7 +6,7 @@ products_ensure_columns($conn);
 $category = isset($_GET['category']) ? sanitize($_GET['category']) : '';
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 
-$query = 'SELECT id, name, category, price, stock, image_url, images, description, featured, amazon_url FROM products';
+$query = 'SELECT id, name, category, price, stock, image_url, images, description, featured, amazon_url, badge, created_at FROM products';
 $params = [];
 $types = '';
 $where = [];

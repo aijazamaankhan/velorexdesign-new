@@ -8,9 +8,16 @@ function products_ensure_columns(mysqli $conn): void {
     $done = true;
     try {
         $conn->query('ALTER TABLE products ADD COLUMN IF NOT EXISTS amazon_url VARCHAR(500) NULL');
+        $conn->query('ALTER TABLE products ADD COLUMN IF NOT EXISTS badge VARCHAR(20) NULL');
     } catch (Throwable $e) {
         error_log('products amazon_url column: ' . $e->getMessage());
     }
+}
+
+/** Allowed product badges ('' clears it). Returns the badge or false. */
+function products_clean_badge($raw) {
+    $b = is_string($raw) ? strtolower(trim($raw)) : '';
+    return in_array($b, ['', 'bestseller', 'new', 'limited', 'gift'], true) ? $b : false;
 }
 
 /**
