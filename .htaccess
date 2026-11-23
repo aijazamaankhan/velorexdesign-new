@@ -34,7 +34,7 @@
     # Repo files that get uploaded with a deploy but are not part of the site
     # (same rule as velorexmusic.com). Must run before the "real file" bailout.
     RewriteRule ^(tests|tasks|docs|Logo|\.playwright-cli)/ - [F,L]
-    RewriteRule ^(living-craft-preview\.html|maintenance\.html)$ - [R=404,L]
+    RewriteRule ^(living-craft-preview\.html)$ - [R=404,L]
 
     # Admin portal: only reachable through the secret address /manage/<key>
     # (key = ADMIN_PATH_KEY in the server .env). Direct requests for admin.html
