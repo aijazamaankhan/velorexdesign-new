@@ -746,12 +746,13 @@
       <section class="section">
         <div class="container">
           <ul class="breadcrumbs" id="bc-products"></ul>
-          <div class="section-header"
-            style="text-align: left; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <h2 class="section-title" id="catalogTitle">Our <span class="text-gradient">Catalog</span></h2>
-              <p class="section-subtitle">Browse our handcrafted items</p>
+          <div class="catalog-hero">
+            <div class="catalog-hero-copy">
+              <span class="catalog-kicker"><i class="fas fa-hand-sparkles"></i> Handmade in Meerut, India</span>
+              <h1 class="catalog-title" id="catalogTitle">Our <span class="text-gradient">Catalog</span></h1>
+              <p class="catalog-sub">Wood, wellness and storage pieces made by hand. Pick one you like and buy it safely on Amazon.</p>
             </div>
+            <a class="btn btn-amazon catalog-store-btn" href="https://www.amazon.in/l/27943762031?ie=UTF8&amp;marketplaceID=A21TJRUUN4KGV&amp;me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Visit our Amazon store</a>
           </div>
 
           <!-- Search, filters and sorting for the product grid -->
@@ -764,16 +765,11 @@
               <select id="catFilter" class="form-control pf-select" data-action="cat-filter" aria-label="Category"></select>
               <select id="pfSort" class="form-control pf-select" data-action="pf-sort" aria-label="Sort by">
                 <option value="featured">Sort: Featured</option>
-                <option value="price-asc">Price: low to high</option>
-                <option value="price-desc">Price: high to low</option>
                 <option value="name">Name: A to Z</option>
                 <option value="newest">Newest first</option>
               </select>
             </div>
             <div class="pf-row">
-              <label class="pf-check">
-                <input type="checkbox" id="pfStock" data-action="pf-stock"> In stock only
-              </label>
               <div class="pf-summary">
                 <span id="pfCount" aria-live="polite"></span>
                 <button type="button" class="pf-clear" id="pfClear" data-action="pf-clear" hidden><i class="fas fa-times"></i> Clear filters</button>
