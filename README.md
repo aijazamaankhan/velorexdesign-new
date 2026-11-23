@@ -4,9 +4,17 @@ Velorex Design is a PHP and MySQL storefront for handcrafted wood, resin-art, an
 
 ## Current development state
 
-The latest committed baseline is `8b7c96a` from 11 September 2026 (`admin and new prodcuts listing`). The current checkout also contains a substantial **uncommitted, Unreleased** update. See [CHANGELOG.md](CHANGELOG.md) for the reviewed local changes.
+Code lives on GitHub at `aijazamaankhan/velorexdesign-new`, branch `main`. The live site is **velorexdesign.com** on Hostinger (account `u286479481`, document root `domains/velorexdesign.com/public_html`). Pushing to GitHub does **not** update the live site; see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-Do not treat the Unreleased section as deployed until the working tree is reviewed, committed, and published.
+See [CHANGELOG.md](CHANGELOG.md) for what changed and when.
+
+## Storefront designs
+
+Only the **Classic** design is shown to visitors. The second design, **Living Craft**, is kept in the code but hidden:
+
+- `ALTERNATE_DESIGN_ENABLED = false` in `js/design-selection.js` ignores saved choices and hides the header switch.
+- Preview it any time with `?design=living-craft` in the address.
+- To bring it back for everyone, set the flag to `true`. Its styles are in `css/themes/`.
 
 ## Runtime requirements
 

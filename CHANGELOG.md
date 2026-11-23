@@ -2,7 +2,19 @@
 
 This file records repository development. Entries under **Unreleased** describe the current local working tree and are not proof of production deployment.
 
-## Unreleased — storefront update, 24 November 2026
+## 41d8962 — storefront update, 24 November 2026 (pushed to GitHub, not yet deployed)
+
+### Security
+
+- Signing up with an email that a guest used at checkout no longer reveals that guest's orders and address. The old guest record is detached and kept in admin.
+- Guest orders can no longer be filed under a registered customer's account.
+- Order limits: 5 orders per hour per IP, 20 of one item, 25 lines per order. The cart caps at 20.
+- Admin endpoints no longer return database error text. Customer passwords need 8 characters.
+
+### Designs
+
+- Living Craft is hidden; visitors always get Classic. See README, "Storefront designs".
+
 
 ### Added
 
