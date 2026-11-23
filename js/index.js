@@ -1510,7 +1510,7 @@ const app = {
                 <ul class="hero-meta">
                     <li><i class="fas fa-hammer"></i> ${escapeHtml(craftLabel(p))}</li>
                     <li><i class="fas fa-truck"></i> Ships in 3&ndash;5 days</li>
-                    <li><i class="fab fa-amazon"></i> Sold on Amazon</li>
+                    ${amazonUrlFor(p) ? '<li><i class="fab fa-amazon"></i> Sold on Amazon</li>' : '<li><i class="fas fa-envelope"></i> Order by email</li>'}
                 </ul>`;
             showcase.innerHTML = `
                 <div class="hero-card" data-action="open-product" data-id="${escapeAttr(p.id)}">

@@ -6,6 +6,12 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- Home wellness section: Buy on Amazon is now the first button; the three buttons are equal and full width on phones.
+- Search icon shown in the phone header as well as the tab bar.
+- Header stays on one line on tablets and small laptops (800 to 1200px); the logo text hides below 960px so the menu fits.
+- Banner arrows hidden below 1200px (they covered the headline); dots and swipe still work.
+- Banner says "Sold on Amazon" only for products that are on Amazon, otherwise "Order by email".
+
 - Live database repaired: storefront tables created, admin `owner` added, 8 starter products loaded. Admin login and the product list work again.
 - Phone tab bar has five equal slots (Home, Shop, Search, Wellness, Account) so Search sits in the middle.
 - "Our Other Stores" in the phone menu shows full-width stacked store cards with the IT services card below.

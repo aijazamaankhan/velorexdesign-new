@@ -44,7 +44,7 @@ Git auto-deploy pulls the branch and keeps `.env`. Do not use "deploy from archi
 
 ## Layout check before a release
 
-Every release should pass the overflow sweep: open each main page at 320, 375, 414, 768 and 1024px wide and confirm nothing is cut off and the page never scrolls sideways. Also open the phone menu (three-line button) and the Catalog dropdown inside it.
+Every release should pass the overflow sweep: open each main page at 320, 375, 414, 768, 1024 and 1180px wide, check the header stays on one line, and confirm nothing is cut off and the page never scrolls sideways. Also open the phone menu (three-line button) and the Catalog dropdown inside it.
 
 Known trap: never put `backdrop-filter`, `filter` or `transform` on `.navbar` on phones. Any of them makes the fixed phone menu position against the 80px bar instead of the screen, and the menu collapses to one link.
 

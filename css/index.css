@@ -3690,3 +3690,35 @@ html:not([data-design="living-craft"]) .product-card:hover::after { opacity: 1; 
   .nav-links .mega-stores .mega-promo-title { font-size: 1.15rem; line-height: 1.25; }
   .nav-links .mega-stores .mega-heading { text-align: left; }
 }
+
+/* Call-to-action button groups: equal buttons side by side, full width on phones */
+.cta-group { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+.cta-group .btn { flex: 1 1 0; min-width: 160px; }
+@media (max-width: 600px) {
+  .cta-group { flex-direction: column; }
+  .cta-group .btn { width: 100%; flex: none; }
+}
+
+/* Phones: show search in the top bar too, where shoppers look for it first */
+@media (max-width: 768px) {
+  .nav-actions .nav-search-btn { display: inline-flex !important; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0 !important; }
+}
+
+/* Tablets and small laptops (769–1200px): keep the header on one line */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .navbar .nav-container { padding-inline: 1.25rem; }
+  .navbar .nav-brand { font-size: 1.45rem; }
+  .navbar .nav-brand .brand-emblem { width: 38px; height: 38px; }
+  .navbar .nav-links { gap: 1rem; }
+  .navbar .nav-links .nav-link, .navbar .nav-links a { white-space: nowrap; font-size: .92rem; }
+  .navbar .nav-links .nav-wellness, .navbar .nav-links [class*="wellness"] { padding: .5rem .9rem; }
+  .navbar .nav-actions { gap: .25rem; }
+}
+@media (min-width: 769px) and (max-width: 960px) {
+  .navbar .nav-brand span { display: none; } /* emblem only, so the menu fits */
+}
+
+/* Hero arrows covered the headline on tablets; dots and swipe remain */
+@media (max-width: 1200px) {
+  .hero-arrow { display: none; }
+}
