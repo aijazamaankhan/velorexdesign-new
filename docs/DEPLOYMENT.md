@@ -39,7 +39,7 @@ The Hostinger deploy tool skips `.env` and replaces the site's contents, so if y
 ## After a deploy
 
 1. If the release has a database script (for example `wellness-update.sql`), run it once in phpMyAdmin. Do not re-run `wellness-seed.sql` or `catalog-seed.sql` on the live database; they create duplicates.
-2. Open the home page, a product page, the cart and `admin.html`, and check the browser console for errors.
+2. Open the home page, a product page, the cart and the secret admin link, and check the browser console for errors.
 3. Check that https://velorexdesign.com/.env returns 403.
 
 ## Settings to fill in later
