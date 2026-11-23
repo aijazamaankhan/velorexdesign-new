@@ -3663,3 +3663,30 @@ html:not([data-design="living-craft"]) .product-card:hover::after { opacity: 1; 
   .product-img img, .pd-main img, .cat-card img, #detailMainImage.swap, .toast { animation: none !important; }
   .modal-close-btn:hover { transform: none; }
 }
+
+/* Phone tab bar: five equal slots so the round Search button sits in the middle */
+@media (max-width: 768px) {
+  .tabbar { display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; }
+  .tabbar-item { min-width: 0; justify-self: center; width: 100%; }
+  .tabbar-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+}
+
+/* "Our Other Stores" inside the phone menu: one column, full-width cards, promo below */
+@media (max-width: 768px) {
+  .nav-links .mega-stores .mega-inner { display: flex; flex-direction: column; gap: .9rem; }
+  .nav-links .mega-stores .mega-col { width: 100%; min-width: 0; }
+  .nav-links .mega-stores .mega-store-grid { display: grid; grid-template-columns: 1fr; gap: .6rem; }
+  .nav-links .mega-stores .mega-store {
+    display: flex; align-items: center; gap: .85rem; text-align: left; padding: .8rem .9rem;
+    border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,.03);
+  }
+  .nav-links .mega-stores .mega-store-icon { flex: 0 0 44px; height: 44px; }
+  .nav-links .mega-stores .mega-store-text { min-width: 0; display: flex; flex-direction: column; gap: .15rem; }
+  .nav-links .mega-stores .mega-store-name { font-size: .95rem; }
+  .nav-links .mega-stores .mega-store-desc { font-size: .8rem; }
+  .nav-links .mega-stores .mega-promo {
+    width: 100%; min-height: 0; text-align: left; padding: 1.1rem 1.2rem; border-radius: 14px;
+  }
+  .nav-links .mega-stores .mega-promo-title { font-size: 1.15rem; line-height: 1.25; }
+  .nav-links .mega-stores .mega-heading { text-align: left; }
+}

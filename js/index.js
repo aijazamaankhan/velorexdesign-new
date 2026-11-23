@@ -1076,7 +1076,7 @@ const app = {
             window.scrollTo(0, 0);
 
             // Highlight the matching tab on the phone tab bar.
-            const tabFor = { home: 'home', products: 'products', 'product-detail': 'products', wellness: 'products', cart: 'cart', profile: 'profile', auth: 'profile' }[view];
+            const tabFor = { home: 'home', products: 'products', 'product-detail': 'products', wellness: 'wellness', cart: 'cart', profile: 'profile', auth: 'profile' }[view];
             document.querySelectorAll('.tabbar-item[data-tab]').forEach(tab => {
                 const on = tab.dataset.tab === tabFor;
                 tab.classList.toggle('active', on);
