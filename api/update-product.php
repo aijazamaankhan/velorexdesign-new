@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(['error' => 'Invalid request method'], 405);
 }
 
-if (empty($_SESSION['admin_id'])) {
+if (!admin_session_ok()) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
@@ -42,6 +42,12 @@ if (isset($_POST['amazon_url'])) {
     $fields[] = 'amazon_url = ?';
     $types .= 's';
     $params[] = $amazon === '' ? null : $amazon;
+}
+if (isset($_POST['cost_price'])) {
+    products_ensure_columns($conn);
+    $fields[] = 'cost_price = ?';
+    $types .= 's';
+    $params[] = $_POST['cost_price'] === '' ? null : (string) max(0, (float) $_POST['cost_price']);
 }
 if (isset($_POST['badge'])) {
     $badge = products_clean_badge($_POST['badge']);

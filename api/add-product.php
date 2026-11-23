@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(['error' => 'Invalid request method'], 405);
 }
 
-if (empty($_SESSION['admin_id'])) {
+if (!admin_session_ok()) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
@@ -45,6 +45,12 @@ if (!$stmt->execute()) {
 }
 
 $productId = $stmt->insert_id;
+if (isset($_POST['cost_price']) && $_POST['cost_price'] !== '') {
+    $cost = max(0, (float) $_POST['cost_price']);
+    $cq = $conn->prepare('UPDATE products SET cost_price = ? WHERE id = ?');
+    $cq->bind_param('di', $cost, $productId);
+    $cq->execute();
+}
 $badge = products_clean_badge($_POST['badge'] ?? '');
 if ($badge !== false && $badge !== '') {
     $bq = $conn->prepare('UPDATE products SET badge = ? WHERE id = ?');

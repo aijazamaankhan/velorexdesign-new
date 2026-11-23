@@ -6,6 +6,11 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- Admin Analytics & P&L: income (website/WhatsApp orders + ledger income such as Amazon payouts), cost of goods from a new admin-only product cost price, expenses from a new ledger, net profit and margin, monthly chart, top products, costs by category, CSV export, period picker.
+- Admin sessions now end 8 hours after login (as on velorexmusic.com); a weak admin password shows a warning after login.
+- Admin fixes: popups scroll instead of being cut off, item quantities (no more "0×"), Indian date format, real contact details in Settings, summary cards only on the Inventory dashboard, tables become labelled cards on phones.
+- Storefront: hero campaign banners (Vijaysar, Combo Kit, racks, ways to buy) between product slides; Bestsellers, New arrivals and Coming soon rows; product badges (Bestseller, New, Limited stock, Gift idea) set in admin; soap illustration replaces a mismatched stock photo.
+
 - Admin image cropper (modelled on velorexmusic.com): every picked image opens framed by auto-crop (finds the product against a plain background), with Square / 4:5 / 4:3 / 16:9 / Free shapes, drag and corner resize, rotate, Use original, Skip, and Auto-crop all for batches. Only the cropped WebP (max 1600 px) is uploaded.
 - Chat assistant plan written up in `docs/CHAT-ASSISTANT-PLAN.md`.
 

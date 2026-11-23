@@ -124,6 +124,9 @@ async function checkAuth() {
         localStorage.setItem('velorex_admin_email', res.data.admin.email);
         { const nameEl = document.getElementById('adminName'); if (nameEl) nameEl.textContent = res.data.admin.name || res.data.admin.email || 'Admin'; }
         showToast('Login successful', 'success');
+        if (res.data.weakPassword) {
+            setTimeout(() => showToast('Your password is easy to guess. Please change it in Settings (10+ characters).', 'error'), 1200);
+        }
         setTimeout(() => showApp(), 400);
         return;
     }
@@ -204,7 +207,8 @@ async function loadData() {
                     desc: p.description || p.desc || '',
                     featured: p.featured === '1' || p.featured === 1 || p.featured === true,
                     amazonUrl: p.amazon_url || '',
-                    badge: p.badge || ''
+                    badge: p.badge || '',
+                    costPrice: p.cost_price != null ? parseFloat(p.cost_price) : null
                 };
             });
         }
@@ -233,7 +237,7 @@ async function loadData() {
                 adminNote: o.admin_note || '',
                 statusHistory: o.status_history || [],
                 createdAt: o.created_at || null,
-                date: o.created_at ? new Date(o.created_at).toLocaleDateString() : ''
+                date: o.created_at ? new Date(String(o.created_at).replace(' ', 'T')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
             }));
         }
     } catch (error) {
@@ -380,6 +384,7 @@ async function saveProduct(e) {
     formData.append('price', price === '' ? '0' : price);
     formData.append('amazon_url', amazonUrl);
     formData.append('badge', document.getElementById('pBadge').value);
+    formData.append('cost_price', document.getElementById('pCost').value.trim());
     formData.append('stock', stock);
     formData.append('image_url', cover);
     formData.append('images', JSON.stringify(currentImages));
@@ -632,13 +637,17 @@ function switchTab(tab, el) {
     document.getElementById(tab + '-tab').style.display = 'block';
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
-    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings', coupons: 'Coupons and Offers', loyalty: 'Loyalty Points' };
+    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Analytics & Profit', settings: 'Store Settings', coupons: 'Coupons and Offers', loyalty: 'Loyalty Points' };
     document.getElementById('tabTitle').textContent = titles[tab] || tab;
     if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
     if (tab === 'customers') loadCustomers();
     if (tab === 'featured') { loadData(); renderFeatured(); }
     if (tab === 'categories') renderCategories();
+    // The summary cards belong to the dashboard (Inventory) only.
+    const statsGrid = document.querySelector('#adminApp > .stats-grid');
+    if (statsGrid) statsGrid.style.display = tab === 'inventory' ? '' : 'none';
     if (tab === 'coupons' && typeof loadCoupons === 'function') loadCoupons();
+    if (tab === 'analytics' && typeof loadAnalytics === 'function') loadAnalytics();
     if (tab === 'loyalty' && typeof loadLoyalty === 'function') loadLoyalty();
 }
 
@@ -646,7 +655,7 @@ function showModal(edit = false) {
     if (!edit) {
         document.getElementById('productForm').reset();
         document.getElementById('editingId').value = '';
-        document.getElementById('modalTitle').textContent = 'Add Premium Item';
+        document.getElementById('modalTitle').textContent = 'Add product';
         document.getElementById('submitBtn').textContent = 'Create Listing';
         currentImages = [];
         renderImagesGallery();
@@ -1071,6 +1080,7 @@ function editProduct(id) {
     document.getElementById('pPrice').value = p.price || '';
     document.getElementById('pAmazon').value = p.amazonUrl || '';
     document.getElementById('pBadge').value = p.badge || '';
+    document.getElementById('pCost').value = p.costPrice != null ? p.costPrice : '';
     document.getElementById('pStock').value = p.stock || 0;
     document.getElementById('pImg').value = p.img;
     document.getElementById('pDesc').value = p.desc || '';
@@ -1304,7 +1314,7 @@ function renderOrders() {
     }
 
     oList.innerHTML = filtered.map(o => {
-        const itemsSummary = (o.items || []).slice(0, 2).map(i => `${parseInt(i.qty, 10) || 0}× ${escapeHtml(i.name)}`).join(', ') + ((o.items || []).length > 2 ? ` +${o.items.length - 2} more` : '');
+        const itemsSummary = (o.items || []).slice(0, 2).map(i => `${parseInt(i.qty ?? i.quantity, 10) || 0}× ${escapeHtml(i.name)}`).join(', ') + ((o.items || []).length > 2 ? ` +${o.items.length - 2} more` : '');
         const isExpanded = expandedOrderId === o.id.toString();
         const expandHtml = isExpanded ? buildExpandRow(o) : '';
         const statusKey = (o.status || 'pending').toLowerCase();
@@ -1347,8 +1357,8 @@ function renderOrders() {
 function buildExpandRow(o) {
     const items = (o.items || []).map(i =>
         `<div style="display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem;">
-            <span>${parseInt(i.qty, 10) || 0}× ${escapeHtml(i.name)}</span>
-            <span style="color:var(--accent); font-weight:600;">₹${((parseFloat(i.price) || 0) * (parseInt(i.qty, 10) || 0)).toLocaleString()}</span>
+            <span>${parseInt(i.qty ?? i.quantity, 10) || 0}× ${escapeHtml(i.name)}</span>
+            <span style="color:var(--accent); font-weight:600;">₹${((parseFloat(i.price ?? i.unit_price) || 0) * (parseInt(i.qty ?? i.quantity, 10) || 0)).toLocaleString()}</span>
         </div>`
     ).join('');
 

@@ -162,6 +162,22 @@ if (!function_exists('rateLimitFile')) {
     }
 }
 
+/* Admin sessions last at most 8 hours from login (same as velorexmusic.com's
+   admin tickets). After that every admin endpoint answers 401 and the admin
+   logs in again. Call after session_start(). */
+if (!defined('ADMIN_SESSION_HOURS')) define('ADMIN_SESSION_HOURS', 8);
+if (!function_exists('admin_session_ok')) {
+    function admin_session_ok() {
+        if (!admin_session_ok()) return false;
+        $at = isset($_SESSION['admin_login_at']) ? (int) $_SESSION['admin_login_at'] : 0;
+        if ($at <= 0 || time() - $at > ADMIN_SESSION_HOURS * 3600) {
+            unset($_SESSION['admin_id'], $_SESSION['admin_email'], $_SESSION['admin_name'], $_SESSION['admin_login_at']);
+            return false;
+        }
+        return true;
+    }
+}
+
 /** Reads a request field as a trimmed string, capped in length. Non-strings become ''. */
 if (!function_exists('strField')) {
     function strField($source, $key, $maxLen = 255) {

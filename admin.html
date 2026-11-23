@@ -25,11 +25,12 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Playfair+Display:wght@700&display=swap"
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="css/admin.css?v=20261124o">
-    <script src="js/admin.js?v=20261124o" defer></script>
-    <script src="js/admin-marketing.js?v=20261124o" defer></script>
-    <script src="js/admin-print.js?v=20261124o" defer></script>
-    <script src="js/admin-cropper.js?v=20261124o" defer></script>
+    <link rel="stylesheet" href="css/admin.css?v=20261124r">
+    <script src="js/admin.js?v=20261124r" defer></script>
+    <script src="js/admin-marketing.js?v=20261124r" defer></script>
+    <script src="js/admin-print.js?v=20261124r" defer></script>
+    <script src="js/admin-cropper.js?v=20261124r" defer></script>
+    <script src="js/admin-analytics.js?v=20261124r" defer></script>
 </head>
 
 <body>
@@ -89,7 +90,7 @@
                 <i class="fas fa-gift"></i> <span>Loyalty Points</span>
             </a>
             <a href="#analytics" class="nav-link" data-action="set-tab" data-tab="analytics">
-                <i class="fas fa-chart-line"></i> <span>Analytics</span>
+                <i class="fas fa-chart-line"></i> <span>Analytics &amp; P&amp;L</span>
             </a>
             <a href="#settings" class="nav-link" data-action="set-tab" data-tab="settings">
                 <i class="fas fa-cog"></i> <span>Settings</span>
@@ -375,12 +376,38 @@
 
             <div id="analytics-tab" class="tab-content" style="display: none;">
                 <div class="section-header">
-                    <h2>Sales Analytics</h2>
+                    <h2>Analytics &amp; profit</h2>
+                    <div class="an-controls">
+                        <select id="anPeriod" class="form-control" aria-label="Period">
+                            <option value="30">Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="year" selected>This year</option>
+                            <option value="all">All time</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary" id="anExport"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    </div>
                 </div>
-                <div style="text-align: center; padding: 4rem; color: var(--text-muted);">
-                    <i class="fas fa-chart-pie" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
-                    <p>Advanced analytics and charts are being prepared for your store.</p>
+                <p class="an-note"><i class="fas fa-circle-info"></i> Website and WhatsApp orders are counted automatically (cancelled ones are left out). Add Amazon payouts and your costs in the ledger below so the profit is complete.</p>
+                <div class="an-kpis" id="anKpis"></div>
+                <div class="an-grid">
+                    <div class="an-card"><h3>Month by month</h3><div class="an-chart" id="anChart"></div><div class="an-legend"><span class="lg-in"></span> Income <span class="lg-out"></span> Costs <span class="lg-net"></span> Profit</div></div>
+                    <div class="an-card"><h3>Top products</h3><div id="anTop"></div></div>
                 </div>
+                <div class="an-grid">
+                    <div class="an-card">
+                        <h3>Add to the ledger</h3>
+                        <form id="ledgerForm" class="an-form" novalidate>
+                            <label>Date<input type="date" id="lgDate" class="form-control" required></label>
+                            <label>Type<select id="lgKind" class="form-control"><option value="expense">Expense</option><option value="income">Income</option></select></label>
+                            <label>Category<select id="lgCat" class="form-control"></select></label>
+                            <label>Amount ₹<input type="number" id="lgAmount" class="form-control" min="0.01" step="0.01" required></label>
+                            <label class="an-wide">Note<input type="text" id="lgNote" class="form-control" maxlength="200" placeholder="e.g. Amazon payout 1-15 Nov"></label>
+                            <button type="submit" class="btn btn-primary an-wide"><i class="fas fa-plus"></i> Add entry</button>
+                        </form>
+                    </div>
+                    <div class="an-card"><h3>Costs by category</h3><div id="anCats"></div></div>
+                </div>
+                <div class="an-card"><h3>Ledger</h3><div id="anLedger"></div></div>
             </div>
 
             <div id="settings-tab" class="tab-content" style="display: none;">
@@ -394,19 +421,19 @@
                     </div>
                     <div class="form-group">
                         <label for="settingsWhatsapp">WhatsApp Number <span style="color: var(--text-muted); font-size:0.8rem;">(with country code, no + or spaces — e.g. 919876543210)</span></label>
-                        <input type="text" id="settingsWhatsapp" class="form-control" placeholder="919876543210" maxlength="20" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" id="settingsWhatsapp" class="form-control" placeholder="917906027807" maxlength="20" inputmode="numeric" pattern="[0-9]*">
                     </div>
                     <div class="form-group">
                         <label for="settingsPhone">Phone Number (shown on contact page)</label>
-                        <input type="text" id="settingsPhone" class="form-control" placeholder="+91 98765 43210" maxlength="30">
+                        <input type="text" id="settingsPhone" class="form-control" placeholder="+91 79060 27807" maxlength="30">
                     </div>
                     <div class="form-group">
                         <label for="settingsEmail">Contact Email</label>
-                        <input type="email" id="settingsEmail" class="form-control" placeholder="hello@yourdomain.com" maxlength="160">
+                        <input type="email" id="settingsEmail" class="form-control" placeholder="velorexdesign@gmail.com" maxlength="160">
                     </div>
                     <div class="form-group">
                         <label for="settingsAddress">Studio Address (shown on contact page)</label>
-                        <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="123 Your Street,&#10;City, PIN&#10;India" maxlength="400"></textarea>
+                        <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="Meerut, Uttar Pradesh 250002&#10;India" maxlength="400"></textarea>
                     </div>
                     <button type="button" class="btn btn-primary" data-action="save-settings"><i class="fas fa-save" style="margin-right:8px"></i>Save Settings</button>
 
@@ -440,7 +467,7 @@
     <!-- Product Modal -->
     <div id="productModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="modalTitle" style="margin-bottom: 2rem;">Add Premium Item</h2>
+            <h2 id="modalTitle" style="margin-bottom: 2rem;">Add product</h2>
             <form id="productForm" data-action="save-product" novalidate>
                 <input type="hidden" id="editingId">
                 <div class="form-group">
@@ -454,11 +481,15 @@
                         <select id="pCat" class="form-control"></select>
                     </div>
                     <div class="form-group">
-                        <label for="pPrice">Price ₹ <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(your records only, not shown)</span></label>
+                        <label for="pPrice">Selling price ₹ <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(not shown on the shop)</span></label>
                         <input type="number" id="pPrice" class="form-control" placeholder="0" min="0" step="0.01">
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="pCost"><i class="fas fa-calculator" style="color:#10b981"></i> Cost price ₹ <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(what one piece costs you; used for profit, admin only)</span></label>
+                    <input type="number" id="pCost" class="form-control" placeholder="e.g. 180" min="0" step="0.01">
+                </div>
                 <div class="form-group">
                     <label for="pBadge"><i class="fas fa-award" style="color:#ff8a5c"></i> Badge on the shop</label>
                     <select id="pBadge" class="form-control">

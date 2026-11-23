@@ -58,6 +58,14 @@ Known trap: never put `backdrop-filter`, `filter` or `transform` on `.navbar` on
 
 On 24 November 2026 the live database was repaired. Its original tables had been renamed to `*_old_backup` and tables from another app (`users`, `payment_orders`, …) sat beside them. The repair created the storefront tables (`admins`, `customers`, `customer_addresses`, `products`, `orders`, `order_items`, plus `coupons`, `coupon_redemptions`, `loyalty_config`, `loyalty_ledger`), the admin `owner`, and the 8 starter products from `wellness-seed.sql` and `catalog-seed.sql`. Nothing else was touched; the backup tables can be dropped later once nothing in them is needed (2 admins, 3 customers, no products or orders).
 
+## Admin features (quick reference)
+
+- Inventory (dashboard): summary cards; products with Amazon link, badge, selling price and cost price; image upload with cropper and auto-crop.
+- Orders: status, tracking, notes, Print bill (A4), Address label (4x6 in / A6).
+- Analytics & P&L: website orders are counted automatically; record Amazon payouts and costs in the ledger (`api/admin-ledger.php`, table `ledger_entries`).
+- Coupons and Loyalty Points: built, unused while the shop sells through Amazon and WhatsApp.
+- Sessions end 8 hours after login.
+
 ## Admin access
 
 - Easy address: `https://velorexdesign.com/velorex-admin`. The secret address `https://velorexdesign.com/manage/<ADMIN_PATH_KEY>` also still works.

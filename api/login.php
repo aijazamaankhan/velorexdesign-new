@@ -37,9 +37,16 @@ session_regenerate_id(true);
 $_SESSION['admin_id'] = $admin['id'];
 $_SESSION['admin_email'] = $admin['email'];
 $_SESSION['admin_name'] = $admin['name'];
+$_SESSION['admin_login_at'] = time();
+
+// Warn (do not block) when the password is short or a well-known one.
+$common = ['owner1234', 'admin123', 'admin1234', 'password', 'password123', '12345678', '123456789', 'qwerty123', 'owner123'];
+$weak = strlen($password) < 10 || in_array(strtolower($password), $common, true);
 
 sendResponse([
     'success' => true,
+    'weakPassword' => $weak,
+    'expiresInHours' => ADMIN_SESSION_HOURS,
     'admin' => [
         'id' => $admin['id'],
         'name' => $admin['name'],

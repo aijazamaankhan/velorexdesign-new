@@ -9,6 +9,7 @@ function products_ensure_columns(mysqli $conn): void {
     try {
         $conn->query('ALTER TABLE products ADD COLUMN IF NOT EXISTS amazon_url VARCHAR(500) NULL');
         $conn->query('ALTER TABLE products ADD COLUMN IF NOT EXISTS badge VARCHAR(20) NULL');
+        $conn->query('ALTER TABLE products ADD COLUMN IF NOT EXISTS cost_price DECIMAL(10,2) NULL');
     } catch (Throwable $e) {
         error_log('products amazon_url column: ' . $e->getMessage());
     }

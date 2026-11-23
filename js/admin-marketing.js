@@ -179,3 +179,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const af = document.getElementById('loyaltyAdjustForm');
     if (af) af.addEventListener('submit', mktAdjustPoints);
 });
+
+/* Phone layout for every admin table: copy each column heading onto its cells
+   (data-label) so CSS can show rows as labelled cards on small screens. */
+(function () {
+    const label = (root) => {
+        (root.querySelectorAll ? root : document).querySelectorAll('table').forEach(t => {
+            const heads = Array.from(t.querySelectorAll('thead th')).map(th => th.textContent.trim());
+            if (!heads.length) return;
+            t.classList.add('has-card-rows');
+            t.querySelectorAll('tbody tr').forEach(tr => {
+                Array.from(tr.children).forEach((td, i) => {
+                    if (td.tagName === 'TD' && !td.hasAttribute('data-label') && heads[i] !== undefined) td.setAttribute('data-label', heads[i]);
+                });
+            });
+        });
+    };
+    const start = () => {
+        const app = document.getElementById('adminApp');
+        if (!app) return;
+        label(app);
+        let queued = false;
+        new MutationObserver(() => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(() => { queued = false; label(app); });
+        }).observe(app, { childList: true, subtree: true });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();

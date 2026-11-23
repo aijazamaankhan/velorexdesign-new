@@ -4,7 +4,7 @@ require_once 'db.php';
 require_once 'marketing-lib.php';
 session_start();
 
-if (empty($_SESSION['admin_id'])) sendResponse(['error' => 'Unauthorized'], 401);
+if (!admin_session_ok()) sendResponse(['error' => 'Unauthorized'], 401);
 if (!marketing_ensure_tables($conn)) sendResponse(['error' => 'Loyalty tables could not be created'], 500);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
