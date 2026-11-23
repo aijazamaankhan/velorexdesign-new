@@ -272,7 +272,8 @@ function setShopStructuredData() {
                 logo: new URL('favicon.svg', pageUrl).href,
                 image: new URL('hero.png', pageUrl).href,
                 description: SEO_DEFAULT.description,
-                areaServed: 'IN'
+                areaServed: 'IN',
+                sameAs: ['https://www.youtube.com/@sahacraft', 'https://www.instagram.com/velorexdesign_saha_craft/', 'https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT']
             },
             { '@type': 'WebSite', '@id': pageUrl + '#website', name: 'Velorex Design', url: pageUrl, publisher: { '@id': pageUrl + '#store' } }
         ]

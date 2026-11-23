@@ -66,8 +66,13 @@ On 24 November 2026 the live database was repaired. Its original tables had been
 - To change the secret link, change `ADMIN_PATH_KEY` in the server `.env`. The old link stops working at once.
 - Change the admin username or password from admin → Settings after logging in.
 
+## Social media
+
+- YouTube: https://www.youtube.com/@sahacraft. Instagram: https://www.instagram.com/velorexdesign_saha_craft/
+- Shown as footer icons, a "Follow Velorex" band with QR codes in the footer, and a "Follow us" block on the Contact page. Also listed as `sameAs` in the shop's structured data.
+- QR codes are `images/social/qr-youtube.svg|png` and `qr-instagram.svg|png`. If a handle changes, regenerate them (Python `segno`, colours `#1a0a2e` on `#fbf6ea`, corner squares in the platform colour) and update the links in `index.html` and `setShopStructuredData()` in `js/index.js`.
+
 ## Settings to fill in later
 
 - WhatsApp number: `STORE_WHATSAPP_DEFAULT` in `js/index.js`, or admin settings. WhatsApp buttons stay hidden until it is set.
 - Contact page phone number is still a placeholder.
-- Footer social links (YouTube, Instagram) are placeholders.

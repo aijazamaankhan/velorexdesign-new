@@ -6,6 +6,8 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- YouTube (@sahacraft) and Instagram (@velorexdesign_saha_craft) linked in the footer, with brand-coloured QR codes in a new "Follow Velorex" footer band and on the Contact page; profiles listed as `sameAs` for search engines. The dead WhatsApp footer icon is removed.
+
 - Home wellness section: Buy on Amazon is now the first button; the three buttons are equal and full width on phones.
 - Search icon shown in the phone header as well as the tab bar.
 - Header stays on one line on tablets and small laptops (800 to 1200px); the logo text hides below 960px so the menu fits.
