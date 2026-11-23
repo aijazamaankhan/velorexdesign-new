@@ -3,6 +3,12 @@
 # directories MUST NOT be web-accessible — otherwise anyone can fetch
 # https://your-domain.com/.git/config and download the entire repo + secrets.
 
+# admin.html is only ever read from disk by admin-gate.php, never over HTTP.
+# This blocks every spelling of the address, including URL-encoded ones.
+<Files "admin.html">
+    Require all denied
+</Files>
+
 <Files ".env">
     Require all denied
 </Files>
