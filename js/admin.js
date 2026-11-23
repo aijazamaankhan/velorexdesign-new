@@ -603,12 +603,14 @@ function switchTab(tab, el) {
     document.getElementById(tab + '-tab').style.display = 'block';
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
-    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings' };
+    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings', coupons: 'Coupons and Offers', loyalty: 'Loyalty Points' };
     document.getElementById('tabTitle').textContent = titles[tab] || tab;
     if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
     if (tab === 'customers') loadCustomers();
     if (tab === 'featured') { loadData(); renderFeatured(); }
     if (tab === 'categories') renderCategories();
+    if (tab === 'coupons' && typeof loadCoupons === 'function') loadCoupons();
+    if (tab === 'loyalty' && typeof loadLoyalty === 'function') loadLoyalty();
 }
 
 function showModal(edit = false) {

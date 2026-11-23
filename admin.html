@@ -23,6 +23,7 @@
         referrerpolicy="no-referrer">
     <link rel="stylesheet" href="css/admin.css">
     <script src="js/admin.js" defer></script>
+    <script src="js/admin-marketing.js" defer></script>
 </head>
 
 <body>
@@ -73,6 +74,12 @@
             </a>
             <a href="#categories" class="nav-link" data-action="set-tab" data-tab="categories">
                 <i class="fas fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="#coupons" class="nav-link" data-action="set-tab" data-tab="coupons">
+                <i class="fas fa-ticket-alt"></i> <span>Coupons</span>
+            </a>
+            <a href="#loyalty" class="nav-link" data-action="set-tab" data-tab="loyalty">
+                <i class="fas fa-gift"></i> <span>Loyalty Points</span>
             </a>
             <a href="#analytics" class="nav-link" data-action="set-tab" data-tab="analytics">
                 <i class="fas fa-chart-line"></i> <span>Analytics</span>
@@ -293,6 +300,66 @@
                         <button type="button" class="btn btn-primary" data-action="save-category"><i class="fas fa-plus" style="margin-right:6px;"></i>Add Category</button>
                     </div>
                 </div>
+            </div>
+
+            <div id="coupons-tab" class="tab-content" style="display: none;">
+                <div class="section-header">
+                    <h2>Coupons</h2>
+                    <button type="button" class="btn btn-primary" data-action="mkt-new-coupon"><i class="fas fa-plus"></i> New coupon</button>
+                </div>
+                <form id="couponForm" class="stat-card" style="margin-bottom:1.5rem" novalidate>
+                    <h3 id="couponFormTitle" style="margin-bottom:1rem">New coupon</h3>
+                    <input type="hidden" id="cpId">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Code<input id="cpCode" class="form-control" maxlength="40" placeholder="WELCOME10" required style="text-transform:uppercase"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Type<select id="cpType" class="form-control"><option value="percent">Percent off</option><option value="fixed">Rupees off</option><option value="free_shipping">Free shipping</option></select></label>
+                        <label id="cpValueWrap" style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)"><span id="cpValueLabel">Percent off (1–90)</span><input id="cpValue" class="form-control" type="number" min="1"></label>
+                        <label id="cpMaxWrap" style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Max discount ₹ (optional)<input id="cpMax" class="form-control" type="number" min="1"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Minimum order ₹<input id="cpMin" class="form-control" type="number" min="0" placeholder="0"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Total uses (blank = unlimited)<input id="cpLimit" class="form-control" type="number" min="1"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Uses per customer (blank = unlimited)<input id="cpPer" class="form-control" type="number" min="1" placeholder="1"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Starts (optional)<input id="cpStart" class="form-control" type="datetime-local"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Ends (optional)<input id="cpEnd" class="form-control" type="datetime-local"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Note for yourself<input id="cpNote" class="form-control" maxlength="160" placeholder="Diwali offer"></label>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap">
+                        <label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="cpActive" checked> Active</label>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save coupon</button>
+                    </div>
+                    <p style="font-size:.78rem;color:var(--text-muted);margin-top:.8rem">Coupons cannot be combined with reward points. A discount never makes goods free, and free-shipping coupons only waive the ₹99 delivery fee.</p>
+                </form>
+                <div id="couponList"></div>
+            </div>
+
+            <div id="loyalty-tab" class="tab-content" style="display: none;">
+                <div class="section-header"><h2>Loyalty Points</h2></div>
+                <div id="loyaltyTotals" class="stats-grid" style="margin-bottom:1.5rem"></div>
+                <form id="loyaltyForm" class="stat-card" style="margin-bottom:1.5rem" novalidate>
+                    <h3 style="margin-bottom:1rem">Programme settings</h3>
+                    <label style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;font-weight:600"><input type="checkbox" id="lyEnabled"> Programme is on (customers earn and spend points)</label>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Earn % of order value<input id="lyEarn" class="form-control" type="number" min="0" max="20" step="0.5"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Points per ₹1<input id="lyPpr" class="form-control" type="number" min="1" max="100"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Max % of order payable with points<input id="lyMaxPct" class="form-control" type="number" min="0" max="50"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Minimum points to redeem<input id="lyMin" class="form-control" type="number" min="0"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Sign-up bonus points<input id="lyBonus" class="form-control" type="number" min="0" max="10000"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Expire after months without activity (0 = never)<input id="lyExpiry" class="form-control" type="number" min="0" max="60"></label>
+                    </div>
+                    <p id="lyPreview" style="font-size:.85rem;color:var(--text-muted);margin:1rem 0"></p>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save settings</button>
+                    <p style="font-size:.78rem;color:var(--text-muted);margin-top:.8rem">Points are earned when you mark an order Delivered. Marking it Cancelled returns any points spent and removes points earned.</p>
+                </form>
+                <form id="loyaltyAdjustForm" class="stat-card" style="margin-bottom:1.5rem" novalidate>
+                    <h3 style="margin-bottom:1rem">Give or remove points</h3>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end">
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Customer email<input id="lyAdjEmail" class="form-control" type="email" maxlength="150" required></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Points (use minus to remove)<input id="lyAdjPoints" class="form-control" type="number" placeholder="100"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Reason<input id="lyAdjNote" class="form-control" maxlength="200" placeholder="Sorry for the delay"></label>
+                        <button type="submit" class="btn btn-secondary">Apply</button>
+                    </div>
+                </form>
+                <h3 style="margin-bottom:.8rem">Members</h3>
+                <div id="loyaltyMembers"></div>
             </div>
 
             <div id="analytics-tab" class="tab-content" style="display: none;">

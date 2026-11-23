@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'marketing-lib.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -75,8 +76,21 @@ foreach ($input['items'] as $item) {
     $subtotal += $lineTotal;
 }
 
-$shipping = $subtotal > 999 ? 0.0 : 99.0;
-$grandTotal = $subtotal + $shipping;
+// Coupon and points are priced on the server from the database (never from the browser).
+$couponCode = coupon_normalize_code($input['coupon_code'] ?? '');
+$usePoints = !empty($input['use_points']);
+$sessionCustomer = !empty($_SESSION['customer_id']) ? intval($_SESSION['customer_id']) : 0;
+if (!marketing_ensure_tables($conn)) { $couponCode = ''; $usePoints = false; }
+$quote = marketing_quote($conn, $subtotal, $couponCode, $usePoints, $sessionCustomer, $customerEmail);
+if ($couponCode !== '' && $quote['couponError']) sendResponse(['error' => $quote['couponError']], 422);
+if ($usePoints && $quote['pointsError']) sendResponse(['error' => $quote['pointsError']], 422);
+
+$shipping = (float) $quote['shipping'];
+$couponDiscount = (float) $quote['couponDiscount'];
+$pointsUsed = (int) $quote['pointsUsed'];
+$pointsDiscount = (float) $quote['pointsDiscount'];
+$appliedCoupon = $quote['couponCode'];
+$grandTotal = (float) $quote['total'];
 
 $conn->begin_transaction();
 try {
@@ -138,6 +152,33 @@ try {
     }
     $orderId = $stmt->insert_id;
 
+    $mk = $conn->prepare('UPDATE orders SET subtotal = ?, shipping = ?, coupon_code = ?, coupon_discount = ?, points_used = ?, points_discount = ? WHERE id = ?');
+    $mk->bind_param('ddsdidi', $subtotal, $shipping, $appliedCoupon, $couponDiscount, $pointsUsed, $pointsDiscount, $orderId);
+    if (!$mk->execute()) throw new Exception('Unable to save order');
+
+    if ($appliedCoupon) {
+        // Claim one use; fails if another order took the last use a moment ago.
+        $cid = (int) $quote['couponId'];
+        $claim = $conn->prepare('UPDATE coupons SET used_count = used_count + 1 WHERE id = ? AND active = 1 AND (usage_limit IS NULL OR used_count < usage_limit)');
+        $claim->bind_param('i', $cid);
+        $claim->execute();
+        if ($claim->affected_rows === 0) throw new Exception('Coupon no longer available');
+        $disc = (int) $couponDiscount;
+        $red = $conn->prepare('INSERT INTO coupon_redemptions (coupon_id, order_code, customer_id, email, discount) VALUES (?, ?, ?, ?, ?)');
+        $red->bind_param('isisi', $cid, $orderCode, $customerId, $customerEmail, $disc);
+        if (!$red->execute()) throw new Exception('Coupon no longer available');
+    }
+
+    if ($pointsUsed > 0) {
+        // Lock the customer row so two orders at once cannot spend the same points.
+        $lock = $conn->prepare('SELECT id FROM customers WHERE id = ? FOR UPDATE');
+        $lock->bind_param('i', $sessionCustomer);
+        $lock->execute();
+        $lock->get_result();
+        if (loyalty_balance($conn, $sessionCustomer, null, false) < $pointsUsed) throw new Exception('Points balance changed');
+        if (!loyalty_add($conn, $sessionCustomer, -$pointsUsed, 'redeem', $orderCode, 'Used on order ' . $orderCode)) throw new Exception('Points balance changed');
+    }
+
     $insertItem = $conn->prepare('INSERT INTO order_items (order_id, product_id, name, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?, ?)');
     $decrementStock = $conn->prepare('UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?');
 
@@ -161,12 +202,16 @@ try {
         'order_code' => $orderCode,
         'subtotal' => $subtotal,
         'shipping' => $shipping,
+        'coupon_code' => $appliedCoupon,
+        'coupon_discount' => $couponDiscount,
+        'points_used' => $pointsUsed,
+        'points_discount' => $pointsDiscount,
         'total_amount' => $grandTotal
     ]);
 } catch (Exception $e) {
     $conn->rollback();
     // Only our own messages reach the customer; database errors stay in the log.
-    $safe = ['Unable to save customer', 'Unable to save order', 'Failed to record line item'];
+    $safe = ['Unable to save customer', 'Unable to save order', 'Failed to record line item', 'Coupon no longer available', 'Points balance changed'];
     $msg = $e->getMessage();
     if (!in_array($msg, $safe, true) && strpos($msg, 'Stock became unavailable') !== 0) {
         error_log('create-order failed: ' . $msg);

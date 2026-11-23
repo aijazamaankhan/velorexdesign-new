@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'marketing-lib.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -59,6 +60,14 @@ if ($existing->num_rows === 1) {
         sendResponse(['error' => 'Failed to create account'], 500);
     }
     $customerId = $ins->insert_id;
+}
+
+// Welcome points, if the owner has switched them on.
+if (marketing_ensure_tables($conn)) {
+    $lcfg = loyalty_config($conn);
+    if ($lcfg['enabled'] && $lcfg['signupBonus'] > 0) {
+        loyalty_add($conn, (int) $customerId, $lcfg['signupBonus'], 'bonus', 'SIGNUP-' . (int) $customerId, 'Welcome bonus');
+    }
 }
 
 session_regenerate_id(true);

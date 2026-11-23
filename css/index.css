@@ -3429,3 +3429,68 @@ html:not([data-design="living-craft"]) .amazon-chip { animation: badgePop .5s .2
 
 /* Design switch hidden while Living Craft is turned off (js/design-selection.js) */
 html[data-design-switch="off"] .design-toggle { display: none !important; }
+
+/* ───────────── Product detail page (Amazon-only storefront) ───────────── */
+#productDetailContent.detail-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3.5rem; }
+.pd-gallery { position: sticky; top: 96px; min-width: 0; width: 100%; }
+.pd-main {
+  position: relative; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+}
+.pd-main #detailMainImage {
+  width: 100%; height: 100%; object-fit: contain; border: 0; border-radius: 0; aspect-ratio: auto;
+  transition: transform .6s cubic-bezier(.2,.7,.2,1);
+}
+.pd-main:hover #detailMainImage { transform: scale(1.04); }
+.pd-flag {
+  position: absolute; top: 14px; left: 14px; z-index: 1; display: inline-flex; align-items: center; gap: .4rem;
+  background: #ffd814; color: #0f1111; font-weight: 700; font-size: .78rem; padding: .35rem .7rem; border-radius: 999px;
+}
+.pd-thumbs { display: flex; gap: .6rem; margin-top: .9rem; overflow-x: auto; padding-bottom: .25rem; scrollbar-width: thin; }
+.pd-thumb {
+  flex: 0 0 76px; height: 76px; padding: 0; border-radius: 10px; overflow: hidden; cursor: pointer;
+  background: var(--surface); border: 2px solid var(--border); transition: border-color .2s, transform .2s;
+}
+.pd-thumb:hover { transform: translateY(-2px); }
+.pd-thumb.is-active { border-color: var(--secondary); }
+.pd-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.pd-info { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+.pd-cat {
+  align-self: flex-start; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--secondary); background: rgba(255,107,53,.1); padding: .35rem .75rem; border-radius: 999px; text-decoration: none;
+}
+.pd-title { font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.15; margin: 0; }
+.pd-lead { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
+.pd-buy {
+  display: flex; flex-direction: column; gap: .75rem; padding: 1.25rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+}
+.pd-buy .btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: .95rem 1.2rem; }
+.pd-buy-note { font-size: .85rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+.pd-trust { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.pd-trust li { display: flex; gap: .6rem; align-items: flex-start; font-size: .8rem; color: var(--text-muted); line-height: 1.35; }
+.pd-trust i { color: var(--secondary); font-size: 1.05rem; margin-top: .1rem; }
+.pd-trust span { display: flex; flex-direction: column; min-width: 0; }
+.pd-trust strong { color: var(--text); font-size: .88rem; }
+.pd-more { border-top: 1px solid var(--border); padding-top: 1rem; }
+.pd-more summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; }
+.pd-more summary::after { content: '+'; color: var(--secondary); font-size: 1.2rem; }
+.pd-more[open] summary::after { content: '–'; }
+.pd-more p { color: var(--text-muted); line-height: 1.7; margin: .75rem 0 0; }
+.pd-share { display: flex; align-items: center; gap: .6rem; font-size: .85rem; color: var(--text-muted); }
+.pd-share a {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid var(--border); color: var(--text); transition: background .2s, color .2s, transform .2s;
+}
+.pd-share a:hover { background: var(--secondary); color: #fff; transform: translateY(-2px); }
+
+@media (max-width: 900px) {
+  #productDetailContent.detail-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+  .pd-gallery { position: static; }
+}
+@media (max-width: 480px) {
+  .pd-trust { grid-template-columns: 1fr; }
+  .pd-thumb { flex-basis: 64px; height: 64px; }
+}
+html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-buy { border-radius: 0; }

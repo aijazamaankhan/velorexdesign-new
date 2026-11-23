@@ -165,15 +165,13 @@ function whatsAppOrderUrl(product) {
     const n = storeWhatsAppNumber();
     if (!n || !product) return '';
     const link = window.location.origin + routeToPath('product-detail', { id: product.id });
-    const text = `Hi Velorex Design! I would like to order:
+    const text = `Hi Velorex Design! I am interested in:
 
 *${product.name}*
-Price: ₹${Number(product.price || 0).toLocaleString('en-IN')}
-Quantity: 1
 
 ${link}
 
-Please share payment and delivery details.`;
+Could you share the price and delivery time?`;
     return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
 }
 
@@ -186,6 +184,18 @@ const AMAZON_LINKS = [
     { match: /multipurpose 2-tier/i, url: 'https://www.amazon.in/dp/B0HK2CY3C6' },
     { match: /mango.*tray/i, url: 'https://www.amazon.in/dp/B0HHFSJTH9' }
 ];
+const STORE_EMAIL = 'velorexdesign@gmail.com';
+
+/** The only way to buy on this site: Amazon, or an enquiry for unlisted items. */
+function buyButtonHtml(product, extraClass = '') {
+    const amazon = amazonUrlFor(product);
+    if (amazon) {
+        return `<a class="btn btn-amazon ${extraClass}" href="${escapeAttr(amazon)}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>`;
+    }
+    const mail = `mailto:${STORE_EMAIL}?subject=${encodeURIComponent('Enquiry: ' + (product.name || 'Velorex product'))}`;
+    return `<a class="btn btn-secondary ${extraClass}" href="${escapeAttr(mail)}"><i class="fas fa-envelope"></i> Ask about this</a>`;
+}
+
 function amazonUrlFor(product) {
     const hit = AMAZON_LINKS.find(l => l.match.test(String((product && product.name) || '')));
     return hit ? hit.url : '';
@@ -193,7 +203,7 @@ function amazonUrlFor(product) {
 
 const SEO_VIEWS = {
     home:     SEO_DEFAULT,
-    products: { title: 'Shop All Handcrafted Products | Velorex Design', description: 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Free shipping above ₹999.' },
+    products: { title: 'Shop All Handcrafted Products | Velorex Design', description: 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Buy on Amazon.' },
     wellness: { title: 'Velorex Wellness | Vijaysar Glass, Neem Comb & Acupressure', description: 'Traditional Ayurvedic wood products made by hand: Vijaysar wood glass, neem wood comb and acupressure tools. 100% natural, no paint or polish.', image: VIJAYSAR_OG_IMAGE },
     services: { title: 'Graphic Design Services | Velorex Design', description: 'Logo, branding, social media and print design from Velorex Design. Pick a package and message us on WhatsApp.' },
     about:    { title: 'About Us | Velorex Design', description: 'Velorex Design is an Indian workshop making handcrafted wood items, resin art and wellness products.' },
@@ -244,14 +254,7 @@ function productSchema(p) {
         description: String(p.desc || '').slice(0, 500),
         image: (p.images && p.images.length ? p.images : [p.img]).filter(Boolean).map(u => new URL(u, pageUrl).href),
         category: getCatName(p.cat),
-        brand: { '@type': 'Brand', name: 'Velorex Design' },
-        offers: {
-            '@type': 'Offer',
-            url: window.location.origin + routeToPath('product-detail', { id: p.id }),
-            priceCurrency: 'INR',
-            price: Number(p.price || 0).toFixed(2),
-            availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-        }
+        brand: { '@type': 'Brand', name: 'Velorex Design' }
     };
 }
 
@@ -1324,10 +1327,7 @@ const app = {
                 <div class="product-info">
                     <div class="product-cat">${cat}</div>
                     <h3 class="product-title"><a href="${escapeAttr(routeToPath('product-detail', { id: product.id }))}">${name}</a></h3>
-                    <div class="product-price">₹${Number(product.price || 0).toLocaleString()}</div>
-                    <button type="button" class="btn btn-primary btn-block" data-action="add-to-cart" data-id="${escapeAttr(product.id)}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                    ${buyButtonHtml(product, 'btn-block')}
                 </div>
             </div>
         `;
@@ -1495,32 +1495,27 @@ const app = {
         };
 
         const paintProduct = (p) => {
-            const price = `\u20b9${Number(p.price || 0).toLocaleString()}`;
             const cover = escapeAttr(safeUrl(p.img));
             const fallback = `https://placehold.co/800x800/1a1a2e/9890b0?text=${encodeURIComponent(p.name || 'Product')}`;
             content.innerHTML = `
                 <span class="hero-eyebrow"><i class="fas fa-certificate"></i> ${escapeHtml(getCatName(p.cat))}</span>
                 <h1 class="hero-title hero-title--product">${escapeHtml(p.name)}</h1>
                 <p class="hero-desc">${escapeHtml(shortDetail(p))}</p>
-                <div class="hero-price">${price}</div>
                 <div class="hero-buttons">
                     <button type="button" class="btn btn-primary" data-action="open-product" data-id="${escapeAttr(p.id)}">
                         <i class="fas fa-eye"></i> View Details
                     </button>
-                    <button type="button" class="btn btn-secondary" data-action="add-to-cart" data-id="${escapeAttr(p.id)}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                    ${buyButtonHtml(p)}
                 </div>
                 <ul class="hero-meta">
                     <li><i class="fas fa-hammer"></i> ${escapeHtml(craftLabel(p))}</li>
                     <li><i class="fas fa-truck"></i> Ships in 3&ndash;5 days</li>
-                    <li><i class="fas fa-shield-halved"></i> Secure checkout</li>
+                    <li><i class="fab fa-amazon"></i> Sold on Amazon</li>
                 </ul>`;
             showcase.innerHTML = `
                 <div class="hero-card" data-action="open-product" data-id="${escapeAttr(p.id)}">
                     <img src="${cover}" alt="${escapeAttr(p.name)}" data-fallback="${escapeAttr(fallback)}">
                     <span class="hero-card-tag">${escapeHtml(getCatName(p.cat))}</span>
-                    <span class="hero-card-price">${price}</span>
                 </div>`;
         };
 
@@ -1638,7 +1633,7 @@ const app = {
                 </a>
             </div>
             <div class="mega-foot">
-                <span><i class="fas fa-truck"></i> Free shipping above ₹999</span>
+                <span><i class="fab fa-amazon"></i> Buy on Amazon</span>
                 <span><i class="fas fa-hand-sparkles"></i> Handmade in India</span>
                 <span><i class="fab fa-whatsapp"></i> Order on WhatsApp</span>
             </div>`;
@@ -1679,7 +1674,6 @@ const app = {
                 <img src="${escapeAttr(safeUrl(p.img) || '')}" alt="" loading="lazy" data-fallback="https://placehold.co/120x120/1a1a2e/9890b0?text=+">
                 <span class="mega-product-text">
                     <span class="mega-product-name">${escapeHtml(p.name)}</span>
-                    <span class="mega-product-price">${inr(p.price)}${p.stock <= 0 ? ' <span class="mega-product-out">Out of stock</span>' : ''}</span>
                 </span>
             </button>`;
 
@@ -1882,7 +1876,7 @@ const app = {
             title.innerHTML = `${escapeHtml(getCatName(catFilter))} <span class="text-gradient">Collection</span>`;
             setSeo({
                 title: `${getCatName(catFilter)} | Velorex Design`,
-                description: `Shop handcrafted ${getCatName(catFilter)} from Velorex Design. Made by hand in India, free shipping above ₹999.`
+                description: `Shop handcrafted ${getCatName(catFilter)} from Velorex Design. Made by hand in India, sold on Amazon.`
             });
         } else {
             title.innerHTML = `Our <span class="text-gradient">Catalog</span>`;
@@ -2052,10 +2046,18 @@ const app = {
         this.trackRecentlyViewed(product.id);
         setSeo({
             title: `${product.name} | Velorex Design`,
-            description: product.desc || `${product.name} from Velorex Design, handcrafted in India.`,
+            description: String(product.desc || `${product.name} from Velorex Design, handcrafted in India.`).replace(/\s+/g, ' ').slice(0, 158),
             image: /vijaysar/i.test(product.name || '') ? VIJAYSAR_OG_IMAGE : product.img
         });
         setStructuredData('ldProduct', Object.assign({ '@context': 'https://schema.org' }, productSchema(product)));
+        setStructuredData('ldBreadcrumbs', {
+            '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+            itemListElement: [
+                ['Home', '/'], ['Catalog', '/products'],
+                [getCatName(product.cat), routeToPath('products', { cat: product.cat })],
+                [product.name, routeToPath('product-detail', { id: product.id })]
+            ].map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: window.location.origin + path }))
+        });
 
         const bc = document.getElementById('bc-detail');
         if (bc) {
@@ -2072,53 +2074,52 @@ const app = {
         const gallery = (product.images && product.images.length ? product.images : [product.img]).filter(Boolean);
         this._detailGallery = gallery;
         const thumbsHtml = gallery.length > 1 ? `
-            <div class="detail-thumbs" style="display:flex; gap:0.6rem; margin-top:0.9rem; flex-wrap:wrap;">
+            <div class="pd-thumbs">
                 ${gallery.map((src, i) => `
-                    <div data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" style="width:74px; height:74px; border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid ${i === 0 ? 'var(--secondary)' : 'var(--border)'}; transition:border-color 0.2s; background:var(--surface);">
-                        <img src="${escapeAttr(safeUrl(src))}" data-broken-opacity="1" style="width:100%; height:100%; object-fit:cover;" alt="">
-                    </div>
+                    <button type="button" class="pd-thumb${i === 0 ? ' is-active' : ''}" data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" aria-label="Show image ${i + 1}">
+                        <img src="${escapeAttr(safeUrl(src))}" data-broken-opacity="1" alt="${escapeAttr(product.name + ' - view ' + (i + 1))}" loading="lazy" width="76" height="76">
+                    </button>
                 `).join('')}
             </div>` : '';
 
+        const amazon = amazonUrlFor(product);
+        const descText = String(product.desc || '');
+        const firstSentence = (descText.match(/^[^.!?]+[.!?]/) || [descText])[0];
+        const restText = descText.slice(firstSentence.length).trim();
+        const shareUrl = window.location.origin + routeToPath('product-detail', { id: product.id });
         container.innerHTML = `
-            <div class="detail-img">
-                <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name)}" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
+            <div class="pd-gallery">
+                <div class="pd-main">
+                    ${amazon ? '<span class="pd-flag"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
+                    <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name + ' by Velorex Design')}" width="800" height="800" fetchpriority="high" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
+                </div>
                 ${thumbsHtml}
             </div>
-            <div class="detail-info">
-                <div style="color: var(--secondary); font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 2px;">
-                    ${escapeHtml(getCatName(product.cat))} Collection
-                </div>
-                <h1>${escapeHtml(product.name)}</h1>
-                <div class="detail-price">₹${Number(product.price || 0).toLocaleString()}</div>
-                <p class="detail-desc">${escapeHtml(product.desc)}</p>
+            <div class="pd-info">
+                <a class="pd-cat" href="#products?cat=${encodeURIComponent(product.cat)}">${escapeHtml(getCatName(product.cat))}</a>
+                <h1 class="pd-title">${escapeHtml(product.name)}</h1>
+                <p class="pd-lead">${escapeHtml(firstSentence)}</p>
 
-                <div style="background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <i class="fas fa-check-circle text-gold"></i> <span>${escapeHtml(craftLabel(product))}</span>
-                    </div>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <i class="fas fa-truck text-gold"></i> <span>Ships in 3-5 business days</span>
-                    </div>
-                    <div style="display: flex; gap: 1rem;">
-                        <i class="fas fa-shield-alt text-gold"></i> <span>Secure checkout</span>
-                    </div>
+                <div class="pd-buy">
+                    ${buyButtonHtml(product, 'btn-lg pd-buy-main')}
+                    ${whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Ask on WhatsApp</a>` : ''}
+                    <p class="pd-buy-note">${amazon ? 'Sold and shipped by Velorex Design on Amazon.in. See the current price, offers and delivery date on Amazon.' : 'This piece is not on Amazon yet. Email us and we will reply with the price and delivery time.'}</p>
                 </div>
 
-                <div style="display: flex; gap: 1rem;">
-                    <button type="button" class="btn btn-primary" style="flex: 2;" data-action="add-to-cart" data-id="${escapeAttr(product.id)}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                <ul class="pd-trust">
+                    <li><i class="fas fa-hand-sparkles"></i><span><strong>Handmade</strong>${escapeHtml(craftLabel(product))}</span></li>
+                    <li><i class="fas fa-location-dot"></i><span><strong>Made in India</strong>Meerut studio</span></li>
+                    <li><i class="${amazon ? 'fab fa-amazon' : 'fas fa-envelope'}"></i><span><strong>${amazon ? 'Amazon delivery' : 'Direct order'}</strong>${amazon ? 'Returns as per Amazon' : 'Reply within a day'}</span></li>
+                </ul>
+
+                ${restText ? `<details class="pd-more" open><summary>About this piece</summary><p>${escapeHtml(restText)}</p></details>` : ''}
+
+                <div class="pd-share">
+                    <span>Share</span>
+                    <a href="https://wa.me/?text=${encodeURIComponent(product.name + ' ' + shareUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(product.name)}" target="_blank" rel="noopener noreferrer" aria-label="Pin on Pinterest"><i class="fab fa-pinterest-p"></i></a>
                 </div>
-                ${(whatsAppOrderUrl(product) || amazonUrlFor(product)) ? `
-                <div class="buy-alt">
-                    <p class="buy-alt-label">Or order another way</p>
-                    <div class="buy-alt-buttons">
-                        ${whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
-                        ${amazonUrlFor(product) ? `<a class="btn btn-amazon" href="${escapeAttr(amazonUrlFor(product))}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>` : ''}
-                    </div>
-                    <p class="amazon-note">${whatsAppOrderUrl(product) ? 'Message us to order directly. ' : ''}${amazonUrlFor(product) ? 'Also sold by Velorex Design on Amazon.' : ''}</p>
-                </div>` : ''}
             </div>
         `;
 
@@ -2199,7 +2200,7 @@ const app = {
         if (main) main.src = safeUrl(this._detailGallery[i]);
         this._detailGallery.forEach((_, idx) => {
             const t = document.getElementById('detail-thumb-' + idx);
-            if (t) t.style.borderColor = idx === i ? 'var(--secondary)' : 'var(--border)';
+            if (t) t.classList.toggle('is-active', idx === i);
         });
     },
 

@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'marketing-lib.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -15,7 +16,19 @@ if (!$input || empty($input['order_code'])) {
     sendResponse(['error' => 'Order code is required'], 422);
 }
 
-$orderCode = trim($input['order_code']);
+$orderCode = trim((string) $input['order_code']);
+$allowedStatus = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+if (isset($input['status']) && !in_array($input['status'], $allowedStatus, true)) {
+    sendResponse(['error' => 'Unknown status'], 422);
+}
+$oldStatus = null;
+$cur = $conn->prepare('SELECT status FROM orders WHERE order_code = ?');
+$cur->bind_param('s', $orderCode);
+$cur->execute();
+$curRow = $cur->get_result()->fetch_assoc();
+if (!$curRow) sendResponse(['error' => 'Order not found'], 404);
+$oldStatus = $curRow['status'];
+marketing_ensure_tables($conn);
 $fields = [];
 $params = [];
 $types = '';
@@ -65,6 +78,14 @@ $updateStmt = $conn->prepare($query);
 $updateStmt->bind_param($types, ...$params);
 if (!$updateStmt->execute()) {
     sendResponse(['error' => 'Failed to update order'], 500);
+}
+
+if (isset($input['status'])) {
+    try {
+        marketing_on_status_change($conn, $orderCode, (string) $oldStatus, (string) $input['status']);
+    } catch (Throwable $e) {
+        error_log('loyalty/coupon status hook failed for ' . $orderCode . ': ' . $e->getMessage());
+    }
 }
 
 sendResponse(['success' => true]);
