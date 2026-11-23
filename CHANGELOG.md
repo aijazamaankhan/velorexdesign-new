@@ -2,6 +2,15 @@
 
 This file records repository development. Entries under **Unreleased** describe the current local working tree and are not proof of production deployment.
 
+## amazon-storefront branch, 24 November 2026 (live)
+
+- Amazon-only shop: prices, cart and checkout removed; Buy on Amazon or Ask about this on every product.
+- Redesigned product page and catalog header; breadcrumb structured data and better image alt text.
+- Admin portal behind a secret link; `/admin.html` returns 404.
+- Coupons and loyalty points (admin tabs), dormant while there is no cart.
+- CSS/JS links carry a `?v=` version so browsers fetch new files after a deploy.
+- Pages and the sitemap still render if the products table is missing.
+
 ## 41d8962 — storefront update, 24 November 2026 (pushed to GitHub, not yet deployed)
 
 ### Security

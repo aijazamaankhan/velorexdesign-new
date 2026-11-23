@@ -2207,6 +2207,12 @@ const app = {
     addToCart(id) {
         const product = PRODUCTS.find(p => String(p.id) === String(id));
         if (!product) return;
+        // The site sells through Amazon only. A stale cached page may still
+        // show an old Add to Cart button: send that click to Amazon instead.
+        const amazon = amazonUrlFor(product);
+        if (amazon) { window.open(amazon, '_blank', 'noopener,noreferrer'); return; }
+        this.navigate('product-detail', { id: product.id });
+        return;
 
         const existing = this.cart.find(item => String(item.id) === String(id));
         if (existing) {
