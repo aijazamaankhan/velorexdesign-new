@@ -12,7 +12,6 @@ echo "User-agent: *\n";
 echo "Allow: /\n";
 // Keep the admin panel and private endpoints out of search results. The product
 // list and product photos stay open: Google needs them to render the shop.
-echo "Disallow: /admin.html\n";
 echo "Disallow: /api/\n";
 echo "Allow: /api/get-products.php\n";
 echo "Allow: /api/uploads/\n";

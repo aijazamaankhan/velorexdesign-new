@@ -47,3 +47,12 @@ The Hostinger deploy tool skips `.env` and replaces the site's contents, so if y
 - WhatsApp number: `STORE_WHATSAPP_DEFAULT` in `js/index.js`, or admin settings. WhatsApp buttons stay hidden until it is set.
 - Contact page phone number is still a placeholder.
 - Footer social links (YouTube, Instagram) are placeholders.
+
+## Admin access
+
+- The admin portal is only reachable at `https://velorexdesign.com/manage/<ADMIN_PATH_KEY>`.
+  `ADMIN_PATH_KEY` is set in the server `.env` (32 random letters and digits). It is never in Git.
+- `/admin.html` and `/admin-gate.php` return 404 when opened directly. There is no admin link on the public site or in `robots.txt`.
+- A wrong key also returns 404, so the address gives nothing away. The admin API still needs a username and password.
+- To change the secret link, change `ADMIN_PATH_KEY` in the server `.env`. The old link stops working at once.
+- Change the admin username or password from the admin Settings page after logging in.

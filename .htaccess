@@ -30,6 +30,13 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule "(^|/)\." - [F]
+
+    # Admin portal: only reachable through the secret address /manage/<key>
+    # (key = ADMIN_PATH_KEY in the server .env). Direct requests for admin.html
+    # or the gate script get a plain 404.
+    RewriteCond %{THE_REQUEST} \s/+(admin\.html|admin-gate\.php)[\s?/] [NC]
+    RewriteRule ^ - [R=404,L]
+    RewriteRule ^manage/([A-Za-z0-9_-]+)$ admin-gate.php?k=$1 [L,QSA]
     # Search-engine files, generated so they always carry the live domain.
     RewriteRule ^robots\.txt$ api/robots.php [L]
     RewriteRule ^sitemap\.xml$ api/sitemap.php [L]
@@ -44,7 +51,7 @@
     RewriteCond %{THE_REQUEST} ^[A-Z]+\s/index\.html[\s?]
     RewriteRule ^index\.html$ / [R=301,L]
 
-    # Real files and folders (css, js, images, api, admin.html) are served as they are.
+    # Real files and folders (css, js, images, api) are served as they are.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
