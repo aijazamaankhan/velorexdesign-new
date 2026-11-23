@@ -3515,3 +3515,16 @@ html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-
   .catalog-hero { padding: 1.4rem; }
   .catalog-store-btn { width: 100%; justify-content: center; }
 }
+
+/* ───────────── Taller, full-width header (desktop) ───────────── */
+@media (min-width: 769px) {
+  body { padding-top: 96px; }
+  .navbar { height: 96px; }
+  .navbar.scrolled { height: 74px; }
+  .hero { margin-top: -96px; }
+  .navbar .nav-container { max-width: none; padding-inline: clamp(1.5rem, 3.5vw, 3.5rem); }
+  .navbar .nav-brand { font-size: 2rem; }
+  .navbar .nav-brand .brand-emblem { width: 46px; height: 46px; }
+  .navbar.scrolled .nav-brand .brand-emblem { width: 38px; height: 38px; }
+  .navbar .nav-links { gap: clamp(1.25rem, 2.4vw, 2.75rem); }
+}
