@@ -6,6 +6,9 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- Admin image cropper (modelled on velorexmusic.com): every picked image opens framed by auto-crop (finds the product against a plain background), with Square / 4:5 / 4:3 / 16:9 / Free shapes, drag and corner resize, rotate, Use original, Skip, and Auto-crop all for batches. Only the cropped WebP (max 1600 px) is uploaded.
+- Chat assistant plan written up in `docs/CHAT-ASSISTANT-PLAN.md`.
+
 - WhatsApp ordering on +91 79060 27807: "Order on WhatsApp" on product cards and pages (the main button for products not on Amazon), a floating WhatsApp button, tap-to-call and chat on the Contact page, WhatsApp icon in the footer.
 - Footer ventures as cards: Velorex Music, Velorex Studio, Velorex Fashion (coming soon).
 - Admin: easy address /velorex-admin, "Velorex Design Admin" title and favicon, logo opens the admin home, real dashboard cards, an Amazon link field on every product (price now optional), refreshed UI for all sections with a phone layout, the logged-in admin's name in the top bar.

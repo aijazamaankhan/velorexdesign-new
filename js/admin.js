@@ -1190,7 +1190,7 @@ async function offlinePreviewFallback(files, reasonToast) {
 }
 
 async function uploadProductImages(event) {
-    const files = Array.from(event.target.files || []);
+    let files = Array.from(event.target.files || []);
     event.target.value = '';
     if (files.length === 0) return;
 
@@ -1203,6 +1203,12 @@ async function uploadProductImages(event) {
     if (wrongType) {
         showToast(`"${wrongType.name}" is not an image`, 'error');
         return;
+    }
+
+    // Frame each image first (auto-crop pre-applied); only the result is uploaded.
+    if (typeof ImageCropper !== 'undefined') {
+        files = await ImageCropper.runBatch(files);
+        if (files.length === 0) { showToast('No images uploaded', 'info'); return; }
     }
 
     const formData = new FormData();
