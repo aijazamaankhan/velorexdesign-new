@@ -1,15 +1,18 @@
 <?php
 require_once 'db.php';
+require_once 'marketing-lib.php';
 session_start();
 
 if (empty($_SESSION['admin_id'])) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
+marketing_ensure_tables($conn); // adds subtotal/shipping/discount columns if missing
+
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 $status = isset($_GET['status']) ? sanitize($_GET['status']) : '';
 
-$query = 'SELECT o.id, o.order_code, o.customer_id, o.total_amount, o.status, o.shipping_address, o.shipping_city, o.shipping_zip, o.phone, o.email, o.tracking_number, o.admin_note, o.status_history, o.created_at, c.name AS customer_name, c.email AS customer_email, c.phone AS customer_phone FROM orders o LEFT JOIN customers c ON o.customer_id = c.id';
+$query = 'SELECT o.id, o.order_code, o.customer_id, o.total_amount, o.status, o.shipping_address, o.shipping_city, o.shipping_zip, o.phone, o.email, o.tracking_number, o.admin_note, o.status_history, o.created_at, o.subtotal, o.shipping, o.coupon_code, o.coupon_discount, o.points_discount, c.name AS customer_name, c.email AS customer_email, c.phone AS customer_phone FROM orders o LEFT JOIN customers c ON o.customer_id = c.id';
 $where = [];
 $params = [];
 $types = '';
@@ -64,6 +67,12 @@ while ($row = $result->fetch_assoc()) {
         'customer_name' => $row['customer_name'] ?: 'Guest',
         'customer_email' => $row['customer_email'],
         'customer_phone' => $row['customer_phone'],
+        'order_phone' => $row['phone'],
+        'order_email' => $row['email'],
+        'subtotal' => $row['subtotal'] !== null ? floatval($row['subtotal']) : null,
+        'shipping' => $row['shipping'] !== null ? floatval($row['shipping']) : null,
+        'coupon_code' => $row['coupon_code'],
+        'discount' => floatval($row['coupon_discount']) + floatval($row['points_discount']),
         'status' => $row['status'],
         'total' => floatval($row['total_amount']),
         'shipping_address' => $row['shipping_address'],

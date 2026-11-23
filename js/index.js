@@ -153,7 +153,7 @@ const VIJAYSAR_OG_IMAGE = 'images/products/vijaysar/og-vijaysar.jpg';
 /* Store WhatsApp number in international format, digits only (e.g. 919876543210).
    Every visitor uses this; the admin panel setting, if saved, overrides it.
    Leave empty to hide the WhatsApp order buttons. */
-const STORE_WHATSAPP_DEFAULT = '';
+const STORE_WHATSAPP_DEFAULT = '917906027807'; // +91 79060 27807
 
 function storeWhatsAppNumber() {
     let saved = '';
@@ -165,13 +165,13 @@ function whatsAppOrderUrl(product) {
     const n = storeWhatsAppNumber();
     if (!n || !product) return '';
     const link = window.location.origin + routeToPath('product-detail', { id: product.id });
-    const text = `Hi Velorex Design! I am interested in:
+    const text = `Hi Velorex Design! I would like to order:
 
 *${product.name}*
 
 ${link}
 
-Could you share the price and delivery time?`;
+Please share the price, payment and delivery details.`;
     return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
 }
 
@@ -185,6 +185,7 @@ const AMAZON_LINKS = [
     { match: /mango.*tray/i, url: 'https://www.amazon.in/dp/B0HHFSJTH9' }
 ];
 const STORE_EMAIL = 'velorexdesign@gmail.com';
+const WA_DISPLAY = '+91 79060 27807';
 
 /** The only way to buy on this site: Amazon, or an enquiry for unlisted items. */
 function buyButtonHtml(product, extraClass = '') {
@@ -192,11 +193,17 @@ function buyButtonHtml(product, extraClass = '') {
     if (amazon) {
         return `<a class="btn btn-amazon ${extraClass}" href="${escapeAttr(amazon)}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>`;
     }
+    const wa = whatsAppOrderUrl(product);
+    if (wa) {
+        return `<a class="btn btn-whatsapp ${extraClass}" href="${escapeAttr(wa)}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>`;
+    }
     const mail = `mailto:${STORE_EMAIL}?subject=${encodeURIComponent('Enquiry: ' + (product.name || 'Velorex product'))}`;
     return `<a class="btn btn-secondary ${extraClass}" href="${escapeAttr(mail)}"><i class="fas fa-envelope"></i> Ask about this</a>`;
 }
 
 function amazonUrlFor(product) {
+    // A link set in admin wins; the name table below covers built-in products.
+    if (product && /^https:\/\/([a-z0-9-]+\.)*(amazon\.in|amzn\.in|amzn\.to)\//i.test(product.amazonUrl || '')) return product.amazonUrl;
     const hit = AMAZON_LINKS.find(l => l.match.test(String((product && product.name) || '')));
     return hit ? hit.url : '';
 }
@@ -314,13 +321,13 @@ function validateForm(rules) {
 let PRODUCTS = [];
 
 const DEFAULT_CATS = [
-    { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'cat-wood.png' },
+    { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'images/categories/wood.webp' },
     { id: 'rack',         name: 'MDF Racks & Shelves', icon: 'fas fa-layer-group', image: 'images/products/rack-4tier-1.jpg' },
     { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'images/products/combo/category-wellness.webp' },
-    { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'cat-resin.png' },
-    { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80' },
-    { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80' },
-    { id: 'raw_material', name: 'Raw Materials', icon: 'fas fa-box',       image: 'cat-raw.png' }
+    { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'images/categories/resin.webp' },
+    { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'images/categories/soap.webp' },
+    { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'images/categories/candle.webp' },
+    { id: 'raw_material', name: 'Raw Materials', icon: 'fas fa-box',       image: 'images/categories/raw.webp' }
 ];
 const DEFAULT_CAT_FALLBACK_ICON = 'fas fa-tag';
 const DEFAULT_CAT_FALLBACK_IMAGE = 'https://placehold.co/400x300/1a0a2e/ffd700?text=New+Category';
@@ -844,7 +851,8 @@ async function loadProducts() {
                 cat: p.category,
                 desc: p.description || '',
                 stock: parseInt(p.stock, 10) || 0,
-                featured: p.featured === '1' || p.featured === 1 || p.featured === true
+                featured: p.featured === '1' || p.featured === 1 || p.featured === true,
+                amazonUrl: p.amazon_url || ''
             };
         });
     } catch (error) {
@@ -1328,7 +1336,10 @@ const app = {
                 <div class="product-info">
                     <div class="product-cat">${cat}</div>
                     <h3 class="product-title"><a href="${escapeAttr(routeToPath('product-detail', { id: product.id }))}">${name}</a></h3>
-                    ${buyButtonHtml(product, 'btn-block')}
+                    <div class="card-buy">
+                        ${buyButtonHtml(product, 'btn-block')}
+                        ${amazonUrlFor(product) && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-block btn-sm" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
+                    </div>
                 </div>
             </div>
         `;
@@ -1445,7 +1456,7 @@ const app = {
             const el = document.createElement('div');
             el.className = 'hero-slide ' + (p.brand ? 'hero-slide--brand' : 'hero-slide--product')
                 + (i === 0 ? ' active' : '');
-            el.style.backgroundImage = `url('${p.brand ? 'hero.png' : safeUrl(p.img)}')`;
+            el.style.backgroundImage = `url('${p.brand ? 'images/hero.webp' : safeUrl(p.img)}')`;
             track.insertBefore(el, overlay);
             return el;
         });
@@ -1511,7 +1522,7 @@ const app = {
                 <ul class="hero-meta">
                     <li><i class="fas fa-hammer"></i> ${escapeHtml(craftLabel(p))}</li>
                     <li><i class="fas fa-truck"></i> Ships in 3&ndash;5 days</li>
-                    ${amazonUrlFor(p) ? '<li><i class="fab fa-amazon"></i> Sold on Amazon</li>' : '<li><i class="fas fa-envelope"></i> Order by email</li>'}
+                    ${amazonUrlFor(p) ? '<li><i class="fab fa-amazon"></i> Sold on Amazon</li>' : '<li><i class="fab fa-whatsapp"></i> Order on WhatsApp</li>'}
                 </ul>`;
             showcase.innerHTML = `
                 <div class="hero-card" data-action="open-product" data-id="${escapeAttr(p.id)}">
@@ -2103,14 +2114,14 @@ const app = {
 
                 <div class="pd-buy">
                     ${buyButtonHtml(product, 'btn-lg pd-buy-main')}
-                    ${whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Ask on WhatsApp</a>` : ''}
-                    <p class="pd-buy-note">${amazon ? 'Sold and shipped by Velorex Design on Amazon.in. See the current price, offers and delivery date on Amazon.' : 'This piece is not on Amazon yet. Email us and we will reply with the price and delivery time.'}</p>
+                    ${amazon && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
+                    <p class="pd-buy-note">${amazon ? 'Buy on Amazon.in, or order directly from us on WhatsApp (' + WA_DISPLAY + ').' : 'Message us on WhatsApp (' + WA_DISPLAY + ') and we will share the price, payment and delivery details.'}</p>
                 </div>
 
                 <ul class="pd-trust">
                     <li><i class="fas fa-hand-sparkles"></i><span><strong>Handmade</strong>${escapeHtml(craftLabel(product))}</span></li>
                     <li><i class="fas fa-location-dot"></i><span><strong>Made in India</strong>Meerut studio</span></li>
-                    <li><i class="${amazon ? 'fab fa-amazon' : 'fas fa-envelope'}"></i><span><strong>${amazon ? 'Amazon delivery' : 'Direct order'}</strong>${amazon ? 'Returns as per Amazon' : 'Reply within a day'}</span></li>
+                    <li><i class="fab fa-whatsapp"></i><span><strong>Order on WhatsApp</strong>Quick reply, Mon–Fri</span></li>
                 </ul>
 
                 ${restText ? `<details class="pd-more" open><summary>About this piece</summary><p>${escapeHtml(restText)}</p></details>` : ''}
@@ -3289,4 +3300,23 @@ document.addEventListener('DOMContentLoaded', () => {
         void img.offsetWidth; // restart the animation
         img.classList.add('swap');
     });
+})();
+
+/* Splash screen: lift it once the page is ready (min 700ms so the animation
+   lands, max 2.5s so a slow network never holds the visitor). */
+(function () {
+    const splash = document.getElementById('splash');
+    if (!splash || document.documentElement.classList.contains('splash-seen')) { if (splash) splash.remove(); return; }
+    const started = performance.now();
+    let done = false;
+    const hide = () => {
+        if (done) return; done = true;
+        const wait = Math.max(0, 700 - (performance.now() - started));
+        setTimeout(() => {
+            splash.classList.add('is-out');
+            setTimeout(() => splash.remove(), 650);
+        }, wait);
+    };
+    if (document.readyState === 'complete') hide(); else window.addEventListener('load', hide, { once: true });
+    setTimeout(hide, 2500);
 })();

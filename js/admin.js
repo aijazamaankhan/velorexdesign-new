@@ -122,6 +122,7 @@ async function checkAuth() {
     if (res.ok && res.data && res.data.success) {
         localStorage.setItem('velorex_admin_logged', 'true');
         localStorage.setItem('velorex_admin_email', res.data.admin.email);
+        { const nameEl = document.getElementById('adminName'); if (nameEl) nameEl.textContent = res.data.admin.name || res.data.admin.email || 'Admin'; }
         showToast('Login successful', 'success');
         setTimeout(() => showApp(), 400);
         return;
@@ -133,6 +134,8 @@ async function checkAuth() {
 async function checkSession() {
     const res = await apiCall('api/session-check.php');
     if (res.ok && res.data && res.data.authenticated) {
+        const nameEl = document.getElementById('adminName');
+        if (nameEl && res.data.admin) nameEl.textContent = res.data.admin.name || res.data.admin.email || 'Admin';
         localStorage.setItem('velorex_admin_logged', 'true');
         showApp();
     } else {
@@ -199,7 +202,8 @@ async function loadData() {
                     img: cover,
                     images: imagesArr.length ? imagesArr : (cover ? [cover] : []),
                     desc: p.description || p.desc || '',
-                    featured: p.featured === '1' || p.featured === 1 || p.featured === true
+                    featured: p.featured === '1' || p.featured === 1 || p.featured === true,
+                    amazonUrl: p.amazon_url || ''
                 };
             });
         }
@@ -213,7 +217,12 @@ async function loadData() {
                 items: o.items || [],
                 userName: o.customer_name || 'Guest',
                 userEmail: o.customer_email || '',
-                userPhone: o.customer_phone || '',
+                userPhone: o.order_phone || o.customer_phone || '',
+                orderEmail: o.order_email || o.customer_email || '',
+                subtotal: o.subtotal,
+                shipping: o.shipping,
+                couponCode: o.coupon_code || '',
+                discount: parseFloat(o.discount) || 0,
                 address: {
                     street: o.shipping_address || '',
                     city: o.shipping_city || '',
@@ -334,8 +343,13 @@ async function saveProduct(e) {
         showToast('Product title is too long (max 200 chars)', 'error');
         return;
     }
-    if (!VALIDATORS.positiveNumber(price) || parseFloat(price) <= 0) {
-        showToast('Price must be a positive number', 'error');
+    if (price !== '' && (!VALIDATORS.positiveNumber(price) && parseFloat(price) !== 0)) {
+        showToast('Price must be a number (or leave it empty)', 'error');
+        return;
+    }
+    const amazonUrl = document.getElementById('pAmazon').value.trim();
+    if (amazonUrl && !/^https:\/\/([a-z0-9-]+\.)*(amazon\.in|amzn\.in|amzn\.to)\//i.test(amazonUrl)) {
+        showToast('Amazon link must start with https://www.amazon.in/ (or amzn.in)', 'error');
         return;
     }
     if (!VALIDATORS.positiveNumber(stock)) {
@@ -362,7 +376,8 @@ async function saveProduct(e) {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('category', category);
-    formData.append('price', price);
+    formData.append('price', price === '' ? '0' : price);
+    formData.append('amazon_url', amazonUrl);
     formData.append('stock', stock);
     formData.append('image_url', cover);
     formData.append('images', JSON.stringify(currentImages));
@@ -554,9 +569,19 @@ function renderFeatured() {
 
 function render() {
     document.getElementById('statProducts').textContent = products.length;
-    document.getElementById('statOrders').textContent = allOrders.filter(o => o.status === 'Pending').length;
-    const revenue = allOrders.reduce((sum, o) => sum + o.total, 0);
-    document.getElementById('statRevenue').textContent = `₹${revenue.toLocaleString()}`;
+    const setText = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+    const featuredCount = products.filter(p => p.featured).length;
+    const onAmazon = products.filter(p => p.amazonUrl).length;
+    const low = products.filter(p => (p.stock || 0) <= 3);
+    const out = low.filter(p => (p.stock || 0) <= 0).length;
+    const pending = allOrders.filter(o => o.status === 'Pending').length;
+    setText('statProductsNote', featuredCount + ' featured on the home page');
+    setText('statAmazon', onAmazon);
+    setText('statAmazonNote', products.length - onAmazon ? (products.length - onAmazon) + ' still need an Amazon link' : 'Every product has a link');
+    setText('statLowStock', low.length);
+    setText('statLowStockNote', out ? out + ' out of stock' : 'Nothing out of stock');
+    setText('statOrders', pending);
+    setText('statOrdersNote', allOrders.length + ' in total');
 
     const invQuery = document.getElementById('inventorySearch').value.toLowerCase();
     const catFilter = document.getElementById('categoryFilter').value;
@@ -575,11 +600,11 @@ function render() {
                 <td>
                     <div class="prod-cell">
                         <img src="${img}" class="prod-img" alt="">
-                        <div style="font-weight: 600;">${escapeHtml(p.name)}</div>
+                        <div><div style="font-weight: 600;">${escapeHtml(p.name)}</div>${p.amazonUrl ? '<a class="badge-amazon" href="' + escapeAttr(p.amazonUrl) + '" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> On Amazon</a>' : '<span class="badge-muted">No Amazon link</span>'}</div>
                     </div>
                 </td>
                 <td><span style="color: var(--text-muted); text-transform: capitalize;">${escapeHtml((p.cat || '').replace('_', ' '))}</span></td>
-                <td>₹${p.price.toLocaleString()}</td>
+                <td>${p.price ? '₹' + p.price.toLocaleString() : '<span style="color:var(--text-muted)">—</span>'}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <input type="number" min="0" value="${escapeAttr(p.stock || 0)}" data-action="update-stock" data-id="${escapeAttr(p.id)}" style="width: 60px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 4px; border-radius: 4px;">
@@ -599,6 +624,8 @@ function render() {
 }
 
 function switchTab(tab, el) {
+    // The sidebar logo also opens a tab; highlight the matching menu link instead.
+    if (el && !el.classList.contains('nav-link')) el = document.querySelector('.nav-link[data-tab="' + tab + '"]');
     document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
     document.getElementById(tab + '-tab').style.display = 'block';
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
@@ -1039,7 +1066,8 @@ function editProduct(id) {
     document.getElementById('editingId').value = p.id;
     document.getElementById('pName').value = p.name;
     document.getElementById('pCat').value = p.cat;
-    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pPrice').value = p.price || '';
+    document.getElementById('pAmazon').value = p.amazonUrl || '';
     document.getElementById('pStock').value = p.stock || 0;
     document.getElementById('pImg').value = p.img;
     document.getElementById('pDesc').value = p.desc || '';
@@ -1356,6 +1384,10 @@ function buildExpandRow(o) {
                             <div class="expand-section-title" style="margin-top:1rem;"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Admin Note (visible to customer)</div>
                             <textarea id="note-${escapeAttr(o.id)}" class="form-control" style="min-height:70px; font-size:0.82rem; resize:vertical;" placeholder="e.g. Dispatched via DTDC, expect delivery in 3-5 days">${escapeHtml(o.adminNote || '')}</textarea>
                             <button type="button" class="btn btn-secondary" data-action="save-note" data-id="${escapeAttr(o.id)}" style="margin-top:0.5rem; font-size:0.8rem; padding:0.4rem 1rem;"><i class="fas fa-save"></i> Save Note</button>
+                            <div class="order-print-actions">
+                                <button type="button" class="btn btn-secondary" data-action="print-bill" data-id="${escapeAttr(o.id)}"><i class="fas fa-file-invoice"></i> Print bill</button>
+                                <button type="button" class="btn btn-secondary" data-action="print-label" data-id="${escapeAttr(o.id)}"><i class="fas fa-tag"></i> Address label</button>
+                            </div>
                         </div>
                     </div>
                 </div>

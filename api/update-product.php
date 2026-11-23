@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'product-lib.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -33,6 +34,14 @@ if (isset($_POST['price'])) {
     $fields[] = 'price = ?';
     $types .= 'd';
     $params[] = floatval($_POST['price']);
+}
+if (isset($_POST['amazon_url'])) {
+    $amazon = products_clean_amazon_url($_POST['amazon_url']);
+    if ($amazon === false) sendResponse(['error' => 'Amazon link must be an https://www.amazon.in/... or amzn.in link'], 422);
+    products_ensure_columns($conn);
+    $fields[] = 'amazon_url = ?';
+    $types .= 's';
+    $params[] = $amazon === '' ? null : $amazon;
 }
 if (isset($_POST['stock'])) {
     $fields[] = 'stock = ?';

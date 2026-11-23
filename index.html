@@ -25,7 +25,7 @@
   <meta name="apple-mobile-web-app-title" content="Velorex">
 
   <!-- Apply the saved/previewed design before styles load to avoid a flash of Classic. -->
-  <script src="js/design-selection.js?v=20261124j"></script>
+  <script src="js/design-selection.js?v=20261124l"></script>
 
   <!-- Link previews (WhatsApp, Facebook, X) -->
   <meta property="og:type" content="website">
@@ -50,13 +50,26 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Zilla+Slab:wght@500;600&display=swap"
     crossorigin="anonymous"
     referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="css/index.css?v=20261124j">
-  <link rel="stylesheet" href="css/themes/living-craft.css?v=20261124j">
-  <link rel="stylesheet" href="css/themes/living-craft-shell.css?v=20261124j">
-  <script src="js/index.js?v=20261124j" defer></script>
+  <link rel="stylesheet" href="css/index.css?v=20261124l">
+  <link rel="stylesheet" href="css/themes/living-craft.css?v=20261124l">
+  <link rel="stylesheet" href="css/themes/living-craft-shell.css?v=20261124l">
+  <script src="js/index.js?v=20261124l" defer></script>
 </head>
 
 <body>
+  <!-- SPLASH: first page of each visit only (html.splash-seen hides it, set pre-paint) -->
+  <div class="splash" id="splash" aria-hidden="true">
+    <div class="splash-glow"></div>
+    <div class="splash-inner">
+      <div class="splash-mark">
+        <svg class="splash-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" /></svg>
+        <img src="images/brand/emblem.webp" width="84" height="84" alt="">
+      </div>
+      <div class="splash-word"><span>V</span><span>e</span><span>l</span><span>o</span><span>r</span><span>e</span><span>x</span><em>Design</em></div>
+      <p class="splash-tag">Handmade in India</p>
+      <div class="splash-bar"><i></i></div>
+    </div>
+  </div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -196,6 +209,7 @@
           <div class="social-links">
             <a href="https://www.youtube.com/@sahacraft" target="_blank" rel="noopener noreferrer me" class="social-icon social-yt" aria-label="Saha Craft on YouTube" title="YouTube"><i class="fab fa-youtube"></i></a>
             <a href="https://www.instagram.com/velorexdesign_saha_craft/" target="_blank" rel="noopener noreferrer me" class="social-icon social-ig" aria-label="Velorex Design on Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/917906027807" target="_blank" rel="noopener noreferrer" class="social-icon social-wa" aria-label="Order on WhatsApp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
           </div>
         </div>
         <div class="footer-links">
@@ -221,10 +235,24 @@
             <li><a href="#terms">Terms & Conditions</a></li>
             <li><a href="#privacy">Privacy Policy</a></li>
             <li><a class="footer-amazon-link" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Velorex on Amazon</a></li>
-            <li style="margin-top: 0.5rem;"><a href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer"><i
-                  class="fas fa-external-link-alt" style="font-size: 0.8em; margin-right: 5px;"></i>Music Store</a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"
-                  style="font-size: 0.8em; margin-right: 5px;"></i>Fashion Store</a></li>
+            <li class="footer-stores-li">
+              <div class="footer-stores">
+                <a class="footer-store" href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer">
+                  <span class="footer-store-icon fs-music"><i class="fas fa-music"></i></span>
+                  <span class="footer-store-text"><strong>Velorex Music</strong><small>Vinyl, CDs &amp; music gear</small></span>
+                  <i class="fas fa-arrow-up-right-from-square footer-store-go"></i>
+                </a>
+                <a class="footer-store fs-studio-card" href="https://velorexstudio.com" target="_blank" rel="noopener noreferrer">
+                  <span class="footer-store-icon fs-studio"><i class="fas fa-laptop-code"></i></span>
+                  <span class="footer-store-text"><strong>Velorex Studio</strong><small>Websites, apps &amp; software</small></span>
+                  <i class="fas fa-arrow-up-right-from-square footer-store-go"></i>
+                </a>
+                <span class="footer-store is-soon" aria-disabled="true">
+                  <span class="footer-store-icon fs-fashion"><i class="fas fa-shirt"></i></span>
+                  <span class="footer-store-text"><strong>Velorex Fashion</strong><small>Coming soon</small></span>
+                </span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
@@ -493,6 +521,11 @@
     <a href="#profile" class="tabbar-item" data-tab="profile"><i class="fas fa-user"></i><span>Account</span></a>
   </nav>
 
+  <!-- WHATSAPP ORDER BUTTON -->
+  <a class="wa-float" href="https://wa.me/917906027807?text=Hi%20Velorex%20Design!%20I%20would%20like%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer" aria-label="Order on WhatsApp">
+    <i class="fab fa-whatsapp"></i><span>Order on WhatsApp</span>
+  </a>
+
   <!-- BACK TO TOP -->
   <button type="button" class="back-to-top" id="backToTop" data-action="back-to-top" style="background:var(--orange-gradient); border:none;">
     <i class="fas fa-arrow-up"></i>
@@ -684,7 +717,7 @@
           </div>
         </div>
         <figure class="lc-hero-media">
-          <img src="images/themes/living-craft/hero-mango-tray-v1.png" width="1536" height="1024" alt="Carved dark wood serving tray displayed on a charcoal stone table.">
+          <img loading="lazy" src="images/themes/living-craft/hero-mango-tray-v1.png" width="1536" height="1024" alt="Carved dark wood serving tray displayed on a charcoal stone table.">
           <figcaption>Carved mango wood · serving collection</figcaption>
         </figure>
       </section>
@@ -1049,7 +1082,8 @@
                 <i class="fas fa-phone-alt text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
                 <div>
                   <h4 style="margin-bottom: 0.5rem;">Phone / WhatsApp</h4>
-                  <p id="contactPhone" style="color: var(--text-muted);">+91 98765 43210<br>(Mon–Fri, 10am – 6pm IST)</p>
+                  <p id="contactPhone" style="color: var(--text-muted);"><a href="tel:+917906027807">+91 79060 27807</a><br>(Mon–Fri, 10am – 6pm IST)</p>
+                  <a class="btn btn-whatsapp btn-sm" style="margin-top:.6rem" href="https://wa.me/917906027807?text=Hi%20Velorex%20Design!%20I%20would%20like%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
                 </div>
               </div>
               <div style="display: flex; gap: 1.5rem; align-items: flex-start;">

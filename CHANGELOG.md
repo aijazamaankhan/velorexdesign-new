@@ -6,6 +6,13 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- WhatsApp ordering on +91 79060 27807: "Order on WhatsApp" on product cards and pages (the main button for products not on Amazon), a floating WhatsApp button, tap-to-call and chat on the Contact page, WhatsApp icon in the footer.
+- Footer ventures as cards: Velorex Music, Velorex Studio, Velorex Fashion (coming soon).
+- Admin: easy address /velorex-admin, "Velorex Design Admin" title and favicon, logo opens the admin home, real dashboard cards, an Amazon link field on every product (price now optional), refreshed UI for all sections with a phone layout, the logged-in admin's name in the top bar.
+- Admin orders: printable A4 bill and 4x6 in / A6 address label, modelled on velorexmusic.com.
+- Speed: home page went from about 3.1 MB to well under 1 MB. Category, banner and product photos converted to WebP (served automatically in place of the original JPG/PNG), Unsplash images replaced with local copies, hidden Living Craft images no longer download, one-year browser caching for versioned files and compression for text.
+- Splash screen on the first page of each visit (lifts as soon as the page is ready, never longer than 2.5 s).
+
 - YouTube (@sahacraft) and Instagram (@velorexdesign_saha_craft) linked in the footer, with brand-coloured QR codes in a new "Follow Velorex" footer band and on the Contact page; profiles listed as `sameAs` for search engines. The dead WhatsApp footer icon is removed.
 
 - Home wellness section: Buy on Amazon is now the first button; the three buttons are equal and full width on phones.

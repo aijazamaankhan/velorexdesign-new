@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'product-lib.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -30,9 +31,12 @@ if (isset($_POST['images'])) {
     }
 }
 
-if (!$name || !$category || $price <= 0) {
-    sendResponse(['error' => 'Required fields missing (name, category, price)'], 422);
+if (!$name || !$category || $price < 0) {
+    sendResponse(['error' => 'Required fields missing (name, category)'], 422);
 }
+$amazon = products_clean_amazon_url($_POST['amazon_url'] ?? '');
+if ($amazon === false) sendResponse(['error' => 'Amazon link must be an https://www.amazon.in/... or amzn.in link'], 422);
+products_ensure_columns($conn);
 
 $stmt = $conn->prepare('INSERT INTO products (name, category, price, stock, image_url, description, featured, images, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
 $stmt->bind_param('ssdissis', $name, $category, $price, $stock, $image_url, $description, $featured, $imagesJson);
@@ -41,5 +45,10 @@ if (!$stmt->execute()) {
 }
 
 $productId = $stmt->insert_id;
+if ($amazon !== '') {
+    $a = $conn->prepare('UPDATE products SET amazon_url = ? WHERE id = ?');
+    $a->bind_param('si', $amazon, $productId);
+    $a->execute();
+}
 sendResponse(['success' => true, 'product_id' => $productId]);
 ?>

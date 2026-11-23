@@ -60,11 +60,23 @@ On 24 November 2026 the live database was repaired. Its original tables had been
 
 ## Admin access
 
-- The admin portal is only at `https://velorexdesign.com/manage/<ADMIN_PATH_KEY>`. The key is in the server `.env`, never in Git.
+- Easy address: `https://velorexdesign.com/velorex-admin`. The secret address `https://velorexdesign.com/manage/<ADMIN_PATH_KEY>` also still works.
+- Either way the admin username and password are required, and logins are rate limited. Use a strong password.
 - `/admin.html` and `/admin-gate.php` return 404 on purpose. There is no admin link on the public site or in `robots.txt`.
 - A wrong key also returns 404. The admin still needs a username and password.
 - To change the secret link, change `ADMIN_PATH_KEY` in the server `.env`. The old link stops working at once.
 - Change the admin username or password from admin → Settings after logging in.
+
+## Ordering and contact
+
+- WhatsApp: +91 79060 27807 (`STORE_WHATSAPP_DEFAULT` in `js/index.js`). A number saved in admin settings overrides it.
+- Email: velorexdesign@gmail.com. Address: Meerut, Uttar Pradesh 250002, India.
+
+## Images and speed
+
+- Every JPG/PNG under the site has a `.webp` copy next to it; `.htaccess` sends the WebP to browsers that accept it. When you add a new JPG/PNG to the repo, add its WebP copy too (Python Pillow, quality 78–80, max 1200 px wide).
+- Product photos uploaded through admin are served as uploaded.
+- Versioned CSS/JS and images are cached for a year; bump the `?v=` number when CSS or JS changes.
 
 ## Social media
 
@@ -74,5 +86,3 @@ On 24 November 2026 the live database was repaired. Its original tables had been
 
 ## Settings to fill in later
 
-- WhatsApp number: `STORE_WHATSAPP_DEFAULT` in `js/index.js`, or admin settings. WhatsApp buttons stay hidden until it is set.
-- Contact page phone number is still a placeholder.
