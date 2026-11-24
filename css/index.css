@@ -4024,3 +4024,36 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
 .vx-menu { top: 96px; } .vx-head-text strong { font-size: .95rem; }
 .vx-chat { z-index: 1150; }
 @media (max-width: 768px) { .vx-chat { height: min(600px, calc(100vh - 250px)); } }
+
+/* ───────────── My Account ───────────── */
+.profile-card-mini { display: flex; align-items: center; gap: .75rem; padding: .9rem; margin-bottom: .75rem; border-radius: 14px; background: rgba(255,107,53,.08); border: 1px solid rgba(255,107,53,.2); }
+.pm-avatar { flex: 0 0 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; color: #fff; background: var(--orange-gradient); }
+.profile-card-mini strong { display: block; } .profile-card-mini span { font-size: .78rem; color: var(--text-muted); word-break: break-all; }
+.pf-title { margin: 0 0 .35rem; font-family: var(--font-display); font-size: 1.6rem; }
+.pf-sub { color: var(--text-muted); margin: 0 0 1.25rem; }
+.ov-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .85rem; margin-bottom: 1rem; }
+.ov-stat { display: flex; flex-direction: column; gap: .2rem; padding: 1rem; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+.ov-stat i { color: var(--secondary); } .ov-stat b { font-size: 1.6rem; } .ov-stat span { font-size: .8rem; color: var(--text-muted); }
+.ov-latest-card { display: flex; align-items: center; gap: 1rem; justify-content: space-between; flex-wrap: wrap; padding: 1rem 1.1rem; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 1rem; }
+.ov-latest-card div { display: flex; flex-direction: column; } .ov-k { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+.ov-latest-card.ov-empty span { color: var(--text-muted); }
+.ov-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.ov-action { display: flex; flex-direction: column; align-items: center; gap: .45rem; padding: 1rem .5rem; border-radius: 14px; border: 1px solid var(--border); background: transparent; color: var(--text); font: inherit; font-weight: 600; font-size: .85rem; cursor: pointer; text-decoration: none; transition: transform .2s, border-color .2s, background .2s; }
+.ov-action i { font-size: 1.3rem; color: var(--secondary); }
+.ov-action:hover { transform: translateY(-3px); border-color: var(--secondary); background: rgba(255,107,53,.06); }
+.pf-card { padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 1rem; }
+.pf-card h4 { margin: 0 0 1rem; display: flex; gap: .5rem; align-items: center; } .pf-card h4 i { color: var(--secondary); }
+.pf-2col { grid-template-columns: 1fr 1fr; gap: 1rem; }
+.pf-hint { font-size: .82rem; color: var(--text-muted); margin: 0 0 1rem; }
+.pf-danger { border-color: rgba(239,68,68,.35); } .pf-danger h4 i { color: #ef4444; }
+.pf-danger-btn { background: rgba(239,68,68,.12); color: #ef4444; border: 1px solid rgba(239,68,68,.35); }
+.pf-danger-btn:hover { background: #ef4444; color: #fff; }
+.help-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .85rem; }
+.help-card { display: flex; flex-direction: column; gap: .3rem; padding: 1.1rem; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none; text-align: left; font: inherit; cursor: pointer; transition: transform .2s, border-color .2s; }
+.help-card i { font-size: 1.4rem; color: var(--secondary); margin-bottom: .2rem; } .help-card .fa-whatsapp { color: #25d366; }
+.help-card span { font-size: .8rem; color: var(--text-muted); }
+.help-card:hover { transform: translateY(-3px); border-color: var(--secondary); }
+@media (max-width: 640px) {
+  .ov-stats, .ov-actions { grid-template-columns: repeat(2, 1fr); } .ov-stats .ov-stat:last-child { grid-column: 1 / -1; }
+  .help-grid, .pf-2col { grid-template-columns: 1fr; }
+}

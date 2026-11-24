@@ -794,3 +794,8 @@ th { position: static; }
 @media (max-width: 1100px) { .cat-layout, .settings-grid { grid-template-columns: 1fr; } .cat-form { position: static; } }
 .cat-card-img img { position: absolute; inset: 0; }
 .cat-card { display: flex; flex-direction: column; }
+
+.cust-actions { display: inline-flex; gap: .35rem; flex-wrap: wrap; justify-content: center; }
+.cust-actions .btn { min-height: 34px; padding: .35rem .6rem; font-size: .78rem; }
+.cust-wa { color: #25d366 !important; } .cust-block { color: #f59e0b !important; } .cust-unblock { color: #10b981 !important; } .cust-del { color: #ef4444 !important; }
+.cust-blocked { font-size: .7rem; background: rgba(239,68,68,.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-weight: 700; }

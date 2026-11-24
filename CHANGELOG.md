@@ -6,6 +6,11 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- Chat is now a movable phone: drag it by the top bar anywhere on screen (remembered for the visit, double-click to reset), with a status bar, notch and home bar. New menu of 21 options, new and previous chats kept on the visitor's device, and new answers (custom orders, payment, wood care, our story, Velorex family, gift ideas, bestsellers, new arrivals, coming soon).
+- Hero: the first slide now uses the same single framed image as the other slides.
+- Admin opens on Dashboard & P&L, now first in the menu. Customers: block / unblock sign-in, quick WhatsApp, email and delete buttons, Export CSV.
+- My Account: Overview (orders, in-progress, addresses, latest order, quick actions), Password & security (change password, delete account), Help & support.
+
 - Chat assistant phase 2: order tracking, Leave a message, admin Chat & Messages tab (inbox with unread badge, answer editor, what people ask). Floating WhatsApp button brought back on the right.
 - Admin redesign of Categories (image cards with live/coming-soon state and product counts, sticky add form) and Settings (Store details and Admin account side by side).
 

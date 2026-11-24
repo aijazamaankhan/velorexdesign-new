@@ -2604,6 +2604,55 @@ const app = {
         }
     },
 
+    /* Overview tab: greeting, counts, latest order. */
+    renderProfileOverview(orders) {
+        const p = this.userProfile || {};
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        const first = String(p.name || '').trim().split(/\s+/)[0] || 'there';
+        set('ovName', first);
+        set('pmName', p.name || 'My account');
+        set('pmEmail', p.email || '');
+        set('pmAvatar', (first[0] || 'V').toUpperCase());
+        set('ovOrders', orders.length);
+        set('ovActive', orders.filter(o => ['Pending', 'Processing', 'Shipped'].includes(o.status)).length);
+        set('ovAddr', (p.addresses || []).length);
+        const latest = document.getElementById('ovLatest');
+        if (!latest) return;
+        const o = orders[0];
+        latest.innerHTML = o ? `
+            <div class="ov-latest-card">
+                <div><span class="ov-k">Latest order</span><b>${escapeHtml(o.id || o.order_code || '')}</b><span>${escapeHtml(o.date || '')}</span></div>
+                <span class="order-status-pill pill-${escapeAttr(String(o.status || '').toLowerCase())}">${escapeHtml(o.status || '')}</span>
+                <button type="button" class="btn btn-secondary btn-sm" data-action="profile-tab" data-tab="orders">View</button>
+            </div>` : `<div class="ov-latest-card ov-empty"><span>No orders yet. Browse the collection or order on WhatsApp.</span><button type="button" class="btn btn-primary btn-sm" data-action="goto-products">Shop now</button></div>`;
+    },
+
+    async changePassword() {
+        const cur = document.getElementById('pwCurrent').value;
+        const nw = document.getElementById('pwNew').value;
+        const rep = document.getElementById('pwConfirm').value;
+        if (!cur || !nw) { this.showToast('Fill in your current and new password', 'error'); return; }
+        if (nw.length < 8) { this.showToast('New password must be at least 8 characters', 'error'); return; }
+        if (nw !== rep) { this.showToast('The new passwords do not match', 'error'); return; }
+        const res = await apiCall('api/customer-account.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'password', current_password: cur, new_password: nw }) });
+        if (!res.ok) { this.showToast((res.data && res.data.error) || 'Could not change the password', 'error'); return; }
+        ['pwCurrent', 'pwNew', 'pwConfirm'].forEach(id => { document.getElementById(id).value = ''; });
+        this.showToast('Password updated', 'success');
+    },
+
+    async deleteAccount() {
+        const pw = document.getElementById('delPassword').value;
+        if (!pw) { this.showToast('Type your password to confirm', 'error'); return; }
+        if (!confirm('Delete your Velorex account? This cannot be undone.')) return;
+        const res = await apiCall('api/customer-account.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', password: pw }) });
+        if (!res.ok) { this.showToast((res.data && res.data.error) || 'Could not delete the account', 'error'); return; }
+        this.currentUser = null;
+        try { localStorage.removeItem('velorex_design_user'); } catch (_) { /* ignore */ }
+        this.showToast('Your account has been deleted', 'info');
+        this.navigate('home');
+        setTimeout(() => window.location.reload(), 800);
+    },
+
     async renderProfile() {
         document.getElementById('profName').value = this.userProfile.name || '';
         document.getElementById('profEmail').value = this.userProfile.email || '';
@@ -2645,6 +2694,7 @@ const app = {
         }
 
         this.markNotificationsRead();
+        this.renderProfileOverview(myOrders);
 
         if (myOrders.length === 0) {
             ordersContainer.innerHTML = `
@@ -3103,7 +3153,8 @@ const ACTION_HANDLERS = {
     'default-address':     (e, el) => app.setDefaultAddress(el.dataset.id),
     'show-addr-form':      () => app.showAddressForm(),
     'logout':              () => app.handleLogout(),
-    'profile-tab':         (e, el) => app.switchProfileTab(el.dataset.tab, el),
+    'profile-tab':         (e, el) => app.switchProfileTab(el.dataset.tab, document.querySelector('#app .profile-menu-item[data-tab="' + el.dataset.tab + '"]') || el),
+    'open-chat-track':     () => { const l = document.querySelector('.vx-chat-launch'); if (l) l.click(); setTimeout(() => { const b = document.querySelector('#vxMenuGrid [data-chip="track"]'); if (b) b.click(); }, 700); },
     'select-service':      (e, el) => app.selectServiceType(el.dataset.svc),
     'select-package':      (e, el) => app.selectPackage(el.dataset.svc, parseInt(el.dataset.idx, 10)),
     'proceed-service':     (e, el) => app.proceedService(el.dataset.svc, parseInt(el.dataset.idx, 10)),
@@ -3151,6 +3202,8 @@ function wireDelegatedEvents() {
         if (action === 'login')           app.handleLogin(e);
         else if (action === 'register')   app.handleRegister(e);
         else if (action === 'save-profile') app.saveProfile();
+        else if (action === 'change-password') app.changePassword();
+        else if (action === 'delete-account') app.deleteAccount();
         else if (action === 'save-address') app.saveAddress();
         else if (action === 'submit-checkout') app.submitCheckout();
         else if (action === 'submit-contact')  app.submitContact();

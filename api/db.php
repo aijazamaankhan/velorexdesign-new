@@ -178,6 +178,22 @@ if (!function_exists('admin_session_ok')) {
     }
 }
 
+/** True when the admin has blocked this customer (column may not exist yet). */
+if (!function_exists('customer_is_blocked')) {
+    function customer_is_blocked($conn, $id) {
+        try {
+            $st = $conn->prepare('SELECT is_blocked FROM customers WHERE id = ? LIMIT 1');
+            if (!$st) return false;
+            $st->bind_param('i', $id);
+            $st->execute();
+            $r = $st->get_result()->fetch_assoc();
+            return $r && !empty($r['is_blocked']);
+        } catch (Throwable $e) {
+            return false; // column not added yet: nobody is blocked
+        }
+    }
+}
+
 /** Reads a request field as a trimmed string, capped in length. Non-strings become ''. */
 if (!function_exists('strField')) {
     function strField($source, $key, $maxLen = 255) {

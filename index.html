@@ -25,7 +25,7 @@
   <meta name="apple-mobile-web-app-title" content="Velorex">
 
   <!-- Apply the saved/previewed design before styles load to avoid a flash of Classic. -->
-  <script src="js/design-selection.js?v=20261124z"></script>
+  <script src="js/design-selection.js?v=20261125a"></script>
 
   <!-- Link previews (WhatsApp, Facebook, X) -->
   <meta property="og:type" content="website">
@@ -50,11 +50,11 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Zilla+Slab:wght@500;600&display=swap"
     crossorigin="anonymous"
     referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="css/index.css?v=20261124z">
-  <link rel="stylesheet" href="css/themes/living-craft.css?v=20261124z">
-  <link rel="stylesheet" href="css/themes/living-craft-shell.css?v=20261124z">
-  <script src="js/index.js?v=20261124z" defer></script>
-  <script src="js/chat.js?v=20261124z" defer></script>
+  <link rel="stylesheet" href="css/index.css?v=20261125a">
+  <link rel="stylesheet" href="css/themes/living-craft.css?v=20261125a">
+  <link rel="stylesheet" href="css/themes/living-craft-shell.css?v=20261125a">
+  <script src="js/index.js?v=20261125a" defer></script>
+  <script src="js/chat.js?v=20261125a" defer></script>
 </head>
 
 <body>
@@ -973,11 +973,24 @@
           <div class="profile-container">
             <div class="profile-sidebar">
               <div class="profile-menu">
-                <div class="profile-menu-item active" data-action="profile-tab" data-tab="settings">
-                  <i class="fas fa-user-cog"></i> Account Settings
+                <div class="profile-card-mini" id="profileMini">
+                  <div class="pm-avatar" id="pmAvatar">V</div>
+                  <div><strong id="pmName">My account</strong><span id="pmEmail"></span></div>
+                </div>
+                <div class="profile-menu-item active" data-action="profile-tab" data-tab="overview">
+                  <i class="fas fa-gauge"></i> Overview
+                </div>
+                <div class="profile-menu-item" data-action="profile-tab" data-tab="settings">
+                  <i class="fas fa-user-pen"></i> Profile &amp; addresses
                 </div>
                 <div class="profile-menu-item" data-action="profile-tab" data-tab="orders">
-                  <i class="fas fa-box-open"></i> Order History
+                  <i class="fas fa-box-open"></i> Order history
+                </div>
+                <div class="profile-menu-item" data-action="profile-tab" data-tab="security">
+                  <i class="fas fa-shield-halved"></i> Password &amp; security
+                </div>
+                <div class="profile-menu-item" data-action="profile-tab" data-tab="help">
+                  <i class="fas fa-life-ring"></i> Help &amp; support
                 </div>
                 <div class="profile-menu-item" id="profileLogoutBtn" data-action="logout" style="margin-top: 1rem; color: #ef4444;">
                   <i class="fas fa-sign-out-alt"></i> Logout
@@ -986,7 +999,58 @@
             </div>
 
             <div class="profile-content">
-              <div id="tab-settings" class="profile-section active">
+              <div id="tab-overview" class="profile-section active">
+                <h3 class="pf-title">Hello, <span id="ovName">there</span> 👋</h3>
+                <p class="pf-sub">Everything about your Velorex account in one place.</p>
+                <div class="ov-stats">
+                  <div class="ov-stat"><i class="fas fa-box"></i><b id="ovOrders">0</b><span>Orders</span></div>
+                  <div class="ov-stat"><i class="fas fa-truck-fast"></i><b id="ovActive">0</b><span>In progress</span></div>
+                  <div class="ov-stat"><i class="fas fa-location-dot"></i><b id="ovAddr">0</b><span>Saved addresses</span></div>
+                </div>
+                <div class="ov-latest" id="ovLatest"></div>
+                <div class="ov-actions">
+                  <button type="button" class="ov-action" data-action="profile-tab" data-tab="settings"><i class="fas fa-user-pen"></i><span>Edit profile</span></button>
+                  <button type="button" class="ov-action" data-action="show-addr-form"><i class="fas fa-map-location-dot"></i><span>Add address</span></button>
+                  <button type="button" class="ov-action" data-action="profile-tab" data-tab="orders"><i class="fas fa-box-open"></i><span>My orders</span></button>
+                  <button type="button" class="ov-action" data-action="profile-tab" data-tab="security"><i class="fas fa-key"></i><span>Change password</span></button>
+                  <a class="ov-action" href="https://wa.me/917906027807" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i><span>WhatsApp us</span></a>
+                  <button type="button" class="ov-action" data-action="goto-products"><i class="fas fa-store"></i><span>Shop</span></button>
+                </div>
+              </div>
+
+              <div id="tab-security" class="profile-section">
+                <h3 class="pf-title">Password &amp; security</h3>
+                <form class="pf-card" data-action="change-password" novalidate>
+                  <h4><i class="fas fa-key"></i> Change password</h4>
+                  <div class="form-group"><label for="pwCurrent">Current password</label><input type="password" id="pwCurrent" class="form-control" autocomplete="current-password" required maxlength="200"></div>
+                  <div class="grid pf-2col">
+                    <div class="form-group"><label for="pwNew">New password</label><input type="password" id="pwNew" class="form-control" autocomplete="new-password" minlength="8" maxlength="200" required></div>
+                    <div class="form-group"><label for="pwConfirm">Repeat new password</label><input type="password" id="pwConfirm" class="form-control" autocomplete="new-password" minlength="8" maxlength="200" required></div>
+                  </div>
+                  <p class="pf-hint">At least 8 characters. A short sentence is easy to remember and hard to guess.</p>
+                  <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update password</button>
+                </form>
+                <form class="pf-card pf-danger" data-action="delete-account" novalidate>
+                  <h4><i class="fas fa-triangle-exclamation"></i> Delete account</h4>
+                  <p class="pf-hint">This removes your account and saved addresses. Past orders stay with us for our records and deliveries. This cannot be undone.</p>
+                  <div class="form-group"><label for="delPassword">Type your password to confirm</label><input type="password" id="delPassword" class="form-control" autocomplete="current-password" required maxlength="200"></div>
+                  <button type="submit" class="btn pf-danger-btn"><i class="fas fa-trash"></i> Delete my account</button>
+                </form>
+              </div>
+
+              <div id="tab-help" class="profile-section">
+                <h3 class="pf-title">Help &amp; support</h3>
+                <div class="help-grid">
+                  <a class="help-card" href="https://wa.me/917906027807" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i><b>Chat on WhatsApp</b><span>+91 79060 27807 · Mon–Fri, 10am–6pm IST</span></a>
+                  <button type="button" class="help-card" data-action="open-chat-track"><i class="fas fa-location-crosshairs"></i><b>Track an order</b><span>Order number + your email or phone</span></button>
+                  <a class="help-card" href="#shipping"><i class="fas fa-truck"></i><b>Shipping</b><span>Pan-India, 4–7 business days after dispatch</span></a>
+                  <a class="help-card" href="#returns"><i class="fas fa-rotate-left"></i><b>Returns &amp; refunds</b><span>Damaged items: photo within 48 hours</span></a>
+                  <a class="help-card" href="mailto:velorexdesign@gmail.com"><i class="fas fa-envelope"></i><b>Email us</b><span>velorexdesign@gmail.com</span></a>
+                  <a class="help-card" href="#faq"><i class="fas fa-circle-question"></i><b>FAQ</b><span>Quick answers</span></a>
+                </div>
+              </div>
+
+              <div id="tab-settings" class="profile-section">
                 <h3 style="margin-bottom: 1.5rem;">Personal Information</h3>
                 <form data-action="save-profile" novalidate>
                   <div class="grid" style="grid-template-columns: 1fr 1fr;">

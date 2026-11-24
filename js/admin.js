@@ -169,6 +169,8 @@ async function showApp() {
     loadCategories();
     loadSettings();
     render();
+    // Dashboard & P&L is the first screen after login.
+    switchTab('analytics', document.querySelector('.nav-link[data-tab="analytics"]'));
 }
 
 async function loadSettings() {
@@ -640,7 +642,7 @@ function switchTab(tab, el) {
     document.getElementById(tab + '-tab').style.display = 'block';
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
-    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Analytics & Profit', settings: 'Store Settings', coupons: 'Coupons and Offers', chat: 'Chat & Messages', loyalty: 'Loyalty Points' };
+    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Dashboard & Profit', settings: 'Store Settings', coupons: 'Coupons and Offers', chat: 'Chat & Messages', loyalty: 'Loyalty Points' };
     document.getElementById('tabTitle').textContent = titles[tab] || tab;
     if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
     if (tab === 'customers') loadCustomers();
@@ -648,7 +650,7 @@ function switchTab(tab, el) {
     if (tab === 'categories') renderCategories();
     // The summary cards belong to the dashboard (Inventory) only.
     const statsGrid = document.querySelector('#adminApp > .stats-grid');
-    if (statsGrid) statsGrid.style.display = tab === 'inventory' ? '' : 'none';
+    if (statsGrid) statsGrid.style.display = (tab === 'inventory' || tab === 'analytics') ? '' : 'none';
     if (tab === 'coupons' && typeof loadCoupons === 'function') loadCoupons();
     if (tab === 'analytics' && typeof loadAnalytics === 'function') loadAnalytics();
     if (tab === 'chat' && typeof loadMessages === 'function') loadMessages();
@@ -923,14 +925,18 @@ function renderCustomers() {
             <td>${c.phone ? escapeHtml(c.phone) : '<span style="color:var(--text-muted);">—</span>'}</td>
             <td>${c.has_account
                 ? '<span style="font-size:0.72rem; background:rgba(0,212,170,0.12); color:var(--success); padding:2px 8px; border-radius:10px; font-weight:600;">Registered</span>'
-                : '<span style="font-size:0.72rem; background:rgba(152,144,176,0.12); color:var(--text-muted); padding:2px 8px; border-radius:10px; font-weight:600;">Guest</span>'}</td>
+                : '<span style="font-size:0.72rem; background:rgba(152,144,176,0.12); color:var(--text-muted); padding:2px 8px; border-radius:10px; font-weight:600;">Guest</span>'}${c.is_blocked ? ' <span class="cust-blocked">Blocked</span>' : ''}</td>
             <td style="text-align:right;">${escapeHtml(String(c.orders_count || 0))}</td>
             <td style="text-align:right;">₹${Number(c.total_spent || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
             <td style="white-space:nowrap;">${escapeHtml(formatDate(c.created_at))}</td>
             <td style="text-align:center; white-space:nowrap;">
-                <button type="button" class="btn btn-secondary" data-action="open-customer" data-id="${escapeAttr(c.id)}" style="padding:0.35rem 0.7rem; font-size:0.78rem;">
-                    <i class="fas fa-eye"></i> View / Edit
-                </button>
+                <div class="cust-actions">
+                <button type="button" class="btn btn-secondary" data-action="open-customer" data-id="${escapeAttr(c.id)}" title="View and edit"><i class="fas fa-pen"></i> Edit</button>
+                ${c.phone && String(c.phone).replace(/\D/g, '').length >= 10 ? `<a class="btn btn-secondary cust-wa" href="https://wa.me/${escapeAttr((String(c.phone).replace(/\D/g, '').length === 10 ? '91' : '') + String(c.phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>` : ''}
+                ${c.email ? `<a class="btn btn-secondary" href="mailto:${escapeAttr(c.email)}" title="Email"><i class="fas fa-envelope"></i></a>` : ''}
+                ${c.has_account ? `<button type="button" class="btn btn-secondary ${c.is_blocked ? 'cust-unblock' : 'cust-block'}" data-action="toggle-block" data-id="${escapeAttr(c.id)}" data-blocked="${c.is_blocked ? '1' : '0'}" title="${c.is_blocked ? 'Allow sign-in again' : 'Stop this customer signing in'}"><i class="fas ${c.is_blocked ? 'fa-unlock' : 'fa-ban'}"></i></button>` : ''}
+                <button type="button" class="btn btn-secondary cust-del" data-action="quick-delete-customer" data-id="${escapeAttr(c.id)}" title="Delete"><i class="fas fa-trash"></i></button>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -1661,4 +1667,35 @@ function wireUpDelegatedEvents() {
 document.addEventListener('DOMContentLoaded', () => {
     wireUpDelegatedEvents();
     checkSession();
+});
+
+
+/* ───────── Customer quick actions: block / unblock, delete, CSV ───────── */
+Object.assign(ACTION_HANDLERS, {
+    'toggle-block': async (e, el) => {
+        const block = el.dataset.blocked !== '1';
+        if (block && !confirm('Block this customer? They will not be able to sign in. Their orders are kept.')) return;
+        const res = await apiCall('api/admin-customer-block.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: el.dataset.id, blocked: block }) });
+        if (!res.ok) { showToast(explainApiFailure(res, 'Could not update'), 'error'); return; }
+        showToast(block ? 'Customer blocked' : 'Customer can sign in again', 'success');
+        loadCustomers();
+    },
+    'quick-delete-customer': async (e, el) => {
+        const c = customers.find(x => String(x.id) === String(el.dataset.id));
+        if (!confirm(`Delete ${c ? c.name : 'this customer'}? Their account and addresses are removed. Orders stay on record.`)) return;
+        const res = await apiCall('api/admin-delete-customer.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: el.dataset.id }) });
+        if (!res.ok) { showToast(explainApiFailure(res, 'Could not delete'), 'error'); return; }
+        showToast('Customer deleted', 'success');
+        loadCustomers();
+    },
+    'export-customers': () => {
+        const rows = [['ID', 'Name', 'Email', 'Phone', 'Account', 'Blocked', 'Orders', 'Total spent', 'Joined']].concat(
+            customers.map(c => [c.id, c.name, c.email || '', c.phone || '', c.has_account ? 'Registered' : 'Guest', c.is_blocked ? 'Yes' : 'No', c.orders_count || 0, c.total_spent || 0, c.created_at || '']));
+        const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'velorex-customers.csv';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
 });

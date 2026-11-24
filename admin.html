@@ -25,14 +25,14 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Playfair+Display:wght@700&display=swap"
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="css/admin.css?v=20261124z">
-    <script src="js/admin.js?v=20261124z" defer></script>
-    <script src="js/admin-marketing.js?v=20261124z" defer></script>
-    <script src="js/admin-print.js?v=20261124z" defer></script>
-    <script src="js/admin-cropper.js?v=20261124z" defer></script>
-    <script src="js/admin-analytics.js?v=20261124z" defer></script>
-    <script src="js/chat.js?v=20261124z" defer></script>
-    <script src="js/admin-messages.js?v=20261124z" defer></script>
+    <link rel="stylesheet" href="css/admin.css?v=20261125a">
+    <script src="js/admin.js?v=20261125a" defer></script>
+    <script src="js/admin-marketing.js?v=20261125a" defer></script>
+    <script src="js/admin-print.js?v=20261125a" defer></script>
+    <script src="js/admin-cropper.js?v=20261125a" defer></script>
+    <script src="js/admin-analytics.js?v=20261125a" defer></script>
+    <script src="js/chat.js?v=20261125a" defer></script>
+    <script src="js/admin-messages.js?v=20261125a" defer></script>
 </head>
 
 <body>
@@ -65,12 +65,15 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <a href="#inventory" class="logo admin-logo" data-action="set-tab" data-tab="inventory" title="Admin home">
+        <a href="#analytics" class="logo admin-logo" data-action="set-tab" data-tab="analytics" title="Admin home">
             <img src="images/brand/emblem.webp" width="36" height="36" alt="">
             <span class="admin-logo-text"><span>Velorex Design</span><small>Admin</small></span>
         </a>
         <nav class="nav-menu">
-            <a href="#inventory" class="nav-link active" data-action="set-tab" data-tab="inventory">
+                        <a href="#analytics" class="nav-link active" data-action="set-tab" data-tab="analytics">
+                <i class="fas fa-chart-line"></i> <span>Dashboard &amp; P&amp;L</span>
+            </a>
+            <a href="#inventory" class="nav-link" data-action="set-tab" data-tab="inventory">
                 <i class="fas fa-boxes"></i> <span>Inventory</span>
             </a>
             <a href="#orders" class="nav-link" data-action="set-tab" data-tab="orders">
@@ -93,9 +96,6 @@
             </a>
             <a href="#loyalty" class="nav-link" data-action="set-tab" data-tab="loyalty">
                 <i class="fas fa-gift"></i> <span>Loyalty Points</span>
-            </a>
-            <a href="#analytics" class="nav-link" data-action="set-tab" data-tab="analytics">
-                <i class="fas fa-chart-line"></i> <span>Analytics &amp; P&amp;L</span>
             </a>
             <a href="#settings" class="nav-link" data-action="set-tab" data-tab="settings">
                 <i class="fas fa-cog"></i> <span>Settings</span>
@@ -258,6 +258,7 @@
                         </div>
                     </div>
                     <div style="display:flex; gap:0.75rem;">
+                        <button type="button" class="btn btn-secondary" data-action="export-customers"><i class="fas fa-file-csv"></i> Export CSV</button>
                         <button type="button" class="btn btn-secondary" data-action="load-customers"><i class="fas fa-sync-alt"></i> Refresh</button>
                     </div>
                 </div>
