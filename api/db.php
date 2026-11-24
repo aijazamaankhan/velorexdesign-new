@@ -168,7 +168,7 @@ if (!function_exists('rateLimitFile')) {
 if (!defined('ADMIN_SESSION_HOURS')) define('ADMIN_SESSION_HOURS', 8);
 if (!function_exists('admin_session_ok')) {
     function admin_session_ok() {
-        if (!admin_session_ok()) return false;
+        if (empty($_SESSION['admin_id'])) return false;
         $at = isset($_SESSION['admin_login_at']) ? (int) $_SESSION['admin_login_at'] : 0;
         if ($at <= 0 || time() - $at > ADMIN_SESSION_HOURS * 3600) {
             unset($_SESSION['admin_id'], $_SESSION['admin_email'], $_SESSION['admin_name'], $_SESSION['admin_login_at']);
