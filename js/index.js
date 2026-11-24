@@ -3272,7 +3272,13 @@ const ACTION_HANDLERS = {
     'show-login':          () => app.showAuthForm('login'),
     'faq-toggle':          (e, el) => el.classList.toggle('active'),
     'scroll-to':           (e, el) => { const t = document.getElementById(el.dataset.target); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-    'clear-notifs':        () => app.clearNotifications()
+    'clear-notifs':        () => app.clearNotifications(),
+    // Opens a product by name, so it works for both database ids and built-in ids.
+    'open-product-match':  (e, el) => {
+        const re = new RegExp(el.dataset.match, 'i');
+        const p = PRODUCTS.find(x => re.test(x.name || ''));
+        if (p) app.navigate('product-detail', { id: p.id }); else app.navigate('products');
+    }
 };
 
 function wireDelegatedEvents() {
