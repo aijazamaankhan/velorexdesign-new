@@ -4057,3 +4057,16 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
   .ov-stats, .ov-actions { grid-template-columns: repeat(2, 1fr); } .ov-stats .ov-stat:last-child { grid-column: 1 / -1; }
   .help-grid, .pf-2col { grid-template-columns: 1fr; }
 }
+/* 320–360px phones: header icons and My Account fit the screen */
+.profile-container > *, .profile-content { min-width: 0; }
+@media (max-width: 360px) {
+  .nav-actions { gap: .15rem !important; }
+  .nav-actions .nav-search-btn, .nav-actions .theme-toggle, .nav-actions #notifBell { width: 34px !important; padding: 0 !important; }
+  .navbar .nav-brand { font-size: 1.15rem; gap: 6px; }
+  .navbar .nav-brand .brand-emblem { width: 30px; height: 30px; }
+  .ov-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ov-stat { padding: .75rem; }
+}
+.ov-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ov-stat { min-width: 0; }
+@media (max-width: 640px) { .ov-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ov-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
