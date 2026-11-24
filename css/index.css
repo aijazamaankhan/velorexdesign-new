@@ -3961,3 +3961,11 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
 }
 @media (prefers-reduced-motion: reduce) { .vx-chat-launch::before { animation: none; } .vx-msg { animation: none; } }
 .vx-chat-launch.is-active .vx-launch-tip { display: none; }
+
+/* WhatsApp button on the right (chat bubble is on the left); back-to-top sits above it */
+.wa-float { left: auto; right: 20px; bottom: 24px; }
+.back-to-top { bottom: 96px !important; }
+@media (max-width: 768px) {
+  .wa-float { left: auto; right: 14px; bottom: calc(78px + env(safe-area-inset-bottom)); }
+  .back-to-top { bottom: calc(142px + env(safe-area-inset-bottom)) !important; right: 18px !important; }
+}

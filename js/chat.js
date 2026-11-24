@@ -235,9 +235,6 @@
         launcher.innerHTML = '<i class="fas fa-comment-dots vx-ico-open"></i><i class="fas fa-xmark vx-ico-close"></i><span class="vx-launch-tip">Need help? Ask us</span>';
         launcher.addEventListener('click', () => (built && els.panel.classList.contains('is-open') ? close() : open()));
         document.body.appendChild(launcher);
-        // The chat includes WhatsApp, so the separate floating button is retired.
-        const wa = document.querySelector('.wa-float');
-        if (wa) wa.remove();
         // Show the tooltip once per visit after a short delay.
         try {
             if (!sessionStorage.getItem('vx_chat_tip')) {
