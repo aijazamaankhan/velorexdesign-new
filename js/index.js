@@ -211,7 +211,7 @@ const HERO_PROMOS = [
         key: 'vijaysar', eyebrow: 'Ayurvedic wellness', icon: 'fas fa-leaf',
         title: 'Fill it at night.<br><span class="text-gradient">Drink it at dawn.</span>',
         desc: 'The Vijaysar heartwood glass, hand-turned in Meerut. Natural wood, no polish, packed in a Velorex gift box.',
-        bg: 'images/products/vijaysar/banner.webp', art: 'images/products/vijaysar/box-front.webp',
+        bg: 'images/products/vijaysar/banner.webp', art: 'images/products/vijaysar/box-front.webp?v=20261125',
         product: /vijaysar/i, badge: 'Bestseller'
     },
     {
@@ -790,9 +790,9 @@ const PRODUCT_DETAILS = {
         ],
         stepsHeading: 'The Craft Up Close',
         steps: [
-            { icon: 'fas fa-leaf', img: 'images/products/tray/detail-border.webp', title: 'Carved Border', text: 'Flowers and vines are <strong>cut by hand</strong> into the base, so every curve is slightly different from the next tray.' },
-            { icon: 'fas fa-gem', img: 'images/products/tray/detail-flower.webp', title: 'Brass Flower', text: 'The centre flower and leaves are <strong>brass pieces set into the wood</strong> and polished flush with the surface.' },
-            { icon: 'fas fa-pen-nib', img: 'images/products/tray/detail-inlay.webp', title: 'Fine Brass Lines', text: 'Thin brass wire traces the <strong>vine outline</strong> between the petals, catching the light as you turn the tray.' }
+            { icon: 'fas fa-leaf', img: 'images/products/tray/detail-border.webp?v=20261125', title: 'Carved Border', text: 'Flowers and vines are <strong>cut by hand</strong> into the base, so every curve is slightly different from the next tray.' },
+            { icon: 'fas fa-gem', img: 'images/products/tray/detail-flower.webp?v=20261125', title: 'Brass Flower', text: 'The centre flower and leaves are <strong>brass pieces set into the wood</strong> and polished flush with the surface.' },
+            { icon: 'fas fa-pen-nib', img: 'images/products/tray/detail-inlay.webp?v=20261125', title: 'Fine Brass Lines', text: 'Thin brass wire traces the <strong>vine outline</strong> between the petals, catching the light as you turn the tray.' }
         ],
         benefitsHeading: 'Where It Fits',
         benefits: [
@@ -945,6 +945,28 @@ function ensureCatalogSeed() {
     });
 }
 
+/* Images are cached for a year under the same name. When a photo is replaced
+   in place, list its path prefix here with a new tag so browsers fetch it again
+   (works for database rows too, without editing them). */
+const IMAGE_VERSIONS = [
+    ['images/products/tray/', '20261125'],
+    ['images/products/vijaysar/box-', '20261125'],
+    ['images/products/comb-floral/box-3d', '20261125'],
+    ['images/products/comb-handle/box-3d', '20261125'],
+    ['images/products/comb-combo/box-3d', '20261125']
+];
+function versionedImage(src) {
+    if (typeof src !== 'string' || src.includes('?')) return src;
+    const hit = IMAGE_VERSIONS.find(([prefix]) => src.startsWith(prefix));
+    return hit ? src + '?v=' + hit[1] : src;
+}
+function bustReplacedImages() {
+    PRODUCTS.forEach(p => {
+        p.img = versionedImage(p.img);
+        if (Array.isArray(p.images)) p.images = p.images.map(versionedImage);
+    });
+}
+
 /* One-line blurb for the hero: an explicit `tagline` if the product has one,
    otherwise the opening sentence of its description, trimmed to fit. */
 function craftLabel(product) {
@@ -1019,6 +1041,7 @@ async function loadProducts() {
     // Catalog starters first, so the newest range leads the hero rotation.
     ensureCatalogSeed();
     ensureWellnessSeed();
+    bustReplacedImages();
 
     // Product counts and the featured column in the Catalog mega menu need the product list.
     app.renderNavCategories();
