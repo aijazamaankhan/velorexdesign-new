@@ -34,6 +34,9 @@ if (!password_verify($password, $hash) || !$customer || empty($customer['passwor
 }
 
 rateLimitClear('customer-login');
+if (customer_is_blocked($conn, (int) $customer['id'])) {
+    sendResponse(['error' => 'This account has been disabled. Please contact us on WhatsApp.'], 403);
+}
 session_regenerate_id(true);
 
 $_SESSION['customer_id'] = intval($customer['id']);

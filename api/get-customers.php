@@ -2,7 +2,7 @@
 require_once 'db.php';
 session_start();
 
-if (empty($_SESSION['admin_id'])) {
+if (!admin_session_ok()) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
@@ -19,7 +19,8 @@ $accountExpr = $hasPw
     ? '(c.password_hash IS NOT NULL AND c.password_hash <> "")'
     : '0';
 
-$query = 'SELECT c.id, c.name, c.email, c.phone, c.created_at,
+$blockedExpr = isset($custCols['is_blocked']) ? 'c.is_blocked' : '0';
+$query = 'SELECT c.id, c.name, c.email, c.phone, c.created_at, ' . $blockedExpr . ' AS is_blocked,
                  ' . $accountExpr . ' AS has_account,
                  COALESCE(o.orders_count, 0) AS orders_count,
                  COALESCE(o.total_spent, 0)  AS total_spent,
@@ -64,6 +65,7 @@ while ($row = $res->fetch_assoc()) {
         'email'         => $row['email'],
         'phone'         => $row['phone'],
         'has_account'   => (bool) $row['has_account'],
+        'is_blocked'    => !empty($row['is_blocked']),
         'orders_count'  => intval($row['orders_count']),
         'total_spent'   => floatval($row['total_spent']),
         'last_order_at' => $row['last_order_at'],

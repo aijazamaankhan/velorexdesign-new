@@ -25,7 +25,7 @@
   <meta name="apple-mobile-web-app-title" content="Velorex">
 
   <!-- Apply the saved/previewed design before styles load to avoid a flash of Classic. -->
-  <script src="js/design-selection.js"></script>
+  <script src="js/design-selection.js?v=20261125c"></script>
 
   <!-- Link previews (WhatsApp, Facebook, X) -->
   <meta property="og:type" content="website">
@@ -50,13 +50,27 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Zilla+Slab:wght@500;600&display=swap"
     crossorigin="anonymous"
     referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="css/index.css">
-  <link rel="stylesheet" href="css/themes/living-craft.css">
-  <link rel="stylesheet" href="css/themes/living-craft-shell.css">
-  <script src="js/index.js" defer></script>
+  <link rel="stylesheet" href="css/index.css?v=20261125e">
+  <link rel="stylesheet" href="css/themes/living-craft.css?v=20261125c">
+  <link rel="stylesheet" href="css/themes/living-craft-shell.css?v=20261125c">
+  <script src="js/index.js?v=20261125g" defer></script>
+  <script src="js/chat.js?v=20261125c" defer></script>
 </head>
 
 <body>
+  <!-- SPLASH: first page of each visit only (html.splash-seen hides it, set pre-paint) -->
+  <div class="splash" id="splash" aria-hidden="true">
+    <div class="splash-glow"></div>
+    <div class="splash-inner">
+      <div class="splash-mark">
+        <svg class="splash-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" /></svg>
+        <img src="images/brand/emblem.webp" width="84" height="84" alt="">
+      </div>
+      <div class="splash-word"><span>V</span><span>e</span><span>l</span><span>o</span><span>r</span><span>e</span><span>x</span><em>Design</em></div>
+      <p class="splash-tag">Handmade in India</p>
+      <div class="splash-bar"><i></i></div>
+    </div>
+  </div>
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -147,10 +161,6 @@
           <i class="fas fa-gem" id="designToggleIcon" aria-hidden="true"></i>
           <span id="designToggleLabel">Classic</span>
         </button>
-        <button type="button" class="cart-icon" data-action="nav-cart" style="background:none; border:none;">
-          <i class="fas fa-shopping-cart"></i>
-          <span class="cart-badge" id="cartCount">0</span>
-        </button>
         <button type="button" class="menu-toggle" data-action="nav-toggle" style="background:none; border:none;">
           <i class="fas fa-bars"></i>
         </button>
@@ -167,7 +177,7 @@
       <h2>Velorex Design: handcrafted wood, resin art and wellness products</h2>
       <p>Velorex Design makes sheesham wood serveware, MDF racks and shelves, resin art and Ayurvedic
         wellness pieces such as the Vijaysar wood glass, neem comb and acupressure tools. Everything is
-        made by hand in India and shipped India-wide. Shipping is free above ₹999.</p>
+        made by hand in India and shipped India-wide. Every piece is sold through our Amazon store.</p>
       <p>This shop needs JavaScript to show products and take orders. Please turn it on and reload the page.</p>
     </div>
   </noscript>
@@ -175,15 +185,32 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
+      <section class="footer-follow" aria-labelledby="footerFollowTitle">
+        <div class="footer-follow-copy">
+          <span class="footer-follow-kicker"><i class="fas fa-qrcode"></i> Scan or tap</span>
+          <h3 id="footerFollowTitle">Follow Velorex</h3>
+          <p>Making-of videos on YouTube, new pieces and offers first on Instagram.</p>
+        </div>
+        <div class="follow-cards ">
+              <a class="follow-card follow-yt" href="https://www.youtube.com/@sahacraft" target="_blank" rel="noopener noreferrer me">
+                <img src="images/social/qr-youtube.svg" width="132" height="132" alt="QR code for the Saha Craft YouTube channel" loading="lazy">
+                <span class="follow-meta"><i class="fab fa-youtube"></i><strong>YouTube</strong><span>@sahacraft</span></span>
+              </a>
+              <a class="follow-card follow-ig" href="https://www.instagram.com/velorexdesign_saha_craft/" target="_blank" rel="noopener noreferrer me">
+                <img src="images/social/qr-instagram.svg" width="132" height="132" alt="QR code for the Velorex Design Instagram profile" loading="lazy">
+                <span class="follow-meta"><i class="fab fa-instagram"></i><strong>Instagram</strong><span>@velorexdesign_saha_craft</span></span>
+              </a>
+            </div>
+      </section>
       <div class="footer-grid">
         <div class="footer-brand">
           <h3 class="footer-logo"><img class="logo-on-dark" src="images/brand/logo-on-dark.webp" width="888" height="429" alt="Velorex Design"><img class="logo-on-light" src="images/brand/logo-on-light.webp" width="887" height="429" alt="Velorex Design"></h3>
           <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Premium handcrafted art pieces and professional
             graphic design services. Crafted with passion, designed with soul.</p>
           <div class="social-links">
-            <a href="#" rel="noopener" class="social-icon"><i class="fab fa-youtube"></i></a>
-            <a href="#" rel="noopener" class="social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="#" rel="noopener" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.youtube.com/@sahacraft" target="_blank" rel="noopener noreferrer me" class="social-icon social-yt" aria-label="Saha Craft on YouTube" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/velorexdesign_saha_craft/" target="_blank" rel="noopener noreferrer me" class="social-icon social-ig" aria-label="Velorex Design on Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/917906027807" target="_blank" rel="noopener noreferrer" class="social-icon social-wa" aria-label="Order on WhatsApp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
           </div>
         </div>
         <div class="footer-links">
@@ -209,10 +236,24 @@
             <li><a href="#terms">Terms & Conditions</a></li>
             <li><a href="#privacy">Privacy Policy</a></li>
             <li><a class="footer-amazon-link" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Velorex on Amazon</a></li>
-            <li style="margin-top: 0.5rem;"><a href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer"><i
-                  class="fas fa-external-link-alt" style="font-size: 0.8em; margin-right: 5px;"></i>Music Store</a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"
-                  style="font-size: 0.8em; margin-right: 5px;"></i>Fashion Store</a></li>
+            <li class="footer-stores-li">
+              <div class="footer-stores">
+                <a class="footer-store" href="https://velorexmusic.com" target="_blank" rel="noopener noreferrer">
+                  <span class="footer-store-icon fs-music"><i class="fas fa-music"></i></span>
+                  <span class="footer-store-text"><strong>Velorex Music</strong><small>Vinyl, CDs &amp; music gear</small></span>
+                  <i class="fas fa-arrow-up-right-from-square footer-store-go"></i>
+                </a>
+                <a class="footer-store fs-studio-card" href="https://velorexstudio.com" target="_blank" rel="noopener noreferrer">
+                  <span class="footer-store-icon fs-studio"><i class="fas fa-laptop-code"></i></span>
+                  <span class="footer-store-text"><strong>Velorex Studio</strong><small>Websites, apps &amp; software</small></span>
+                  <i class="fas fa-arrow-up-right-from-square footer-store-go"></i>
+                </a>
+                <span class="footer-store is-soon" aria-disabled="true">
+                  <span class="footer-store-icon fs-fashion"><i class="fas fa-shirt"></i></span>
+                  <span class="footer-store-text"><strong>Velorex Fashion</strong><small>Coming soon</small></span>
+                </span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
@@ -477,9 +518,14 @@
     <a href="#home" class="tabbar-item" data-tab="home"><i class="fas fa-home"></i><span>Home</span></a>
     <a href="#products" class="tabbar-item" data-tab="products"><i class="fas fa-store"></i><span>Shop</span></a>
     <button type="button" class="tabbar-item tabbar-search" data-action="open-search" aria-label="Search products"><i class="fas fa-search"></i><span>Search</span></button>
-    <a href="#cart" class="tabbar-item" data-tab="cart"><i class="fas fa-shopping-cart"></i><span>Cart</span><b class="tabbar-badge" id="tabbarCartCount" hidden>0</b></a>
+    <a href="#wellness" class="tabbar-item" data-tab="wellness"><i class="fas fa-leaf"></i><span>Wellness</span></a>
     <a href="#profile" class="tabbar-item" data-tab="profile"><i class="fas fa-user"></i><span>Account</span></a>
   </nav>
+
+  <!-- WHATSAPP ORDER BUTTON -->
+  <a class="wa-float" href="https://wa.me/917906027807?text=Hi%20Velorex%20Design!%20I%20would%20like%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer" aria-label="Order on WhatsApp">
+    <i class="fab fa-whatsapp"></i><span>Order on WhatsApp</span>
+  </a>
 
   <!-- BACK TO TOP -->
   <button type="button" class="back-to-top" id="backToTop" data-action="back-to-top" style="background:var(--orange-gradient); border:none;">
@@ -513,6 +559,15 @@
             </div>
             <div class="hero-showcase" id="heroShowcase"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- Announcement under the banner: same on every slide -->
+      <section class="soon-band" aria-label="Online shopping coming soon">
+        <div class="container soon-band-inner">
+          <span class="soon-band-icon" aria-hidden="true"><i class="fas fa-cart-shopping"></i></span>
+          <p class="soon-band-text"><strong>Coming soon:</strong> buy online directly from this website, with secure payment and delivery across India.</p>
+          <span class="soon-band-note">Until then, order on Amazon or WhatsApp</span>
         </div>
       </section>
 
@@ -567,15 +622,47 @@
                 <li><i class="fas fa-check"></i> 90 ml, packed in a Velorex gift box</li>
                 <li><i class="fas fa-check"></i> Replace after 30–90 days, depending on daily use</li>
               </ul>
-              <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+              <div class="cta-group">
+                <a href="https://www.amazon.in/dp/B0H3QK8K7S" target="_blank" rel="noopener noreferrer sponsored" class="btn btn-amazon"><i class="fab fa-amazon"></i> Buy on Amazon</a>
                 <button type="button" class="btn btn-primary" data-action="open-product" data-id="w-vijaysar">
                   <i class="fas fa-circle-info"></i> View Details
                 </button>
-                <a href="#wellness" class="btn btn-secondary"><i class="fas fa-leaf"></i> Explore More Products</a>
-                <a href="https://www.amazon.in/dp/B0H3QK8K7S" target="_blank" rel="noopener noreferrer sponsored" class="btn btn-amazon"><i class="fab fa-amazon"></i> Buy on Amazon</a>
+                <a href="#wellness" class="btn btn-secondary"><i class="fas fa-leaf"></i> More Wellness</a>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="section home-row">
+        <div class="container">
+          <div class="section-header row-header">
+            <div><span class="row-kicker"><i class="fas fa-fire"></i> Most loved</span>
+            <h2 class="section-title">Best<span class="text-gradient">sellers</span></h2></div>
+            <a href="#products" class="row-link">See all <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="grid" id="homeBestGrid"></div>
+        </div>
+      </section>
+
+      <section class="section home-row" style="background: var(--surface);">
+        <div class="container">
+          <div class="section-header row-header">
+            <div><span class="row-kicker"><i class="fas fa-star"></i> Just added</span>
+            <h2 class="section-title">New <span class="text-gradient">arrivals</span></h2></div>
+            <a href="#products" class="row-link">See all <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="grid" id="homeNewGrid"></div>
+        </div>
+      </section>
+
+      <section class="section home-row">
+        <div class="container">
+          <div class="section-header row-header">
+            <div><span class="row-kicker"><i class="fas fa-clock"></i> On the workbench</span>
+            <h2 class="section-title">Coming <span class="text-gradient">soon</span></h2></div>
+          </div>
+          <div class="soon-grid" id="homeSoonGrid"></div>
         </div>
       </section>
 
@@ -671,8 +758,8 @@
             <button type="button" class="btn btn-secondary" data-action="goto-categories">Choose a material</button>
           </div>
         </div>
-        <figure class="lc-hero-media">
-          <img src="images/themes/living-craft/hero-mango-tray-v1.png" width="1536" height="1024" alt="Carved dark wood serving tray displayed on a charcoal stone table.">
+        <figure class="lc-hero-media" data-action="open-product-match" data-match="mango.*tray" role="link" tabindex="0" aria-label="View the Mango-Shaped Sheesham Wood Tray" style="cursor:pointer;">
+          <img loading="lazy" src="images/themes/living-craft/hero-mango-tray-v1.png" width="1536" height="1024" alt="Carved dark wood serving tray displayed on a charcoal stone table.">
           <figcaption>Carved mango wood · serving collection</figcaption>
         </figure>
       </section>
@@ -751,12 +838,13 @@
       <section class="section">
         <div class="container">
           <ul class="breadcrumbs" id="bc-products"></ul>
-          <div class="section-header"
-            style="text-align: left; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <h2 class="section-title" id="catalogTitle">Our <span class="text-gradient">Catalog</span></h2>
-              <p class="section-subtitle">Browse our handcrafted items</p>
+          <div class="catalog-hero">
+            <div class="catalog-hero-copy">
+              <span class="catalog-kicker"><i class="fas fa-hand-sparkles"></i> Handmade in Meerut, India</span>
+              <h1 class="catalog-title" id="catalogTitle">Our <span class="text-gradient">Catalog</span></h1>
+              <p class="catalog-sub">Wood, wellness and storage pieces made by hand. Pick one you like and buy it safely on Amazon.</p>
             </div>
+            <a class="btn btn-amazon catalog-store-btn" href="https://www.amazon.in/l/27943762031?ie=UTF8&amp;marketplaceID=A21TJRUUN4KGV&amp;me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Visit our Amazon store</a>
           </div>
 
           <!-- Search, filters and sorting for the product grid -->
@@ -769,22 +857,11 @@
               <select id="catFilter" class="form-control pf-select" data-action="cat-filter" aria-label="Category"></select>
               <select id="pfSort" class="form-control pf-select" data-action="pf-sort" aria-label="Sort by">
                 <option value="featured">Sort: Featured</option>
-                <option value="price-asc">Price: low to high</option>
-                <option value="price-desc">Price: high to low</option>
                 <option value="name">Name: A to Z</option>
                 <option value="newest">Newest first</option>
               </select>
             </div>
             <div class="pf-row">
-              <div class="pf-chips" role="group" aria-label="Price range">
-                <button type="button" class="pf-chip" data-action="pf-price" data-price="all">Any price</button>
-                <button type="button" class="pf-chip" data-action="pf-price" data-price="0-500">Under ₹500</button>
-                <button type="button" class="pf-chip" data-action="pf-price" data-price="500-1000">₹500 – ₹1,000</button>
-                <button type="button" class="pf-chip" data-action="pf-price" data-price="1000-">Above ₹1,000</button>
-              </div>
-              <label class="pf-check">
-                <input type="checkbox" id="pfStock" data-action="pf-stock"> In stock only
-              </label>
               <div class="pf-summary">
                 <span id="pfCount" aria-live="polite"></span>
                 <button type="button" class="pf-clear" id="pfClear" data-action="pf-clear" hidden><i class="fas fa-times"></i> Clear filters</button>
@@ -905,11 +982,24 @@
           <div class="profile-container">
             <div class="profile-sidebar">
               <div class="profile-menu">
-                <div class="profile-menu-item active" data-action="profile-tab" data-tab="settings">
-                  <i class="fas fa-user-cog"></i> Account Settings
+                <div class="profile-card-mini" id="profileMini">
+                  <div class="pm-avatar" id="pmAvatar">V</div>
+                  <div><strong id="pmName">My account</strong><span id="pmEmail"></span></div>
+                </div>
+                <div class="profile-menu-item active" data-action="profile-tab" data-tab="overview">
+                  <i class="fas fa-gauge"></i> Overview
+                </div>
+                <div class="profile-menu-item" data-action="profile-tab" data-tab="settings">
+                  <i class="fas fa-user-pen"></i> Profile &amp; addresses
                 </div>
                 <div class="profile-menu-item" data-action="profile-tab" data-tab="orders">
-                  <i class="fas fa-box-open"></i> Order History
+                  <i class="fas fa-box-open"></i> Order history
+                </div>
+                <div class="profile-menu-item" data-action="profile-tab" data-tab="security">
+                  <i class="fas fa-shield-halved"></i> Password &amp; security
+                </div>
+                <div class="profile-menu-item" data-action="profile-tab" data-tab="help">
+                  <i class="fas fa-life-ring"></i> Help &amp; support
                 </div>
                 <div class="profile-menu-item" id="profileLogoutBtn" data-action="logout" style="margin-top: 1rem; color: #ef4444;">
                   <i class="fas fa-sign-out-alt"></i> Logout
@@ -918,7 +1008,58 @@
             </div>
 
             <div class="profile-content">
-              <div id="tab-settings" class="profile-section active">
+              <div id="tab-overview" class="profile-section active">
+                <h3 class="pf-title">Hello, <span id="ovName">there</span> 👋</h3>
+                <p class="pf-sub">Everything about your Velorex account in one place.</p>
+                <div class="ov-stats">
+                  <div class="ov-stat"><i class="fas fa-box"></i><b id="ovOrders">0</b><span>Orders</span></div>
+                  <div class="ov-stat"><i class="fas fa-truck-fast"></i><b id="ovActive">0</b><span>In progress</span></div>
+                  <div class="ov-stat"><i class="fas fa-location-dot"></i><b id="ovAddr">0</b><span>Saved addresses</span></div>
+                </div>
+                <div class="ov-latest" id="ovLatest"></div>
+                <div class="ov-actions">
+                  <button type="button" class="ov-action" data-action="profile-tab" data-tab="settings"><i class="fas fa-user-pen"></i><span>Edit profile</span></button>
+                  <button type="button" class="ov-action" data-action="show-addr-form"><i class="fas fa-map-location-dot"></i><span>Add address</span></button>
+                  <button type="button" class="ov-action" data-action="profile-tab" data-tab="orders"><i class="fas fa-box-open"></i><span>My orders</span></button>
+                  <button type="button" class="ov-action" data-action="profile-tab" data-tab="security"><i class="fas fa-key"></i><span>Change password</span></button>
+                  <a class="ov-action" href="https://wa.me/917906027807" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i><span>WhatsApp us</span></a>
+                  <button type="button" class="ov-action" data-action="goto-products"><i class="fas fa-store"></i><span>Shop</span></button>
+                </div>
+              </div>
+
+              <div id="tab-security" class="profile-section">
+                <h3 class="pf-title">Password &amp; security</h3>
+                <form class="pf-card" data-action="change-password" novalidate>
+                  <h4><i class="fas fa-key"></i> Change password</h4>
+                  <div class="form-group"><label for="pwCurrent">Current password</label><input type="password" id="pwCurrent" class="form-control" autocomplete="current-password" required maxlength="200"></div>
+                  <div class="grid pf-2col">
+                    <div class="form-group"><label for="pwNew">New password</label><input type="password" id="pwNew" class="form-control" autocomplete="new-password" minlength="8" maxlength="200" required></div>
+                    <div class="form-group"><label for="pwConfirm">Repeat new password</label><input type="password" id="pwConfirm" class="form-control" autocomplete="new-password" minlength="8" maxlength="200" required></div>
+                  </div>
+                  <p class="pf-hint">At least 8 characters. A short sentence is easy to remember and hard to guess.</p>
+                  <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update password</button>
+                </form>
+                <form class="pf-card pf-danger" data-action="delete-account" novalidate>
+                  <h4><i class="fas fa-triangle-exclamation"></i> Delete account</h4>
+                  <p class="pf-hint">This removes your account and saved addresses. Past orders stay with us for our records and deliveries. This cannot be undone.</p>
+                  <div class="form-group"><label for="delPassword">Type your password to confirm</label><input type="password" id="delPassword" class="form-control" autocomplete="current-password" required maxlength="200"></div>
+                  <button type="submit" class="btn pf-danger-btn"><i class="fas fa-trash"></i> Delete my account</button>
+                </form>
+              </div>
+
+              <div id="tab-help" class="profile-section">
+                <h3 class="pf-title">Help &amp; support</h3>
+                <div class="help-grid">
+                  <a class="help-card" href="https://wa.me/917906027807" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i><b>Chat on WhatsApp</b><span>+91 79060 27807 · Mon–Fri, 10am–6pm IST</span></a>
+                  <button type="button" class="help-card" data-action="open-chat-track"><i class="fas fa-location-crosshairs"></i><b>Track an order</b><span>Order number + your email or phone</span></button>
+                  <a class="help-card" href="#shipping"><i class="fas fa-truck"></i><b>Shipping</b><span>Pan-India, 4–7 business days after dispatch</span></a>
+                  <a class="help-card" href="#returns"><i class="fas fa-rotate-left"></i><b>Returns &amp; refunds</b><span>Damaged items: photo within 48 hours</span></a>
+                  <a class="help-card" href="mailto:velorexdesign@gmail.com"><i class="fas fa-envelope"></i><b>Email us</b><span>velorexdesign@gmail.com</span></a>
+                  <a class="help-card" href="#faq"><i class="fas fa-circle-question"></i><b>FAQ</b><span>Quick answers</span></a>
+                </div>
+              </div>
+
+              <div id="tab-settings" class="profile-section">
                 <h3 style="margin-bottom: 1.5rem;">Personal Information</h3>
                 <form data-action="save-profile" novalidate>
                   <div class="grid" style="grid-template-columns: 1fr 1fr;">
@@ -1047,7 +1188,8 @@
                 <i class="fas fa-phone-alt text-gradient" style="font-size: 1.5rem; margin-top: 5px;"></i>
                 <div>
                   <h4 style="margin-bottom: 0.5rem;">Phone / WhatsApp</h4>
-                  <p id="contactPhone" style="color: var(--text-muted);">+91 98765 43210<br>(Mon–Fri, 10am – 6pm IST)</p>
+                  <p id="contactPhone" style="color: var(--text-muted);"><a href="tel:+917906027807">+91 79060 27807</a><br>(Mon–Fri, 10am – 6pm IST)</p>
+                  <a class="btn btn-whatsapp btn-sm" style="margin-top:.6rem" href="https://wa.me/917906027807?text=Hi%20Velorex%20Design!%20I%20would%20like%20to%20place%20an%20order." target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
                 </div>
               </div>
               <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
@@ -1056,6 +1198,19 @@
                   <h4 style="margin-bottom: 0.5rem;">Email</h4>
                   <p id="contactEmail" style="color: var(--text-muted);"><a href="mailto:velorexdesign@gmail.com">velorexdesign@gmail.com</a></p>
                 </div>
+              </div>
+              <div class="contact-follow">
+                <h4><i class="fas fa-share-nodes text-gradient"></i> Follow us</h4>
+                <div class="follow-cards follow-cards-compact">
+              <a class="follow-card follow-yt" href="https://www.youtube.com/@sahacraft" target="_blank" rel="noopener noreferrer me">
+                <img src="images/social/qr-youtube.svg" width="132" height="132" alt="QR code for the Saha Craft YouTube channel" loading="lazy">
+                <span class="follow-meta"><i class="fab fa-youtube"></i><strong>YouTube</strong><span>@sahacraft</span></span>
+              </a>
+              <a class="follow-card follow-ig" href="https://www.instagram.com/velorexdesign_saha_craft/" target="_blank" rel="noopener noreferrer me">
+                <img src="images/social/qr-instagram.svg" width="132" height="132" alt="QR code for the Velorex Design Instagram profile" loading="lazy">
+                <span class="follow-meta"><i class="fab fa-instagram"></i><strong>Instagram</strong><span>@velorexdesign_saha_craft</span></span>
+              </a>
+            </div>
               </div>
             </div>
           </div>

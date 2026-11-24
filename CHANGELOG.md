@@ -2,6 +2,67 @@
 
 This file records repository development. Entries under **Unreleased** describe the current local working tree and are not proof of production deployment.
 
+## mobile-polish branch, 24 November 2026 (live)
+
+### Later the same day
+
+- Chat is now a movable phone: drag it by the top bar anywhere on screen (remembered for the visit, double-click to reset), with a status bar, notch and home bar. New menu of 21 options, new and previous chats kept on the visitor's device, and new answers (custom orders, payment, wood care, our story, Velorex family, gift ideas, bestsellers, new arrivals, coming soon).
+- Hero: the first slide now uses the same single framed image as the other slides.
+- Admin opens on Dashboard & P&L, now first in the menu. Customers: block / unblock sign-in, quick WhatsApp, email and delete buttons, Export CSV.
+- My Account: Overview (orders, in-progress, addresses, latest order, quick actions), Password & security (change password, delete account), Help & support.
+
+- Chat assistant phase 2: order tracking, Leave a message, admin Chat & Messages tab (inbox with unread badge, answer editor, what people ask). Floating WhatsApp button brought back on the right.
+- Admin redesign of Categories (image cards with live/coming-soon state and product counts, sticky add form) and Settings (Store details and Admin account side by side).
+
+- Chat assistant (phase 1): chat bubble on every page with quick replies, product browsing and search, approved answers that match the policy pages, Hinglish keywords, safe wording for health questions, and WhatsApp handoff with the conversation pre-filled. Replaces the floating WhatsApp button.
+- Hotfix: a bulk edit made the new admin session check call itself, which broke the product list and admin for a few minutes after the analytics deploy and filled `api/error.log` (about 27 MB). Fixed and redeployed.
+
+- Admin Analytics & P&L: income (website/WhatsApp orders + ledger income such as Amazon payouts), cost of goods from a new admin-only product cost price, expenses from a new ledger, net profit and margin, monthly chart, top products, costs by category, CSV export, period picker.
+- Admin sessions now end 8 hours after login (as on velorexmusic.com); a weak admin password shows a warning after login.
+- Admin fixes: popups scroll instead of being cut off, item quantities (no more "0×"), Indian date format, real contact details in Settings, summary cards only on the Inventory dashboard, tables become labelled cards on phones.
+- Storefront: hero campaign banners (Vijaysar, Combo Kit, racks, ways to buy) between product slides; Bestsellers, New arrivals and Coming soon rows; product badges (Bestseller, New, Limited stock, Gift idea) set in admin; soap illustration replaces a mismatched stock photo.
+
+- Admin image cropper (modelled on velorexmusic.com): every picked image opens framed by auto-crop (finds the product against a plain background), with Square / 4:5 / 4:3 / 16:9 / Free shapes, drag and corner resize, rotate, Use original, Skip, and Auto-crop all for batches. Only the cropped WebP (max 1600 px) is uploaded.
+- Chat assistant plan written up in `docs/CHAT-ASSISTANT-PLAN.md`.
+
+- WhatsApp ordering on +91 79060 27807: "Order on WhatsApp" on product cards and pages (the main button for products not on Amazon), a floating WhatsApp button, tap-to-call and chat on the Contact page, WhatsApp icon in the footer.
+- Footer ventures as cards: Velorex Music, Velorex Studio, Velorex Fashion (coming soon).
+- Admin: easy address /velorex-admin, "Velorex Design Admin" title and favicon, logo opens the admin home, real dashboard cards, an Amazon link field on every product (price now optional), refreshed UI for all sections with a phone layout, the logged-in admin's name in the top bar.
+- Admin orders: printable A4 bill and 4x6 in / A6 address label, modelled on velorexmusic.com.
+- Speed: home page went from about 3.1 MB to well under 1 MB. Category, banner and product photos converted to WebP (served automatically in place of the original JPG/PNG), Unsplash images replaced with local copies, hidden Living Craft images no longer download, one-year browser caching for versioned files and compression for text.
+- Splash screen on the first page of each visit (lifts as soon as the page is ready, never longer than 2.5 s).
+
+- YouTube (@sahacraft) and Instagram (@velorexdesign_saha_craft) linked in the footer, with brand-coloured QR codes in a new "Follow Velorex" footer band and on the Contact page; profiles listed as `sameAs` for search engines. The dead WhatsApp footer icon is removed.
+
+- Home wellness section: Buy on Amazon is now the first button; the three buttons are equal and full width on phones.
+- Search icon shown in the phone header as well as the tab bar.
+- Header stays on one line on tablets and small laptops (800 to 1200px); the logo text hides below 960px so the menu fits.
+- Banner arrows hidden below 1200px (they covered the headline); dots and swipe still work.
+- Banner says "Sold on Amazon" only for products that are on Amazon, otherwise "Order by email".
+
+- Live database repaired: storefront tables created, admin `owner` added, 8 starter products loaded. Admin login and the product list work again.
+- Phone tab bar has five equal slots (Home, Shop, Search, Wellness, Account) so Search sits in the middle.
+- "Our Other Stores" in the phone menu shows full-width stacked store cards with the IT services card below.
+
+### Earlier
+
+- Phone menu (three-line button) now opens full screen with every link. The header's blur effect had squeezed it into the 80px bar so only Home showed.
+- Home banner no longer cut off on small phones (320 to 375px).
+- One button size system (46px standard, 36px small, 54px large) with focus rings and a click ripple.
+- Popups match the theme: orange top bar, themed backdrop, rotating close button; they open as bottom sheets on phones. Toasts are small and sit above the phone tab bar.
+- Effects: pointer spotlight on product cards, image fade-in, Amazon button sweep, gallery cross-fade, gentle icon motion. All off for reduced-motion users.
+- Taller, full-width desktop header.
+- Checked 13 pages at 320, 375, 414, 768 and 1024px: nothing cut off or wider than the screen.
+
+## amazon-storefront branch, 24 November 2026
+
+- Amazon-only shop: prices, cart and checkout removed; Buy on Amazon or Ask about this on every product.
+- Redesigned product page and catalog header; breadcrumb structured data and better image alt text.
+- Admin portal behind a secret link; `/admin.html` returns 404.
+- Coupons and loyalty points (admin tabs), dormant while there is no cart.
+- CSS/JS links carry a `?v=` version so browsers fetch new files after a deploy.
+- Pages and the sitemap still render if the products table is missing.
+
 ## 41d8962 — storefront update, 24 November 2026 (pushed to GitHub, not yet deployed)
 
 ### Security

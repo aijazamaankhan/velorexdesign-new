@@ -1,12 +1,13 @@
 <?php
 require_once 'db.php';
+require_once 'product-lib.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(['error' => 'Invalid request method'], 405);
 }
 
-if (empty($_SESSION['admin_id'])) {
+if (!admin_session_ok()) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
@@ -30,9 +31,12 @@ if (isset($_POST['images'])) {
     }
 }
 
-if (!$name || !$category || $price <= 0) {
-    sendResponse(['error' => 'Required fields missing (name, category, price)'], 422);
+if (!$name || !$category || $price < 0) {
+    sendResponse(['error' => 'Required fields missing (name, category)'], 422);
 }
+$amazon = products_clean_amazon_url($_POST['amazon_url'] ?? '');
+if ($amazon === false) sendResponse(['error' => 'Amazon link must be an https://www.amazon.in/... or amzn.in link'], 422);
+products_ensure_columns($conn);
 
 $stmt = $conn->prepare('INSERT INTO products (name, category, price, stock, image_url, description, featured, images, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
 $stmt->bind_param('ssdissis', $name, $category, $price, $stock, $image_url, $description, $featured, $imagesJson);
@@ -41,5 +45,22 @@ if (!$stmt->execute()) {
 }
 
 $productId = $stmt->insert_id;
+if (isset($_POST['cost_price']) && $_POST['cost_price'] !== '') {
+    $cost = max(0, (float) $_POST['cost_price']);
+    $cq = $conn->prepare('UPDATE products SET cost_price = ? WHERE id = ?');
+    $cq->bind_param('di', $cost, $productId);
+    $cq->execute();
+}
+$badge = products_clean_badge($_POST['badge'] ?? '');
+if ($badge !== false && $badge !== '') {
+    $bq = $conn->prepare('UPDATE products SET badge = ? WHERE id = ?');
+    $bq->bind_param('si', $badge, $productId);
+    $bq->execute();
+}
+if ($amazon !== '') {
+    $a = $conn->prepare('UPDATE products SET amazon_url = ? WHERE id = ?');
+    $a->bind_param('si', $amazon, $productId);
+    $a->execute();
+}
 sendResponse(['success' => true, 'product_id' => $productId]);
 ?>

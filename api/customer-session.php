@@ -19,6 +19,10 @@ if ($result->num_rows === 0) {
 }
 
 $c = $result->fetch_assoc();
+if (customer_is_blocked($conn, $customerId)) {
+    unset($_SESSION['customer_id'], $_SESSION['customer_email'], $_SESSION['customer_name']);
+    sendResponse(['authenticated' => false, 'blocked' => true]);
+}
 
 sendResponse([
     'authenticated' => true,

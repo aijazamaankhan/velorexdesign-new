@@ -1,10 +1,14 @@
 <?php
 require_once 'db.php';
+require_once 'product-lib.php';
+products_ensure_columns($conn);
+session_start();
+$isAdmin = admin_session_ok(); // cost price is private: only admins receive it
 
 $category = isset($_GET['category']) ? sanitize($_GET['category']) : '';
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 
-$query = 'SELECT id, name, category, price, stock, image_url, images, description, featured FROM products';
+$query = 'SELECT id, name, category, price, stock, image_url, images, description, featured, amazon_url, badge, created_at' . ($isAdmin ? ', cost_price' : '') . ' FROM products';
 $params = [];
 $types = '';
 $where = [];

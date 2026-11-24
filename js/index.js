@@ -153,7 +153,7 @@ const VIJAYSAR_OG_IMAGE = 'images/products/vijaysar/og-vijaysar.jpg';
 /* Store WhatsApp number in international format, digits only (e.g. 919876543210).
    Every visitor uses this; the admin panel setting, if saved, overrides it.
    Leave empty to hide the WhatsApp order buttons. */
-const STORE_WHATSAPP_DEFAULT = '';
+const STORE_WHATSAPP_DEFAULT = '917906027807'; // +91 79060 27807
 
 function storeWhatsAppNumber() {
     let saved = '';
@@ -168,17 +168,18 @@ function whatsAppOrderUrl(product) {
     const text = `Hi Velorex Design! I would like to order:
 
 *${product.name}*
-Price: ₹${Number(product.price || 0).toLocaleString('en-IN')}
-Quantity: 1
 
 ${link}
 
-Please share payment and delivery details.`;
+Please share the price, payment and delivery details.`;
     return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
 }
 
 /* Amazon listings, matched by product name so database rows pick them up too. */
 const AMAZON_LINKS = [
+    // Premium combs and the carved tray are not on Amazon yet: stop here so they
+    // don't borrow the regular comb / wellness kit links (empty url = no link).
+    { match: /premium.*neem|hand-carved wooden tray/i, url: '' },
     { match: /combo/i, url: 'https://www.amazon.in/dp/B0H1KJ7Z8F' },
     { match: /vijaysar/i, url: 'https://www.amazon.in/dp/B0H3QK8K7S' },
     { match: /neem.*comb/i, url: 'https://www.amazon.in/dp/B0H8NDDTVH' },
@@ -186,14 +187,78 @@ const AMAZON_LINKS = [
     { match: /multipurpose 2-tier/i, url: 'https://www.amazon.in/dp/B0HK2CY3C6' },
     { match: /mango.*tray/i, url: 'https://www.amazon.in/dp/B0HHFSJTH9' }
 ];
+const STORE_EMAIL = 'velorexdesign@gmail.com';
+const WA_DISPLAY = '+91 79060 27807';
+
+/** The only way to buy on this site: Amazon, or an enquiry for unlisted items. */
+function buyButtonHtml(product, extraClass = '') {
+    const amazon = amazonUrlFor(product);
+    if (amazon) {
+        return `<a class="btn btn-amazon ${extraClass}" href="${escapeAttr(amazon)}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>`;
+    }
+    const wa = whatsAppOrderUrl(product);
+    if (wa) {
+        return `<a class="btn btn-whatsapp ${extraClass}" href="${escapeAttr(wa)}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>`;
+    }
+    const mail = `mailto:${STORE_EMAIL}?subject=${encodeURIComponent('Enquiry: ' + (product.name || 'Velorex product'))}`;
+    return `<a class="btn btn-secondary ${extraClass}" href="${escapeAttr(mail)}"><i class="fas fa-envelope"></i> Ask about this</a>`;
+}
+
+/* Hero campaign banners. Each one can point at a product (by name match), the
+   Amazon store, WhatsApp or a page. Edit here to change the home carousel. */
+const HERO_PROMOS = [
+    {
+        key: 'vijaysar', eyebrow: 'Ayurvedic wellness', icon: 'fas fa-leaf',
+        title: 'Fill it at night.<br><span class="text-gradient">Drink it at dawn.</span>',
+        desc: 'The Vijaysar heartwood glass, hand-turned in Meerut. Natural wood, no polish, packed in a Velorex gift box.',
+        bg: 'images/products/vijaysar/banner.webp', art: 'images/products/vijaysar/box-front.webp',
+        product: /vijaysar/i, badge: 'Bestseller'
+    },
+    {
+        key: 'combo', eyebrow: 'Gift set', icon: 'fas fa-gift',
+        title: 'Natural Wellness <span class="text-gradient">Combo Kit</span>',
+        desc: 'Vijaysar glass, neem wood comb and acupressure stick in one box. A thoughtful gift for parents and grandparents.',
+        bg: 'images/products/combo/combo-kit.webp', art: 'images/products/combo/combo-kit.webp',
+        product: /combo/i, badge: '3 in 1'
+    },
+    {
+        key: 'racks', eyebrow: 'Kitchen & home storage', icon: 'fas fa-layer-group',
+        title: 'Racks that <span class="text-gradient">clear the counter</span>',
+        desc: 'Compact spice racks, two-tier organisers and a four-tier wall rack, precision-cut and hand-finished.',
+        bg: 'images/products/rack-4tier-1.webp', art: 'images/products/rack-2tier-14-1.webp',
+        category: 'rack', badge: '3 sizes'
+    },
+    {
+        key: 'buy', eyebrow: 'Two easy ways to buy', icon: 'fas fa-bag-shopping',
+        title: 'Buy on <span class="text-gradient">Amazon</span> or order on WhatsApp',
+        desc: 'Amazon delivery and returns, or message us directly at +91 79060 27807 for gifting and bulk orders.',
+        bg: 'images/hero.webp', art: 'images/products/combo/leaflet-more-from-velorex.webp',
+        buy: true, badge: 'Fast replies'
+    }
+];
+
+const BADGES = {
+    bestseller: { label: 'Bestseller', icon: 'fas fa-fire' },
+    new: { label: 'New', icon: 'fas fa-star' },
+    limited: { label: 'Limited stock', icon: 'fas fa-hourglass-half' },
+    gift: { label: 'Gift idea', icon: 'fas fa-gift' }
+};
+function productBadgeHtml(p) {
+    const b = BADGES[p.badge];
+    if (b) return `<span class="product-badge badge-${p.badge}"><i class="${b.icon}"></i> ${b.label}</span>`;
+    return p.featured ? '<span class="product-badge">Featured</span>' : '';
+}
+
 function amazonUrlFor(product) {
+    // A link set in admin wins; the name table below covers built-in products.
+    if (product && /^https:\/\/([a-z0-9-]+\.)*(amazon\.in|amzn\.in|amzn\.to)\//i.test(product.amazonUrl || '')) return product.amazonUrl;
     const hit = AMAZON_LINKS.find(l => l.match.test(String((product && product.name) || '')));
     return hit ? hit.url : '';
 }
 
 const SEO_VIEWS = {
     home:     SEO_DEFAULT,
-    products: { title: 'Shop All Handcrafted Products | Velorex Design', description: 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Free shipping above ₹999.' },
+    products: { title: 'Shop All Handcrafted Products | Velorex Design', description: 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Buy on Amazon.' },
     wellness: { title: 'Velorex Wellness | Vijaysar Glass, Neem Comb & Acupressure', description: 'Traditional Ayurvedic wood products made by hand: Vijaysar wood glass, neem wood comb and acupressure tools. 100% natural, no paint or polish.', image: VIJAYSAR_OG_IMAGE },
     services: { title: 'Graphic Design Services | Velorex Design', description: 'Logo, branding, social media and print design from Velorex Design. Pick a package and message us on WhatsApp.' },
     about:    { title: 'About Us | Velorex Design', description: 'Velorex Design is an Indian workshop making handcrafted wood items, resin art and wellness products.' },
@@ -244,14 +309,7 @@ function productSchema(p) {
         description: String(p.desc || '').slice(0, 500),
         image: (p.images && p.images.length ? p.images : [p.img]).filter(Boolean).map(u => new URL(u, pageUrl).href),
         category: getCatName(p.cat),
-        brand: { '@type': 'Brand', name: 'Velorex Design' },
-        offers: {
-            '@type': 'Offer',
-            url: window.location.origin + routeToPath('product-detail', { id: p.id }),
-            priceCurrency: 'INR',
-            price: Number(p.price || 0).toFixed(2),
-            availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-        }
+        brand: { '@type': 'Brand', name: 'Velorex Design' }
     };
 }
 
@@ -269,7 +327,8 @@ function setShopStructuredData() {
                 logo: new URL('favicon.svg', pageUrl).href,
                 image: new URL('hero.png', pageUrl).href,
                 description: SEO_DEFAULT.description,
-                areaServed: 'IN'
+                areaServed: 'IN',
+                sameAs: ['https://www.youtube.com/@sahacraft', 'https://www.instagram.com/velorexdesign_saha_craft/', 'https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT']
             },
             { '@type': 'WebSite', '@id': pageUrl + '#website', name: 'Velorex Design', url: pageUrl, publisher: { '@id': pageUrl + '#store' } }
         ]
@@ -310,13 +369,13 @@ function validateForm(rules) {
 let PRODUCTS = [];
 
 const DEFAULT_CATS = [
-    { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'cat-wood.png' },
+    { id: 'wood',         name: 'Wood Items',    icon: 'fas fa-tree',      image: 'images/categories/wood.webp' },
     { id: 'rack',         name: 'MDF Racks & Shelves', icon: 'fas fa-layer-group', image: 'images/products/rack-4tier-1.jpg' },
     { id: 'wellness',     name: 'Wellness',      icon: 'fas fa-leaf',      image: 'images/products/combo/category-wellness.webp' },
-    { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'cat-resin.png' },
-    { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f214?auto=format&fit=crop&q=80' },
-    { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80' },
-    { id: 'raw_material', name: 'Raw Materials', icon: 'fas fa-box',       image: 'cat-raw.png' }
+    { id: 'resin',        name: 'Resin Art',     icon: 'fas fa-tint',      image: 'images/categories/resin.webp' },
+    { id: 'soap',         name: 'Handmade Soap', icon: 'fas fa-soap',      image: 'images/categories/soap.svg' },
+    { id: 'candle',       name: 'Candles',       icon: 'fas fa-fire-alt',  image: 'images/categories/candle.webp' },
+    { id: 'raw_material', name: 'Raw Materials', icon: 'fas fa-box',       image: 'images/categories/raw.webp' }
 ];
 const DEFAULT_CAT_FALLBACK_ICON = 'fas fa-tag';
 const DEFAULT_CAT_FALLBACK_IMAGE = 'https://placehold.co/400x300/1a0a2e/ffd700?text=New+Category';
@@ -376,6 +435,45 @@ const STATIC_WELLNESS_PRODUCTS = [
         stock: 50,
         featured: false,
         extra: 'combo'
+    },
+    {
+        id: 'w-neem-comb-floral',
+        name: 'Premium Floral Neem Comb',
+        tagline: 'Natural neem wood with a hand-finished flower engraving, packed in a premium gift box.',
+        price: 299,
+        img: 'images/products/comb-floral/hero.webp',
+        images: ['images/products/comb-floral/hero.webp', 'images/products/comb-floral/cutout.webp', 'images/products/comb-floral/detail.webp', 'images/products/comb-floral/size.webp', 'images/products/comb-floral/box-3d-open.webp', 'images/products/comb-floral/box-3d.webp'],
+        cat: 'wellness',
+        desc: 'From the Velorex Premium Collection. A neem wood comb with a delicate flower sprig engraved on it, finished by hand. Wide, smooth teeth glide through hair, and the wood does not build up static the way plastic does, so there is less frizz. Gentle on hair and scalp, plastic-free, and packed in a premium gift box. Size: approx. 16.5 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing, so each piece is one of a kind.',
+        stock: 50,
+        featured: false,
+        extra: 'neem'
+    },
+    {
+        id: 'w-neem-comb-handle',
+        name: 'Premium Handle Neem Comb',
+        tagline: 'A long, rounded easy-grip handle in natural neem wood, finished by hand.',
+        price: 299,
+        img: 'images/products/comb-handle/hero.webp',
+        images: ['images/products/comb-handle/hero.webp', 'images/products/comb-handle/cutout.webp', 'images/products/comb-handle/detail.webp', 'images/products/comb-handle/size.webp', 'images/products/comb-handle/box-3d-open.webp', 'images/products/comb-handle/box-3d.webp'],
+        cat: 'wellness',
+        desc: 'From the Velorex Premium Collection. A long, rounded handle that sits comfortably in your hand, with smooth, evenly spaced teeth for slow, gentle combing. Natural neem wood, anti-static so there is less frizz, gentle on the scalp and plastic-free. Comes in a premium gift box. Size: approx. 18.2 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing.',
+        stock: 50,
+        featured: false,
+        extra: 'neem'
+    },
+    {
+        id: 'w-neem-comb-combo',
+        name: 'Premium Neem Comb Combo (Handle + Regular)',
+        tagline: 'Two neem wood combs in one premium gift box: the Handle Comb for home, the Regular Comb for your bag.',
+        price: 329,
+        img: 'images/products/comb-combo/main.webp',
+        images: ['images/products/comb-combo/main.webp', 'images/products/comb-combo/gift-box.webp', 'images/products/comb-combo/detail.webp', 'images/products/comb-combo/sizes.webp', 'images/products/comb-combo/box.webp', 'images/products/comb-combo/box-3d-open.webp', 'images/products/comb-combo/box-3d.webp'],
+        cat: 'wellness',
+        desc: 'A set of two natural neem wood combs. The Handle Comb (approx. 18.2 × 5.1 cm) has a long, rounded handle for everyday combing at home; the compact Regular Comb (approx. 16 × 5.7 cm) fits in a bag, desk drawer or travel kit. Both are shaped and finished by hand in India, with smooth rounded teeth that glide through hair without pulling. How to use: comb slowly from scalp to ends on dry or slightly damp hair, wipe with a dry cloth after use, do not soak in water, and rub in a drop of hair oil now and then to nourish the wood. In the box: 1 Handle Comb, 1 Regular Comb, premium gift box, care leaflet.',
+        stock: 50,
+        featured: false,
+        extra: 'neem'
     }
 ];
 
@@ -409,6 +507,34 @@ const STATIC_CATALOG_PRODUCTS = [
         stock: 25,
         featured: false,
         extra: 'mango-tray'
+    },
+    {
+        id: 'wd-carved-tray',
+        name: 'Hand-Carved Wooden Tray with Brass Inlay — 12" × 8"',
+        tagline: 'The Heritage Collection: a hand-carved floral border around a brass-inlaid centre, with cut-out handles.',
+        price: 899,
+        img: 'images/products/tray/front.webp',
+        images: [
+            'images/products/tray/front.webp',
+            'images/products/tray/features.webp',
+            'images/products/tray/detail-inlay.webp',
+            'images/products/tray/detail-flower.webp',
+            'images/products/tray/detail-border.webp',
+            'images/products/tray/detail-side.webp',
+            'images/products/tray/detail-corner.webp',
+            'images/products/tray/back.webp',
+            'images/products/tray/front-back.webp',
+            'images/products/tray/size-guide.webp',
+            'images/products/tray/front-dark.webp',
+            'images/products/tray/gift-box-open.webp',
+            'images/products/tray/gift-box.webp',
+            'images/products/tray/gift-box-closed.webp'
+        ],
+        cat: 'wood',
+        desc: 'A solid wood serving tray from the Velorex Heritage Collection. The border of flowers and vines is cut by hand, and the centre carries a brass inlay of petals and leaves set by hand into the grain. Cut-out handles on both ends give an easy, steady grip. Size: 12 × 8 inches (30.5 × 20.3 cm), 4.5 cm high. Use it for tea and snacks, as a dressing-table or puja tray, or as a gift. Ships in a printed gift box with a thank-you card and care leaflet. Wipe with a dry cloth; do not soak. Natural wood grain and tone vary from piece to piece.',
+        stock: 20,
+        featured: true,
+        extra: 'carved-tray'
     },
     {
         id: 'rk-4tier-24',
@@ -640,6 +766,44 @@ const PRODUCT_DETAILS = {
         disclaimer: 'Natural wood: grain, tone and carving detail vary slightly from piece to piece. Not dishwasher safe — hand wipe only, and avoid soaking or prolonged contact with water.'
     },
 
+    'carved-tray': {
+        badge: 'Heritage Collection · Hand-Carved · Brass Inlay',
+        icon: 'fas fa-crown',
+        introHeading: 'Carved by Hand, Inlaid with Brass',
+        introText: 'Part of the Velorex <strong>Heritage Collection</strong>. Each tray starts as a solid wood frame with deep walls and two cut-out handles. A craftsman then carves a border of flowers and vines around the base by hand, and sets thin brass wire and brass petals and leaves into the centre panel one piece at a time. It is the same inlay craft found in old Indian chests and jewellery boxes, sized for everyday use: tea, snacks, a dressing table or the puja shelf.',
+        points: [
+            'Hand-carved floral and vine border around the base',
+            'Brass inlay of petals, leaves and a central flower, set by hand',
+            'Cut-out handles on both ends for an easy, steady grip',
+            'Arrives in a printed gift box with a thank-you card and care leaflet'
+        ],
+        specs: [
+            { label: 'Size', value: '12 × 8 inches (30.5 × 20.3 cm)' },
+            { label: 'Height', value: '4.5 cm, deep raised walls' },
+            { label: 'Material', value: 'Solid wood with brass inlay' },
+            { label: 'Work', value: 'Hand-carved border, hand-set brass inlay' },
+            { label: 'Handles', value: '2 cut-out handles' },
+            { label: 'Finish', value: 'Natural wood, hand-polished' },
+            { label: 'Packaging', value: 'Gift box (green with gold foil), tissue wrap, thank-you card, care leaflet' },
+            { label: 'Made in', value: 'India, by Velorex Design' },
+            { label: 'Care', value: 'Wipe with a soft dry cloth; do not soak or wash' }
+        ],
+        stepsHeading: 'The Craft Up Close',
+        steps: [
+            { icon: 'fas fa-leaf', img: 'images/products/tray/detail-border.webp', title: 'Carved Border', text: 'Flowers and vines are <strong>cut by hand</strong> into the base, so every curve is slightly different from the next tray.' },
+            { icon: 'fas fa-gem', img: 'images/products/tray/detail-flower.webp', title: 'Brass Flower', text: 'The centre flower and leaves are <strong>brass pieces set into the wood</strong> and polished flush with the surface.' },
+            { icon: 'fas fa-pen-nib', img: 'images/products/tray/detail-inlay.webp', title: 'Fine Brass Lines', text: 'Thin brass wire traces the <strong>vine outline</strong> between the petals, catching the light as you turn the tray.' }
+        ],
+        benefitsHeading: 'Where It Fits',
+        benefits: [
+            { icon: 'fas fa-mug-hot', title: 'Tea & Serving', text: 'Carry cups, a kettle or a plate of snacks; the deep walls keep things from sliding off.' },
+            { icon: 'fas fa-spa', title: 'Puja & Dressing Table', text: 'Holds a diya, incense and flowers, or perfume, jewellery and keys in one tidy place.' },
+            { icon: 'fas fa-couch', title: 'Home Décor', text: 'Lay it on a coffee table or ottoman with candles and a small plant as a centrepiece.' },
+            { icon: 'fas fa-gift', title: 'Ready to Gift', text: 'Packed in a premium box for housewarmings, weddings, Diwali, Eid and anniversaries.' }
+        ],
+        disclaimer: 'Handmade from natural wood: grain, tone and carving detail vary from piece to piece, and small marks from hand tools are part of the craft. Not food-safe for wet or oily food placed directly on the wood; use a plate or napkin. Not dishwasher safe. Wipe dry, keep away from standing water and direct heat, and rub in a drop of wood or coconut oil every few months to keep the finish rich. Brass may darken over time; a soft dry cloth brings back the shine.'
+    },
+
     'rack-4tier': {
         badge: 'Engineered Wood (MDF) · Wall Mounted · Flat-Pack',
         icon: 'fas fa-layer-group',
@@ -840,7 +1004,10 @@ async function loadProducts() {
                 cat: p.category,
                 desc: p.description || '',
                 stock: parseInt(p.stock, 10) || 0,
-                featured: p.featured === '1' || p.featured === 1 || p.featured === true
+                featured: p.featured === '1' || p.featured === 1 || p.featured === true,
+                amazonUrl: p.amazon_url || '',
+                badge: p.badge || '',
+                createdAt: p.created_at || ''
             };
         });
     } catch (error) {
@@ -1073,7 +1240,7 @@ const app = {
             window.scrollTo(0, 0);
 
             // Highlight the matching tab on the phone tab bar.
-            const tabFor = { home: 'home', products: 'products', 'product-detail': 'products', wellness: 'products', cart: 'cart', profile: 'profile', auth: 'profile' }[view];
+            const tabFor = { home: 'home', products: 'products', 'product-detail': 'products', wellness: 'wellness', cart: 'cart', profile: 'profile', auth: 'profile' }[view];
             document.querySelectorAll('.tabbar-item[data-tab]').forEach(tab => {
                 const on = tab.dataset.tab === tabFor;
                 tab.classList.toggle('active', on);
@@ -1318,16 +1485,16 @@ const app = {
             <div class="product-card">
                 <div class="product-img" data-action="open-product" data-id="${escapeAttr(product.id)}" style="cursor:pointer;">
                     <img src="${img}" alt="${escapeAttr(product.name)}" loading="lazy" decoding="async" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
-                    ${product.featured ? '<span class="product-badge">Featured</span>' : ''}
+                    ${productBadgeHtml(product)}
                     ${amazonUrlFor(product) ? '<span class="amazon-chip"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
                 </div>
                 <div class="product-info">
                     <div class="product-cat">${cat}</div>
                     <h3 class="product-title"><a href="${escapeAttr(routeToPath('product-detail', { id: product.id }))}">${name}</a></h3>
-                    <div class="product-price">₹${Number(product.price || 0).toLocaleString()}</div>
-                    <button type="button" class="btn btn-primary btn-block" data-action="add-to-cart" data-id="${escapeAttr(product.id)}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                    <div class="card-buy">
+                        ${buyButtonHtml(product, 'btn-block')}
+                        ${amazonUrlFor(product) && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-block btn-sm" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
+                    </div>
                 </div>
             </div>
         `;
@@ -1349,6 +1516,7 @@ const app = {
     renderHome() {
         this.initHeroCarousel();
         this.renderHomeCategories();
+        this.renderHomeCollections();
         const grid = document.getElementById('homeFeaturedGrid');
         if (!grid) return;
         let featured = PRODUCTS.filter(p => p.featured);
@@ -1358,6 +1526,44 @@ const app = {
             grid.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:2rem; grid-column:1/-1;">No products yet. Add some from the admin panel.</p>`;
         } else {
             grid.innerHTML = featured.map(p => this.createProductCard(p)).join('');
+        }
+    },
+
+    /* Bestsellers, New arrivals and Coming soon rows on the Classic home page.
+       Admin badges decide the first two; without badges they fall back to
+       featured products and the newest additions. */
+    renderHomeCollections() {
+        const best = document.getElementById('homeBestGrid');
+        const fresh = document.getElementById('homeNewGrid');
+        const soon = document.getElementById('homeSoonGrid');
+        const card = p => this.createProductCard(p);
+        if (best) {
+            let list = PRODUCTS.filter(p => p.badge === 'bestseller');
+            if (!list.length) list = PRODUCTS.filter(p => p.featured);
+            if (!list.length) list = PRODUCTS.slice();
+            best.innerHTML = list.slice(0, 4).map(card).join('');
+            best.closest('section').hidden = !list.length;
+        }
+        if (fresh) {
+            const ts = p => Date.parse(String(p.createdAt || '').replace(' ', 'T')) || Number(p.id) || 0;
+            let list = PRODUCTS.filter(p => p.badge === 'new');
+            if (!list.length) list = PRODUCTS.slice().sort((a, b) => ts(b) - ts(a));
+            fresh.innerHTML = list.slice(0, 4).map(card).join('');
+            fresh.closest('section').hidden = !list.length;
+        }
+        if (soon) {
+            const wa = storeWhatsAppNumber();
+            const empty = CATEGORIES.filter(c => !PRODUCTS.some(p => p.cat === c.id));
+            soon.innerHTML = empty.map(c => `
+                <div class="soon-card">
+                    <div class="soon-img"><img src="${escapeAttr(safeUrl(c.image))}" alt="${escapeAttr(c.name)}" loading="lazy"><span class="soon-tag"><i class="fas fa-clock"></i> Coming soon</span></div>
+                    <div class="soon-body">
+                        <h3>${escapeHtml(c.name)}</h3>
+                        <p>New pieces are being made in our Meerut studio.</p>
+                        ${wa ? `<a class="btn btn-secondary btn-sm" href="https://wa.me/${wa}?text=${encodeURIComponent('Hi Velorex Design! Please tell me when ' + c.name + ' is available.')}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Notify me</a>` : ''}
+                    </div>
+                </div>`).join('');
+            soon.closest('section').hidden = !empty.length;
         }
     },
 
@@ -1433,8 +1639,15 @@ const app = {
         const featured = PRODUCTS.filter(p => p.featured);
         const products = (featured.length ? featured : PRODUCTS).slice(0, 5);
 
-        // Slide 0 is always the Velorex Design banner; products follow it.
-        const items = [{ brand: true }, ...products];
+        // Slide 0 is the Velorex Design banner; campaign banners and featured
+        // products alternate after it so the carousel never feels repetitive.
+        const promos = HERO_PROMOS.map(p => Object.assign({ promo: true }, p));
+        const items = [{ brand: true }];
+        const longest = Math.max(promos.length, products.length);
+        for (let i = 0; i < longest; i++) {
+            if (promos[i]) items.push(promos[i]);
+            if (products[i]) items.push(products[i]);
+        }
 
         showcase.style.display = '';
         if (hero) hero.classList.add('hero--product');
@@ -1444,7 +1657,8 @@ const app = {
             const el = document.createElement('div');
             el.className = 'hero-slide ' + (p.brand ? 'hero-slide--brand' : 'hero-slide--product')
                 + (i === 0 ? ' active' : '');
-            el.style.backgroundImage = `url('${p.brand ? 'hero.png' : safeUrl(p.img)}')`;
+            el.style.backgroundImage = `url('${p.brand ? 'images/hero.webp' : safeUrl(p.promo ? p.bg : p.img)}')`;
+            if (p.promo) el.classList.add('hero-slide--promo');
             track.insertBefore(el, overlay);
             return el;
         });
@@ -1458,7 +1672,7 @@ const app = {
             const dot = document.createElement('button');
             dot.type = 'button';
             dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
-            dot.setAttribute('aria-label', p.brand ? 'Show the Velorex Design banner' : `Show ${p.name}`);
+            dot.setAttribute('aria-label', p.brand ? 'Show the Velorex Design banner' : `Show ${p.promo ? p.eyebrow : p.name}`);
             dot.innerHTML = '<span class="hero-dot-fill"></span>';
             dot.addEventListener('click', () => go(i));
             dotsWrap.appendChild(dot);
@@ -1467,10 +1681,6 @@ const app = {
 
         /* The main banner: who Velorex Design is, plus the two ways in. */
         const paintBrand = () => {
-            const collage = products.slice(0, 4).map(p => `
-                <img src="${escapeAttr(safeUrl(p.img))}" alt="${escapeAttr(p.name)}"
-                     data-action="open-product" data-id="${escapeAttr(p.id)}"
-                     data-fallback="https://placehold.co/400x400/1a1a2e/9890b0?text=Velorex">`).join('');
             content.innerHTML = `
                 <span class="hero-eyebrow"><i class="fas fa-gem"></i> Velorex Design</span>
                 <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art &amp; Design</span></h1>
@@ -1489,43 +1699,74 @@ const app = {
                     <li><i class="fas fa-layer-group"></i> ${CATEGORIES.length} collections</li>
                     <li><i class="fas fa-pen-nib"></i> Design services</li>
                 </ul>`;
-            showcase.innerHTML = collage
-                ? `<div class="hero-collage">${collage}</div>`
-                : '';
+            // Same single framed card as the other slides (the 4-image collage looked out of place).
+            const lead = products[0];
+            showcase.innerHTML = lead ? `
+                <div class="hero-card" data-action="open-product" data-id="${escapeAttr(lead.id)}">
+                    <img src="${escapeAttr(safeUrl(lead.img))}" alt="${escapeAttr(lead.name)}" data-fallback="https://placehold.co/800x800/1a1a2e/9890b0?text=Velorex">
+                    <span class="hero-card-tag">Velorex Design</span>
+                    <span class="hero-card-tag hero-card-badge">Handmade</span>
+                </div>` : '';
         };
 
         const paintProduct = (p) => {
-            const price = `\u20b9${Number(p.price || 0).toLocaleString()}`;
             const cover = escapeAttr(safeUrl(p.img));
             const fallback = `https://placehold.co/800x800/1a1a2e/9890b0?text=${encodeURIComponent(p.name || 'Product')}`;
             content.innerHTML = `
                 <span class="hero-eyebrow"><i class="fas fa-certificate"></i> ${escapeHtml(getCatName(p.cat))}</span>
                 <h1 class="hero-title hero-title--product">${escapeHtml(p.name)}</h1>
                 <p class="hero-desc">${escapeHtml(shortDetail(p))}</p>
-                <div class="hero-price">${price}</div>
                 <div class="hero-buttons">
                     <button type="button" class="btn btn-primary" data-action="open-product" data-id="${escapeAttr(p.id)}">
                         <i class="fas fa-eye"></i> View Details
                     </button>
-                    <button type="button" class="btn btn-secondary" data-action="add-to-cart" data-id="${escapeAttr(p.id)}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                    ${buyButtonHtml(p)}
                 </div>
                 <ul class="hero-meta">
                     <li><i class="fas fa-hammer"></i> ${escapeHtml(craftLabel(p))}</li>
                     <li><i class="fas fa-truck"></i> Ships in 3&ndash;5 days</li>
-                    <li><i class="fas fa-shield-halved"></i> Secure checkout</li>
+                    ${amazonUrlFor(p) ? '<li><i class="fab fa-amazon"></i> Sold on Amazon</li>' : '<li><i class="fab fa-whatsapp"></i> Order on WhatsApp</li>'}
                 </ul>`;
             showcase.innerHTML = `
                 <div class="hero-card" data-action="open-product" data-id="${escapeAttr(p.id)}">
                     <img src="${cover}" alt="${escapeAttr(p.name)}" data-fallback="${escapeAttr(fallback)}">
                     <span class="hero-card-tag">${escapeHtml(getCatName(p.cat))}</span>
-                    <span class="hero-card-price">${price}</span>
+                </div>`;
+        };
+
+        /* Campaign banner: headline, short pitch, the matching buy buttons and art. */
+        const paintPromo = (p) => {
+            const product = p.product ? PRODUCTS.find(x => p.product.test(x.name || '')) : null;
+            let buttons = '';
+            if (product) {
+                buttons = `${buyButtonHtml(product)}
+                    <button type="button" class="btn btn-secondary" data-action="open-product" data-id="${escapeAttr(product.id)}"><i class="fas fa-eye"></i> View Details</button>`;
+            } else if (p.category) {
+                buttons = `<button type="button" class="btn btn-primary" data-action="open-category" data-cat="${escapeAttr(p.category)}"><i class="fas fa-layer-group"></i> See the collection</button>`;
+            } else if (p.buy) {
+                const wa = storeWhatsAppNumber();
+                buttons = `<a class="btn btn-amazon" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Amazon store</a>
+                    ${wa ? `<a class="btn btn-whatsapp" href="https://wa.me/${wa}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp us</a>` : ''}`;
+            }
+            content.innerHTML = `
+                <span class="hero-eyebrow"><i class="${escapeAttr(p.icon)}"></i> ${escapeHtml(p.eyebrow)}</span>
+                <h1 class="hero-title hero-title--product">${p.title}</h1>
+                <p class="hero-desc">${escapeHtml(p.desc)}</p>
+                <div class="hero-buttons">${buttons}</div>
+                <ul class="hero-meta">
+                    <li><i class="fas fa-hammer"></i> Handmade in India</li>
+                    <li><i class="fab fa-amazon"></i> On Amazon</li>
+                    <li><i class="fab fa-whatsapp"></i> WhatsApp orders</li>
+                </ul>`;
+            showcase.innerHTML = `
+                <div class="hero-card hero-card--promo"${product ? ` data-action="open-product" data-id="${escapeAttr(product.id)}"` : ''}>
+                    <img src="${escapeAttr(safeUrl(p.art))}" alt="${escapeAttr(p.eyebrow)}">
+                    ${p.badge ? `<span class="hero-card-tag hero-card-badge">${escapeHtml(p.badge)}</span>` : ''}
                 </div>`;
         };
 
         const paint = (p) => {
-            if (p.brand) paintBrand(); else paintProduct(p);
+            if (p.brand) paintBrand(); else if (p.promo) paintPromo(p); else paintProduct(p);
             // Re-trigger the entrance animation on both columns.
             [content, showcase].forEach(el => {
                 el.classList.remove('is-entering');
@@ -1638,7 +1879,7 @@ const app = {
                 </a>
             </div>
             <div class="mega-foot">
-                <span><i class="fas fa-truck"></i> Free shipping above ₹999</span>
+                <span><i class="fab fa-amazon"></i> Buy on Amazon</span>
                 <span><i class="fas fa-hand-sparkles"></i> Handmade in India</span>
                 <span><i class="fab fa-whatsapp"></i> Order on WhatsApp</span>
             </div>`;
@@ -1679,7 +1920,6 @@ const app = {
                 <img src="${escapeAttr(safeUrl(p.img) || '')}" alt="" loading="lazy" data-fallback="https://placehold.co/120x120/1a1a2e/9890b0?text=+">
                 <span class="mega-product-text">
                     <span class="mega-product-name">${escapeHtml(p.name)}</span>
-                    <span class="mega-product-price">${inr(p.price)}${p.stock <= 0 ? ' <span class="mega-product-out">Out of stock</span>' : ''}</span>
                 </span>
             </button>`;
 
@@ -1882,7 +2122,7 @@ const app = {
             title.innerHTML = `${escapeHtml(getCatName(catFilter))} <span class="text-gradient">Collection</span>`;
             setSeo({
                 title: `${getCatName(catFilter)} | Velorex Design`,
-                description: `Shop handcrafted ${getCatName(catFilter)} from Velorex Design. Made by hand in India, free shipping above ₹999.`
+                description: `Shop handcrafted ${getCatName(catFilter)} from Velorex Design. Made by hand in India, sold on Amazon.`
             });
         } else {
             title.innerHTML = `Our <span class="text-gradient">Catalog</span>`;
@@ -2052,10 +2292,18 @@ const app = {
         this.trackRecentlyViewed(product.id);
         setSeo({
             title: `${product.name} | Velorex Design`,
-            description: product.desc || `${product.name} from Velorex Design, handcrafted in India.`,
+            description: String(product.desc || `${product.name} from Velorex Design, handcrafted in India.`).replace(/\s+/g, ' ').slice(0, 158),
             image: /vijaysar/i.test(product.name || '') ? VIJAYSAR_OG_IMAGE : product.img
         });
         setStructuredData('ldProduct', Object.assign({ '@context': 'https://schema.org' }, productSchema(product)));
+        setStructuredData('ldBreadcrumbs', {
+            '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+            itemListElement: [
+                ['Home', '/'], ['Catalog', '/products'],
+                [getCatName(product.cat), routeToPath('products', { cat: product.cat })],
+                [product.name, routeToPath('product-detail', { id: product.id })]
+            ].map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: window.location.origin + path }))
+        });
 
         const bc = document.getElementById('bc-detail');
         if (bc) {
@@ -2072,53 +2320,53 @@ const app = {
         const gallery = (product.images && product.images.length ? product.images : [product.img]).filter(Boolean);
         this._detailGallery = gallery;
         const thumbsHtml = gallery.length > 1 ? `
-            <div class="detail-thumbs" style="display:flex; gap:0.6rem; margin-top:0.9rem; flex-wrap:wrap;">
+            <div class="pd-thumbs">
                 ${gallery.map((src, i) => `
-                    <div data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" style="width:74px; height:74px; border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid ${i === 0 ? 'var(--secondary)' : 'var(--border)'}; transition:border-color 0.2s; background:var(--surface);">
-                        <img src="${escapeAttr(safeUrl(src))}" data-broken-opacity="1" style="width:100%; height:100%; object-fit:cover;" alt="">
-                    </div>
+                    <button type="button" class="pd-thumb${i === 0 ? ' is-active' : ''}" data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" aria-label="Show image ${i + 1}">
+                        <img src="${escapeAttr(safeUrl(src))}" data-broken-opacity="1" alt="${escapeAttr(product.name + ' - view ' + (i + 1))}" loading="lazy" width="76" height="76">
+                    </button>
                 `).join('')}
             </div>` : '';
 
+        const amazon = amazonUrlFor(product);
+        const descText = String(product.desc || '');
+        const firstSentence = (descText.match(/^[^.!?]+[.!?]/) || [descText])[0];
+        const restText = descText.slice(firstSentence.length).trim();
+        const shareUrl = window.location.origin + routeToPath('product-detail', { id: product.id });
         container.innerHTML = `
-            <div class="detail-img">
-                <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name)}" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
+            <div class="pd-gallery">
+                <div class="pd-main">
+                    ${amazon ? '<span class="pd-flag"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
+                    <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name + ' by Velorex Design')}" width="800" height="800" fetchpriority="high" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
+                </div>
                 ${thumbsHtml}
             </div>
-            <div class="detail-info">
-                <div style="color: var(--secondary); font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 2px;">
-                    ${escapeHtml(getCatName(product.cat))} Collection
-                </div>
-                <h1>${escapeHtml(product.name)}</h1>
-                <div class="detail-price">₹${Number(product.price || 0).toLocaleString()}</div>
-                <p class="detail-desc">${escapeHtml(product.desc)}</p>
+            <div class="pd-info">
+                <a class="pd-cat" href="#products?cat=${encodeURIComponent(product.cat)}">${escapeHtml(getCatName(product.cat))}</a>
+                <h1 class="pd-title">${escapeHtml(product.name)}</h1>
+                <p class="pd-lead">${escapeHtml(firstSentence)}</p>
 
-                <div style="background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <i class="fas fa-check-circle text-gold"></i> <span>${escapeHtml(craftLabel(product))}</span>
-                    </div>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <i class="fas fa-truck text-gold"></i> <span>Ships in 3-5 business days</span>
-                    </div>
-                    <div style="display: flex; gap: 1rem;">
-                        <i class="fas fa-shield-alt text-gold"></i> <span>Secure checkout</span>
-                    </div>
+                <div class="pd-buy">
+                    ${buyButtonHtml(product, 'btn-lg pd-buy-main')}
+                    ${amazon && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
+                    <p class="pd-buy-note">${amazon ? 'Buy on Amazon.in, or order directly from us on WhatsApp (' + WA_DISPLAY + ').' : 'Message us on WhatsApp (' + WA_DISPLAY + ') and we will share the price, payment and delivery details.'}</p>
+                    <p class="pd-soon"><i class="fas fa-cart-shopping"></i> <span><strong>Coming soon:</strong> you will be able to buy online directly from this website, with secure payment and delivery across India.</span></p>
                 </div>
 
-                <div style="display: flex; gap: 1rem;">
-                    <button type="button" class="btn btn-primary" style="flex: 2;" data-action="add-to-cart" data-id="${escapeAttr(product.id)}">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                <ul class="pd-trust">
+                    <li><i class="fas fa-hand-sparkles"></i><span><strong>Handmade</strong>${escapeHtml(craftLabel(product))}</span></li>
+                    <li><i class="fas fa-location-dot"></i><span><strong>Made in India</strong>Meerut studio</span></li>
+                    <li><i class="fab fa-whatsapp"></i><span><strong>Order on WhatsApp</strong>Quick reply, Mon–Fri</span></li>
+                </ul>
+
+                ${restText ? `<details class="pd-more" open><summary>About this piece</summary><p>${escapeHtml(restText)}</p></details>` : ''}
+
+                <div class="pd-share">
+                    <span>Share</span>
+                    <a href="https://wa.me/?text=${encodeURIComponent(product.name + ' ' + shareUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(product.name)}" target="_blank" rel="noopener noreferrer" aria-label="Pin on Pinterest"><i class="fab fa-pinterest-p"></i></a>
                 </div>
-                ${(whatsAppOrderUrl(product) || amazonUrlFor(product)) ? `
-                <div class="buy-alt">
-                    <p class="buy-alt-label">Or order another way</p>
-                    <div class="buy-alt-buttons">
-                        ${whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
-                        ${amazonUrlFor(product) ? `<a class="btn btn-amazon" href="${escapeAttr(amazonUrlFor(product))}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>` : ''}
-                    </div>
-                    <p class="amazon-note">${whatsAppOrderUrl(product) ? 'Message us to order directly. ' : ''}${amazonUrlFor(product) ? 'Also sold by Velorex Design on Amazon.' : ''}</p>
-                </div>` : ''}
             </div>
         `;
 
@@ -2199,13 +2447,19 @@ const app = {
         if (main) main.src = safeUrl(this._detailGallery[i]);
         this._detailGallery.forEach((_, idx) => {
             const t = document.getElementById('detail-thumb-' + idx);
-            if (t) t.style.borderColor = idx === i ? 'var(--secondary)' : 'var(--border)';
+            if (t) t.classList.toggle('is-active', idx === i);
         });
     },
 
     addToCart(id) {
         const product = PRODUCTS.find(p => String(p.id) === String(id));
         if (!product) return;
+        // The site sells through Amazon only. A stale cached page may still
+        // show an old Add to Cart button: send that click to Amazon instead.
+        const amazon = amazonUrlFor(product);
+        if (amazon) { window.open(amazon, '_blank', 'noopener,noreferrer'); return; }
+        this.navigate('product-detail', { id: product.id });
+        return;
 
         const existing = this.cart.find(item => String(item.id) === String(id));
         if (existing) {
@@ -2459,6 +2713,55 @@ const app = {
         }
     },
 
+    /* Overview tab: greeting, counts, latest order. */
+    renderProfileOverview(orders) {
+        const p = this.userProfile || {};
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        const first = String(p.name || '').trim().split(/\s+/)[0] || 'there';
+        set('ovName', first);
+        set('pmName', p.name || 'My account');
+        set('pmEmail', p.email || '');
+        set('pmAvatar', (first[0] || 'V').toUpperCase());
+        set('ovOrders', orders.length);
+        set('ovActive', orders.filter(o => ['Pending', 'Processing', 'Shipped'].includes(o.status)).length);
+        set('ovAddr', (p.addresses || []).length);
+        const latest = document.getElementById('ovLatest');
+        if (!latest) return;
+        const o = orders[0];
+        latest.innerHTML = o ? `
+            <div class="ov-latest-card">
+                <div><span class="ov-k">Latest order</span><b>${escapeHtml(o.id || o.order_code || '')}</b><span>${escapeHtml(o.date || '')}</span></div>
+                <span class="order-status-pill pill-${escapeAttr(String(o.status || '').toLowerCase())}">${escapeHtml(o.status || '')}</span>
+                <button type="button" class="btn btn-secondary btn-sm" data-action="profile-tab" data-tab="orders">View</button>
+            </div>` : `<div class="ov-latest-card ov-empty"><span>No orders yet. Browse the collection or order on WhatsApp.</span><button type="button" class="btn btn-primary btn-sm" data-action="goto-products">Shop now</button></div>`;
+    },
+
+    async changePassword() {
+        const cur = document.getElementById('pwCurrent').value;
+        const nw = document.getElementById('pwNew').value;
+        const rep = document.getElementById('pwConfirm').value;
+        if (!cur || !nw) { this.showToast('Fill in your current and new password', 'error'); return; }
+        if (nw.length < 8) { this.showToast('New password must be at least 8 characters', 'error'); return; }
+        if (nw !== rep) { this.showToast('The new passwords do not match', 'error'); return; }
+        const res = await apiCall('api/customer-account.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'password', current_password: cur, new_password: nw }) });
+        if (!res.ok) { this.showToast((res.data && res.data.error) || 'Could not change the password', 'error'); return; }
+        ['pwCurrent', 'pwNew', 'pwConfirm'].forEach(id => { document.getElementById(id).value = ''; });
+        this.showToast('Password updated', 'success');
+    },
+
+    async deleteAccount() {
+        const pw = document.getElementById('delPassword').value;
+        if (!pw) { this.showToast('Type your password to confirm', 'error'); return; }
+        if (!confirm('Delete your Velorex account? This cannot be undone.')) return;
+        const res = await apiCall('api/customer-account.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', password: pw }) });
+        if (!res.ok) { this.showToast((res.data && res.data.error) || 'Could not delete the account', 'error'); return; }
+        this.currentUser = null;
+        try { localStorage.removeItem('velorex_design_user'); } catch (_) { /* ignore */ }
+        this.showToast('Your account has been deleted', 'info');
+        this.navigate('home');
+        setTimeout(() => window.location.reload(), 800);
+    },
+
     async renderProfile() {
         document.getElementById('profName').value = this.userProfile.name || '';
         document.getElementById('profEmail').value = this.userProfile.email || '';
@@ -2500,6 +2803,7 @@ const app = {
         }
 
         this.markNotificationsRead();
+        this.renderProfileOverview(myOrders);
 
         if (myOrders.length === 0) {
             ordersContainer.innerHTML = `
@@ -2958,7 +3262,8 @@ const ACTION_HANDLERS = {
     'default-address':     (e, el) => app.setDefaultAddress(el.dataset.id),
     'show-addr-form':      () => app.showAddressForm(),
     'logout':              () => app.handleLogout(),
-    'profile-tab':         (e, el) => app.switchProfileTab(el.dataset.tab, el),
+    'profile-tab':         (e, el) => app.switchProfileTab(el.dataset.tab, document.querySelector('#app .profile-menu-item[data-tab="' + el.dataset.tab + '"]') || el),
+    'open-chat-track':     () => { const l = document.querySelector('.vx-chat-launch'); if (l) l.click(); setTimeout(() => { const b = document.querySelector('#vxMenuGrid [data-chip="track"]'); if (b) b.click(); }, 700); },
     'select-service':      (e, el) => app.selectServiceType(el.dataset.svc),
     'select-package':      (e, el) => app.selectPackage(el.dataset.svc, parseInt(el.dataset.idx, 10)),
     'proceed-service':     (e, el) => app.proceedService(el.dataset.svc, parseInt(el.dataset.idx, 10)),
@@ -2967,7 +3272,13 @@ const ACTION_HANDLERS = {
     'show-login':          () => app.showAuthForm('login'),
     'faq-toggle':          (e, el) => el.classList.toggle('active'),
     'scroll-to':           (e, el) => { const t = document.getElementById(el.dataset.target); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-    'clear-notifs':        () => app.clearNotifications()
+    'clear-notifs':        () => app.clearNotifications(),
+    // Opens a product by name, so it works for both database ids and built-in ids.
+    'open-product-match':  (e, el) => {
+        const re = new RegExp(el.dataset.match, 'i');
+        const p = PRODUCTS.find(x => re.test(x.name || ''));
+        if (p) app.navigate('product-detail', { id: p.id }); else app.navigate('products');
+    }
 };
 
 function wireDelegatedEvents() {
@@ -3006,6 +3317,8 @@ function wireDelegatedEvents() {
         if (action === 'login')           app.handleLogin(e);
         else if (action === 'register')   app.handleRegister(e);
         else if (action === 'save-profile') app.saveProfile();
+        else if (action === 'change-password') app.changePassword();
+        else if (action === 'delete-account') app.deleteAccount();
         else if (action === 'save-address') app.saveAddress();
         else if (action === 'submit-checkout') app.submitCheckout();
         else if (action === 'submit-contact')  app.submitContact();
@@ -3244,3 +3557,176 @@ document.addEventListener('DOMContentLoaded', () => {
     initMegaMenu();
     initUiEffects();
 });
+
+/* Small interaction effects: button ripple, card spotlight, gallery cross-fade.
+   All skipped when the visitor prefers reduced motion. */
+(function () {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest('.btn');
+        if (!btn) return;
+        const r = btn.getBoundingClientRect();
+        const size = Math.max(r.width, r.height);
+        const dot = document.createElement('span');
+        dot.className = 'ripple';
+        dot.style.width = dot.style.height = size + 'px';
+        dot.style.left = (e.clientX - r.left - size / 2) + 'px';
+        dot.style.top = (e.clientY - r.top - size / 2) + 'px';
+        btn.appendChild(dot);
+        setTimeout(() => dot.remove(), 650);
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (e) => {
+        const card = e.target.closest && e.target.closest('.product-card');
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-action="select-detail-img"]')) return;
+        const img = document.getElementById('detailMainImage');
+        if (!img) return;
+        img.classList.remove('swap');
+        void img.offsetWidth; // restart the animation
+        img.classList.add('swap');
+    });
+})();
+
+/* Splash screen: lift it once the page is ready (min 2.5s so visitors see the
+   brand, max 4s so a slow network never holds the visitor). */
+(function () {
+    const splash = document.getElementById('splash');
+    if (!splash || document.documentElement.classList.contains('splash-seen')) { if (splash) splash.remove(); return; }
+    const started = performance.now();
+    let done = false;
+    const hide = () => {
+        if (done) return; done = true;
+        const wait = Math.max(0, 2500 - (performance.now() - started));
+        setTimeout(() => {
+            splash.classList.add('is-out');
+            setTimeout(() => splash.remove(), 650);
+        }, wait);
+    };
+    if (document.readyState === 'complete') hide(); else window.addEventListener('load', hide, { once: true });
+    setTimeout(hide, 4000);
+})();
+
+/* Product image viewer: click the main product photo to open it full screen with
+   zoom (buttons, mouse wheel, double-click, drag to pan), previous / next, a
+   counter and a close button. Esc closes, arrow keys move, + and - zoom. */
+(function () {
+    let box, img, counter, list = [], idx = 0, scale = 1, tx = 0, ty = 0, drag = null, touchX = null, lastFocus = null;
+    const MIN = 1, MAX = 4;
+
+    function build() {
+        box = document.createElement('div');
+        box.className = 'vx-lb';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+        box.setAttribute('aria-label', 'Product image viewer');
+        box.innerHTML = `
+            <div class="vx-lb-top">
+                <span class="vx-lb-count" aria-live="polite"></span>
+                <div class="vx-lb-tools">
+                    <button type="button" data-lb="out" aria-label="Zoom out"><i class="fas fa-magnifying-glass-minus"></i></button>
+                    <button type="button" data-lb="reset" aria-label="Reset zoom"><i class="fas fa-expand"></i></button>
+                    <button type="button" data-lb="in" aria-label="Zoom in"><i class="fas fa-magnifying-glass-plus"></i></button>
+                    <button type="button" data-lb="close" class="vx-lb-close" aria-label="Close"><i class="fas fa-xmark"></i></button>
+                </div>
+            </div>
+            <button type="button" data-lb="prev" class="vx-lb-nav vx-lb-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+            <div class="vx-lb-stage"><img alt="" draggable="false"></div>
+            <button type="button" data-lb="next" class="vx-lb-nav vx-lb-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>`;
+        document.body.appendChild(box);
+        img = box.querySelector('img');
+        counter = box.querySelector('.vx-lb-count');
+        const stage = box.querySelector('.vx-lb-stage');
+
+        box.addEventListener('click', (e) => {
+            const b = e.target.closest('[data-lb]');
+            if (b) {
+                const a = b.dataset.lb;
+                if (a === 'close') close();
+                else if (a === 'prev') go(-1);
+                else if (a === 'next') go(1);
+                else if (a === 'in') zoom(scale + 0.5);
+                else if (a === 'out') zoom(scale - 0.5);
+                else if (a === 'reset') zoom(1);
+                return;
+            }
+            if (e.target === stage && scale === 1) close(); // click on the dark area around the photo
+        });
+        img.addEventListener('dblclick', () => zoom(scale > 1 ? 1 : 2.5));
+        stage.addEventListener('wheel', (e) => { e.preventDefault(); zoom(scale + (e.deltaY < 0 ? 0.25 : -0.25)); }, { passive: false });
+        img.addEventListener('pointerdown', (e) => {
+            if (scale === 1) return;
+            drag = { x: e.clientX - tx, y: e.clientY - ty };
+            img.setPointerCapture(e.pointerId);
+            img.classList.add('is-dragging');
+        });
+        img.addEventListener('pointermove', (e) => { if (drag) { tx = e.clientX - drag.x; ty = e.clientY - drag.y; apply(); } });
+        const endDrag = () => { drag = null; img.classList.remove('is-dragging'); };
+        img.addEventListener('pointerup', endDrag);
+        img.addEventListener('pointercancel', endDrag);
+        stage.addEventListener('touchstart', (e) => { touchX = e.touches.length === 1 && scale === 1 ? e.touches[0].clientX : null; }, { passive: true });
+        stage.addEventListener('touchend', (e) => {
+            if (touchX === null) return;
+            const dx = e.changedTouches[0].clientX - touchX;
+            if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+            touchX = null;
+        });
+        document.addEventListener('keydown', (e) => {
+            if (!box.classList.contains('is-open')) return;
+            if (e.key === 'Escape') close();
+            else if (e.key === 'ArrowLeft') go(-1);
+            else if (e.key === 'ArrowRight') go(1);
+            else if (e.key === '+' || e.key === '=') zoom(scale + 0.5);
+            else if (e.key === '-') zoom(scale - 0.5);
+        });
+    }
+
+    function apply() {
+        if (scale === 1) { tx = 0; ty = 0; }
+        img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+        img.classList.toggle('is-zoomed', scale > 1);
+        box.querySelector('[data-lb="out"]').disabled = scale <= MIN;
+        box.querySelector('[data-lb="in"]').disabled = scale >= MAX;
+    }
+    function zoom(s) { scale = Math.min(MAX, Math.max(MIN, s)); apply(); }
+    function show(i) {
+        idx = (i + list.length) % list.length;
+        img.src = list[idx];
+        counter.textContent = `${idx + 1} / ${list.length}`;
+        box.classList.toggle('is-single', list.length < 2);
+        zoom(1);
+    }
+    function go(d) { if (list.length > 1) show(idx + d); }
+    function open(images, start) {
+        if (!box) build();
+        list = images;
+        lastFocus = document.activeElement;
+        show(start);
+        box.classList.add('is-open');
+        document.documentElement.classList.add('vx-lb-lock');
+        box.querySelector('.vx-lb-close').focus();
+    }
+    function close() {
+        box.classList.remove('is-open');
+        document.documentElement.classList.remove('vx-lb-lock');
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    document.addEventListener('click', (e) => {
+        const main = e.target.closest('#detailMainImage');
+        if (!main) return;
+        const thumbs = [...document.querySelectorAll('.pd-thumb img')].map(t => t.getAttribute('src'));
+        const images = thumbs.length ? thumbs : [main.getAttribute('src')];
+        const active = document.querySelector('.pd-thumb.is-active');
+        const start = active ? Math.max(0, Number(active.dataset.idx) || 0) : 0;
+        open(images, start);
+    });
+})();

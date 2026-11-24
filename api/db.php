@@ -162,6 +162,38 @@ if (!function_exists('rateLimitFile')) {
     }
 }
 
+/* Admin sessions last at most 8 hours from login (same as velorexmusic.com's
+   admin tickets). After that every admin endpoint answers 401 and the admin
+   logs in again. Call after session_start(). */
+if (!defined('ADMIN_SESSION_HOURS')) define('ADMIN_SESSION_HOURS', 8);
+if (!function_exists('admin_session_ok')) {
+    function admin_session_ok() {
+        if (empty($_SESSION['admin_id'])) return false;
+        $at = isset($_SESSION['admin_login_at']) ? (int) $_SESSION['admin_login_at'] : 0;
+        if ($at <= 0 || time() - $at > ADMIN_SESSION_HOURS * 3600) {
+            unset($_SESSION['admin_id'], $_SESSION['admin_email'], $_SESSION['admin_name'], $_SESSION['admin_login_at']);
+            return false;
+        }
+        return true;
+    }
+}
+
+/** True when the admin has blocked this customer (column may not exist yet). */
+if (!function_exists('customer_is_blocked')) {
+    function customer_is_blocked($conn, $id) {
+        try {
+            $st = $conn->prepare('SELECT is_blocked FROM customers WHERE id = ? LIMIT 1');
+            if (!$st) return false;
+            $st->bind_param('i', $id);
+            $st->execute();
+            $r = $st->get_result()->fetch_assoc();
+            return $r && !empty($r['is_blocked']);
+        } catch (Throwable $e) {
+            return false; // column not added yet: nobody is blocked
+        }
+    }
+}
+
 /** Reads a request field as a trimmed string, capped in length. Non-strings become ''. */
 if (!function_exists('strField')) {
     function strField($source, $key, $maxLen = 255) {

@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-no-chat data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>Velorex Admin | Premium Dashboard</title>
+    <title>Velorex Design Admin</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="images/brand/icon-32.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="images/brand/icon-192.png">
+    <meta name="theme-color" content="#1a0a2e">
     <meta name="robots" content="noindex, nofollow">
     <!-- Font Awesome 6.5.1 from cdnjs with Subresource Integrity. If a future
          version is pinned in href, update the integrity hash from
@@ -21,8 +25,14 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Playfair+Display:wght@700&display=swap"
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="css/admin.css">
-    <script src="js/admin.js" defer></script>
+    <link rel="stylesheet" href="css/admin.css?v=20261125c">
+    <script src="js/admin.js?v=20261125c" defer></script>
+    <script src="js/admin-marketing.js?v=20261125c" defer></script>
+    <script src="js/admin-print.js?v=20261125c" defer></script>
+    <script src="js/admin-cropper.js?v=20261125c" defer></script>
+    <script src="js/admin-analytics.js?v=20261125c" defer></script>
+    <script src="js/chat.js?v=20261125c" defer></script>
+    <script src="js/admin-messages.js?v=20261125c" defer></script>
 </head>
 
 <body>
@@ -30,7 +40,7 @@
     <div id="authScreen">
         <div class="auth-card">
             <div class="logo" style="justify-content: center; margin-bottom: 2rem; font-size: 2.2rem;">
-                <img src="images/brand/emblem.webp" width="36" height="36" alt="" style="width:36px;height:36px;padding:2px;border-radius:50%;background:#fbf6ea;vertical-align:middle;"> Velorex <span>Admin</span>
+                <img src="images/brand/emblem.webp" width="36" height="36" alt="" style="width:36px;height:36px;padding:2px;border-radius:50%;background:#fbf6ea;vertical-align:middle;"> Velorex Design <span>Admin</span>
             </div>
             <p style="color: var(--text-muted); margin-bottom: 2rem;">Please enter your administrative credentials</p>
 
@@ -55,11 +65,15 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <a href="index.html" class="logo" rel="noopener">
-            <img src="images/brand/emblem.webp" width="28" height="28" alt="" style="width:28px;height:28px;padding:2px;border-radius:50%;background:#fbf6ea;vertical-align:middle;"> <span>Velorex</span>
+        <a href="#analytics" class="logo admin-logo" data-action="set-tab" data-tab="analytics" title="Admin home">
+            <img src="images/brand/emblem.webp" width="36" height="36" alt="">
+            <span class="admin-logo-text"><span>Velorex Design</span><small>Admin</small></span>
         </a>
         <nav class="nav-menu">
-            <a href="#inventory" class="nav-link active" data-action="set-tab" data-tab="inventory">
+                        <a href="#analytics" class="nav-link active" data-action="set-tab" data-tab="analytics">
+                <i class="fas fa-chart-line"></i> <span>Dashboard &amp; P&amp;L</span>
+            </a>
+            <a href="#inventory" class="nav-link" data-action="set-tab" data-tab="inventory">
                 <i class="fas fa-boxes"></i> <span>Inventory</span>
             </a>
             <a href="#orders" class="nav-link" data-action="set-tab" data-tab="orders">
@@ -74,8 +88,14 @@
             <a href="#categories" class="nav-link" data-action="set-tab" data-tab="categories">
                 <i class="fas fa-tags"></i> <span>Categories</span>
             </a>
-            <a href="#analytics" class="nav-link" data-action="set-tab" data-tab="analytics">
-                <i class="fas fa-chart-line"></i> <span>Analytics</span>
+            <a href="#chat" class="nav-link" data-action="set-tab" data-tab="chat">
+                <i class="fas fa-comments"></i> <span>Chat &amp; Messages</span><b class="nav-badge" id="msgBadge" hidden>0</b>
+            </a>
+            <a href="#coupons" class="nav-link" data-action="set-tab" data-tab="coupons">
+                <i class="fas fa-ticket-alt"></i> <span>Coupons</span>
+            </a>
+            <a href="#loyalty" class="nav-link" data-action="set-tab" data-tab="loyalty">
+                <i class="fas fa-gift"></i> <span>Loyalty Points</span>
             </a>
             <a href="#settings" class="nav-link" data-action="set-tab" data-tab="settings">
                 <i class="fas fa-cog"></i> <span>Settings</span>
@@ -103,7 +123,7 @@
                 <div class="user-info">
                     <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
                     <div>
-                        <div style="font-weight: 600;">Store Manager</div>
+                        <div style="font-weight: 600;" id="adminName">Admin</div>
                         <div style="font-size: 0.75rem; color: var(--text-muted);">Admin Access</div>
                     </div>
                 </div>
@@ -112,24 +132,28 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Stock Items</div>
+                <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+                <div class="stat-label">Products</div>
                 <div id="statProducts" class="stat-value">0</div>
-                <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 12% vs last month</div>
+                <div class="stat-trend" id="statProductsNote">&nbsp;</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Pending Orders</div>
+                <div class="stat-icon stat-icon-amazon"><i class="fab fa-amazon"></i></div>
+                <div class="stat-label">Listed on Amazon</div>
+                <div id="statAmazon" class="stat-value">0</div>
+                <div class="stat-trend" id="statAmazonNote">&nbsp;</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                <div class="stat-label">Low or out of stock</div>
+                <div id="statLowStock" class="stat-value">0</div>
+                <div class="stat-trend" id="statLowStockNote">&nbsp;</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-label">Pending enquiries / orders</div>
                 <div id="statOrders" class="stat-value">0</div>
-                <div class="stat-trend" style="color: var(--secondary);"><i class="fas fa-clock"></i> 5 Urgent</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Revenue</div>
-                <div id="statRevenue" class="stat-value" style="color: var(--accent);">₹0</div>
-                <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> 24% vs last month</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Store Rating</div>
-                <div class="stat-value">4.9</div>
-                <div class="stat-trend trend-up"><i class="fas fa-star"></i> Top 1% Seller</div>
+                <div class="stat-trend" id="statOrdersNote">&nbsp;</div>
             </div>
         </div>
 
@@ -234,6 +258,7 @@
                         </div>
                     </div>
                     <div style="display:flex; gap:0.75rem;">
+                        <button type="button" class="btn btn-secondary" data-action="export-customers"><i class="fas fa-file-csv"></i> Export CSV</button>
                         <button type="button" class="btn btn-secondary" data-action="load-customers"><i class="fas fa-sync-alt"></i> Refresh</button>
                     </div>
                 </div>
@@ -270,13 +295,13 @@
                 <div class="section-header">
                     <h2>Product Categories</h2>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; max-width: 860px;">
+                <div class="cat-layout">
                     <div>
-                        <h3 style="margin-bottom: 1.25rem; font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Existing Categories</h3>
-                        <div id="categoriesList"></div>
+                        <div class="pane-title"><i class="fas fa-layer-group"></i> Your categories <span id="catCount" class="msg-pill done"></span></div>
+                        <div id="categoriesList" class="cat-grid"></div>
                     </div>
-                    <div>
-                        <h3 style="margin-bottom: 1.25rem; font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Add New Category</h3>
+                    <div class="settings-card cat-form">
+                        <div class="settings-card-head"><span class="sc-icon"><i class="fas fa-plus"></i></span><div><h3>Add a category</h3><p>It appears in the menu, the catalog filter and Shop by Category.</p></div></div>
                         <div class="form-group">
                             <label for="newCatName">Category Name</label>
                             <input type="text" id="newCatName" class="form-control" placeholder="e.g. Macrame Art" maxlength="60" required>
@@ -295,45 +320,156 @@
                 </div>
             </div>
 
+            <div id="chat-tab" class="tab-content" style="display: none;">
+                <div class="section-header">
+                    <h2>Chat &amp; Messages</h2>
+                    <div class="chat-tabs" role="tablist">
+                        <button type="button" class="chat-tab is-active" data-chat-pane="inbox"><i class="fas fa-inbox"></i> Inbox</button>
+                        <button type="button" class="chat-tab" data-chat-pane="answers"><i class="fas fa-pen-to-square"></i> Chat answers</button>
+                        <button type="button" class="chat-tab" data-chat-pane="stats"><i class="fas fa-chart-simple"></i> What people ask</button>
+                    </div>
+                </div>
+                <div class="chat-pane" id="pane-inbox"><div id="msgList" class="msg-grid"></div></div>
+                <div class="chat-pane" id="pane-answers" hidden>
+                    <p class="an-note"><i class="fas fa-circle-info"></i> Change what the website assistant says. Allowed formatting: &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;br&gt; for a new line, and links like &lt;a href="/shipping"&gt;Shipping&lt;/a&gt;. Changes show on the site within 5 minutes.</p>
+                    <div id="answerList" class="answer-grid"></div>
+                </div>
+                <div class="chat-pane" id="pane-stats" hidden>
+                    <div class="an-grid">
+                        <div class="an-card"><h3>Topics in the last 30 days</h3><div id="chatTopics"></div></div>
+                        <div class="an-card"><h3>Questions the chat could not answer</h3><p class="an-note" style="margin:0 0 .75rem">Add these to an answer, a product description or the FAQ.</p><div id="chatUnmatched"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="coupons-tab" class="tab-content" style="display: none;">
+                <div class="section-header">
+                    <h2>Coupons</h2>
+                    <button type="button" class="btn btn-primary" data-action="mkt-new-coupon"><i class="fas fa-plus"></i> New coupon</button>
+                </div>
+                <form id="couponForm" class="stat-card" style="margin-bottom:1.5rem" novalidate>
+                    <h3 id="couponFormTitle" style="margin-bottom:1rem">New coupon</h3>
+                    <input type="hidden" id="cpId">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Code<input id="cpCode" class="form-control" maxlength="40" placeholder="WELCOME10" required style="text-transform:uppercase"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Type<select id="cpType" class="form-control"><option value="percent">Percent off</option><option value="fixed">Rupees off</option><option value="free_shipping">Free shipping</option></select></label>
+                        <label id="cpValueWrap" style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)"><span id="cpValueLabel">Percent off (1–90)</span><input id="cpValue" class="form-control" type="number" min="1"></label>
+                        <label id="cpMaxWrap" style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Max discount ₹ (optional)<input id="cpMax" class="form-control" type="number" min="1"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Minimum order ₹<input id="cpMin" class="form-control" type="number" min="0" placeholder="0"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Total uses (blank = unlimited)<input id="cpLimit" class="form-control" type="number" min="1"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Uses per customer (blank = unlimited)<input id="cpPer" class="form-control" type="number" min="1" placeholder="1"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Starts (optional)<input id="cpStart" class="form-control" type="datetime-local"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Ends (optional)<input id="cpEnd" class="form-control" type="datetime-local"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Note for yourself<input id="cpNote" class="form-control" maxlength="160" placeholder="Diwali offer"></label>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap">
+                        <label style="display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="cpActive" checked> Active</label>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save coupon</button>
+                    </div>
+                    <p style="font-size:.78rem;color:var(--text-muted);margin-top:.8rem">Coupons cannot be combined with reward points. A discount never makes goods free, and free-shipping coupons only waive the ₹99 delivery fee.</p>
+                </form>
+                <div id="couponList"></div>
+            </div>
+
+            <div id="loyalty-tab" class="tab-content" style="display: none;">
+                <div class="section-header"><h2>Loyalty Points</h2></div>
+                <div id="loyaltyTotals" class="stats-grid" style="margin-bottom:1.5rem"></div>
+                <form id="loyaltyForm" class="stat-card" style="margin-bottom:1.5rem" novalidate>
+                    <h3 style="margin-bottom:1rem">Programme settings</h3>
+                    <label style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;font-weight:600"><input type="checkbox" id="lyEnabled"> Programme is on (customers earn and spend points)</label>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Earn % of order value<input id="lyEarn" class="form-control" type="number" min="0" max="20" step="0.5"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Points per ₹1<input id="lyPpr" class="form-control" type="number" min="1" max="100"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Max % of order payable with points<input id="lyMaxPct" class="form-control" type="number" min="0" max="50"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Minimum points to redeem<input id="lyMin" class="form-control" type="number" min="0"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Sign-up bonus points<input id="lyBonus" class="form-control" type="number" min="0" max="10000"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Expire after months without activity (0 = never)<input id="lyExpiry" class="form-control" type="number" min="0" max="60"></label>
+                    </div>
+                    <p id="lyPreview" style="font-size:.85rem;color:var(--text-muted);margin:1rem 0"></p>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save settings</button>
+                    <p style="font-size:.78rem;color:var(--text-muted);margin-top:.8rem">Points are earned when you mark an order Delivered. Marking it Cancelled returns any points spent and removes points earned.</p>
+                </form>
+                <form id="loyaltyAdjustForm" class="stat-card" style="margin-bottom:1.5rem" novalidate>
+                    <h3 style="margin-bottom:1rem">Give or remove points</h3>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end">
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Customer email<input id="lyAdjEmail" class="form-control" type="email" maxlength="150" required></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Points (use minus to remove)<input id="lyAdjPoints" class="form-control" type="number" placeholder="100"></label>
+                        <label style="display:flex;flex-direction:column;gap:.3rem;font-size:.82rem;color:var(--text-muted)">Reason<input id="lyAdjNote" class="form-control" maxlength="200" placeholder="Sorry for the delay"></label>
+                        <button type="submit" class="btn btn-secondary">Apply</button>
+                    </div>
+                </form>
+                <h3 style="margin-bottom:.8rem">Members</h3>
+                <div id="loyaltyMembers"></div>
+            </div>
+
             <div id="analytics-tab" class="tab-content" style="display: none;">
                 <div class="section-header">
-                    <h2>Sales Analytics</h2>
+                    <h2>Analytics &amp; profit</h2>
+                    <div class="an-controls">
+                        <select id="anPeriod" class="form-control" aria-label="Period">
+                            <option value="30">Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="year" selected>This year</option>
+                            <option value="all">All time</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary" id="anExport"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    </div>
                 </div>
-                <div style="text-align: center; padding: 4rem; color: var(--text-muted);">
-                    <i class="fas fa-chart-pie" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
-                    <p>Advanced analytics and charts are being prepared for your store.</p>
+                <p class="an-note"><i class="fas fa-circle-info"></i> Website and WhatsApp orders are counted automatically (cancelled ones are left out). Add Amazon payouts and your costs in the ledger below so the profit is complete.</p>
+                <div class="an-kpis" id="anKpis"></div>
+                <div class="an-grid">
+                    <div class="an-card"><h3>Month by month</h3><div class="an-chart" id="anChart"></div><div class="an-legend"><span class="lg-in"></span> Income <span class="lg-out"></span> Costs <span class="lg-net"></span> Profit</div></div>
+                    <div class="an-card"><h3>Top products</h3><div id="anTop"></div></div>
                 </div>
+                <div class="an-grid">
+                    <div class="an-card">
+                        <h3>Add to the ledger</h3>
+                        <form id="ledgerForm" class="an-form" novalidate>
+                            <label>Date<input type="date" id="lgDate" class="form-control" required></label>
+                            <label>Type<select id="lgKind" class="form-control"><option value="expense">Expense</option><option value="income">Income</option></select></label>
+                            <label>Category<select id="lgCat" class="form-control"></select></label>
+                            <label>Amount ₹<input type="number" id="lgAmount" class="form-control" min="0.01" step="0.01" required></label>
+                            <label class="an-wide">Note<input type="text" id="lgNote" class="form-control" maxlength="200" placeholder="e.g. Amazon payout 1-15 Nov"></label>
+                            <button type="submit" class="btn btn-primary an-wide"><i class="fas fa-plus"></i> Add entry</button>
+                        </form>
+                    </div>
+                    <div class="an-card"><h3>Costs by category</h3><div id="anCats"></div></div>
+                </div>
+                <div class="an-card"><h3>Ledger</h3><div id="anLedger"></div></div>
             </div>
 
             <div id="settings-tab" class="tab-content" style="display: none;">
                 <div class="section-header">
                     <h2>Store Settings</h2>
                 </div>
-                <div style="max-width: 560px;">
+                <div class="settings-grid">
+                    <div class="settings-card">
+                    <div class="settings-card-head"><span class="sc-icon"><i class="fas fa-store"></i></span><div><h3>Store details</h3><p>Shown on the Contact page, in WhatsApp links and on bills.</p></div></div>
                     <div class="form-group">
                         <label for="settingsStoreName">Store Name</label>
                         <input type="text" id="settingsStoreName" class="form-control" placeholder="Velorex Design" maxlength="120">
                     </div>
                     <div class="form-group">
-                        <label for="settingsWhatsapp">WhatsApp Number <span style="color: var(--text-muted); font-size:0.8rem;">(with country code, no + or spaces — e.g. 919876543210)</span></label>
-                        <input type="text" id="settingsWhatsapp" class="form-control" placeholder="919876543210" maxlength="20" inputmode="numeric" pattern="[0-9]*">
+                        <label for="settingsWhatsapp">WhatsApp Number <span style="color: var(--text-muted); font-size:0.8rem;">(country code, no + or spaces, e.g. 917906027807)</span></label>
+                        <input type="text" id="settingsWhatsapp" class="form-control" placeholder="917906027807" maxlength="20" inputmode="numeric" pattern="[0-9]*">
                     </div>
                     <div class="form-group">
                         <label for="settingsPhone">Phone Number (shown on contact page)</label>
-                        <input type="text" id="settingsPhone" class="form-control" placeholder="+91 98765 43210" maxlength="30">
+                        <input type="text" id="settingsPhone" class="form-control" placeholder="+91 79060 27807" maxlength="30">
                     </div>
                     <div class="form-group">
                         <label for="settingsEmail">Contact Email</label>
-                        <input type="email" id="settingsEmail" class="form-control" placeholder="hello@yourdomain.com" maxlength="160">
+                        <input type="email" id="settingsEmail" class="form-control" placeholder="velorexdesign@gmail.com" maxlength="160">
                     </div>
                     <div class="form-group">
                         <label for="settingsAddress">Studio Address (shown on contact page)</label>
-                        <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="123 Your Street,&#10;City, PIN&#10;India" maxlength="400"></textarea>
+                        <textarea id="settingsAddress" class="form-control" style="min-height: 80px;" placeholder="Meerut, Uttar Pradesh 250002&#10;India" maxlength="400"></textarea>
                     </div>
                     <button type="button" class="btn btn-primary" data-action="save-settings"><i class="fas fa-save" style="margin-right:8px"></i>Save Settings</button>
 
-                    <div style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border);">
-                        <h3 style="margin-bottom:0.5rem;">Admin Account</h3>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-card-head"><span class="sc-icon sc-lock"><i class="fas fa-user-shield"></i></span><div><h3>Admin account</h3><p>Sessions end 8 hours after login. Use a long, unique password.</p></div></div>
                         <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Change your login username or password. You must provide your current password to confirm.</p>
 
                         <div class="form-group">
@@ -345,7 +481,7 @@
                             <input type="text" id="adminNewEmail" class="form-control" autocomplete="username" placeholder="Leave blank to keep current" maxlength="120">
                         </div>
                         <div class="form-group">
-                            <label for="adminNewPass">New Password <span style="color:var(--text-muted); font-size:0.78rem;">(min 6 characters)</span></label>
+                            <label for="adminNewPass">New Password <span style="color:var(--text-muted); font-size:0.78rem;">(at least 8 characters)</span></label>
                             <input type="password" id="adminNewPass" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current" maxlength="200" minlength="8">
                         </div>
                         <div class="form-group">
@@ -362,7 +498,7 @@
     <!-- Product Modal -->
     <div id="productModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="modalTitle" style="margin-bottom: 2rem;">Add Premium Item</h2>
+            <h2 id="modalTitle" style="margin-bottom: 2rem;">Add product</h2>
             <form id="productForm" data-action="save-product" novalidate>
                 <input type="hidden" id="editingId">
                 <div class="form-group">
@@ -376,11 +512,29 @@
                         <select id="pCat" class="form-control"></select>
                     </div>
                     <div class="form-group">
-                        <label for="pPrice">Base Price (₹)</label>
-                        <input type="number" id="pPrice" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+                        <label for="pPrice">Selling price ₹ <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(not shown on the shop)</span></label>
+                        <input type="number" id="pPrice" class="form-control" placeholder="0" min="0" step="0.01">
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="pCost"><i class="fas fa-calculator" style="color:#10b981"></i> Cost price ₹ <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(what one piece costs you; used for profit, admin only)</span></label>
+                    <input type="number" id="pCost" class="form-control" placeholder="e.g. 180" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="pBadge"><i class="fas fa-award" style="color:#ff8a5c"></i> Badge on the shop</label>
+                    <select id="pBadge" class="form-control">
+                        <option value="">None</option>
+                        <option value="bestseller">Bestseller</option>
+                        <option value="new">New</option>
+                        <option value="limited">Limited stock</option>
+                        <option value="gift">Gift idea</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pAmazon"><i class="fab fa-amazon" style="color:#ffb400"></i> Amazon link <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(shows the Buy on Amazon button)</span></label>
+                    <input type="url" id="pAmazon" class="form-control" placeholder="https://www.amazon.in/dp/XXXXXXXXXX" maxlength="500" inputmode="url">
+                </div>
                 <div class="form-group">
                     <label for="pStock">Initial Stock (QTY)</label>
                     <input type="number" id="pStock" class="form-control" value="10" min="0" step="1" required>

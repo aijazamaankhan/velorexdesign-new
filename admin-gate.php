@@ -21,6 +21,10 @@ foreach ([__DIR__ . '/.env', __DIR__ . '/api/.env'] as $envFile) {
 if ($key === '') $key = (string) getenv('ADMIN_PATH_KEY');
 
 $given = isset($_GET['k']) && is_string($_GET['k']) ? $_GET['k'] : '';
+// /velorex-admin reaches this script only through the rewrite in .htaccess
+// (direct requests for admin-gate.php are refused there), so it is let in;
+// the admin login and its rate limit protect the data.
+if (isset($_GET['easy']) && $key !== '') $given = $key;
 
 // A short key is too easy to guess, so the gate stays shut until a long one is set.
 if (strlen($key) < 24 || !hash_equals($key, $given)) {

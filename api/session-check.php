@@ -2,7 +2,7 @@
 require_once 'db.php';
 session_start();
 
-if (!empty($_SESSION['admin_id'])) {
+if (admin_session_ok()) {
     sendResponse([
         'authenticated' => true,
         'admin' => [

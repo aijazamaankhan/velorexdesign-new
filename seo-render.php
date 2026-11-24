@@ -71,13 +71,6 @@ $productSchema = function ($row) use ($base) {
         'description' => mb_substr(trim((string) $row['description']), 0, 500),
         'category'    => velorex_category_name($row['category']),
         'brand'       => ['@type' => 'Brand', 'name' => 'Velorex Design'],
-        'offers'      => [
-            '@type'         => 'Offer',
-            'url'           => $base . velorex_product_path($row['id'], $row['name']),
-            'priceCurrency' => 'INR',
-            'price'         => number_format((float) $row['price'], 2, '.', ''),
-            'availability'  => intval($row['stock']) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-        ],
     ];
     if ($img !== '') $data['image'] = [$img];   // only a real photo, never a placeholder
     return $data;
@@ -93,18 +86,24 @@ $listing = function (array $rows) use ($e, $inr, $base) {
               . ($img !== '' ? '<a href="' . $e($path) . '"><img src="' . $e($img) . '" alt="' . $e($r['name']) . '" loading="lazy"></a>' : '')
               . '</div><div class="product-info"><div class="product-cat">' . $e(velorex_category_name($r['category'])) . '</div>'
               . '<h3 class="product-title"><a href="' . $e($path) . '">' . $e($r['name']) . '</a></h3>'
-              . '<div class="product-price">' . $e($inr($r['price'])) . '</div></div></div>';
+              . '</div></div>';
     }
     return $html . '</div>';
 };
 
 $fetchProducts = function ($where = '', $types = '', $params = []) use ($conn) {
     if (!$conn) return [];
-    $stmt = $conn->prepare('SELECT id, name, category, price, stock, image_url, images, description FROM products ' . $where . ' ORDER BY featured DESC, name ASC LIMIT 200');
-    if (!$stmt) return [];
-    if ($params) $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    // PHP 8 throws on a missing table; the page must still render (the app fills it in).
+    try {
+        $stmt = $conn->prepare('SELECT id, name, category, price, stock, image_url, images, description FROM products ' . $where . ' ORDER BY featured DESC, name ASC LIMIT 200');
+        if (!$stmt) return [];
+        if ($params) $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    } catch (Throwable $e) {
+        error_log('seo-render products query failed: ' . $e->getMessage());
+        return [];
+    }
 };
 
 $wrap = function ($inner) { return '<div class="view active"><section class="section"><div class="container">' . $inner . '</div></section></div>'; };
@@ -129,7 +128,7 @@ if ($route === 'product') {
         $inStock = intval($row['stock']) > 0;
         $desc = trim(preg_replace('/\s+/', ' ', (string) $row['description']));
         $seo['title'] = $row['name'] . ' | Velorex Design';
-        $lead = $row['name'] . ' for ' . $inr($row['price']) . ($inStock ? '' : ' (out of stock)') . '. ';
+        $lead = $row['name'] . ' by Velorex Design. ';
         $seo['description'] = mb_substr($lead . ($desc !== '' ? $desc : 'Handcrafted in India by Velorex Design.'), 0, 160);
         $img = velorex_product_image($row, $base);
         if ($img !== '') $seo['image'] = $img;
@@ -141,8 +140,7 @@ if ($route === 'product') {
             $crumbs([['Home', '/'], ['Catalog', '/products'], [$catName, '/category/' . rawurlencode($row['category'])], [$row['name'], null]])
             . '<div class="detail-grid"><div>' . ($img !== '' ? '<img src="' . $e($img) . '" alt="' . $e($row['name']) . '" style="width:100%; border-radius:16px;">' : '') . '</div>'
             . '<div><h1 class="section-title" style="text-align:left;">' . $e($row['name']) . '</h1>'
-            . '<p style="font-size:1.6rem; font-weight:700; color:var(--accent);">' . $e($inr($row['price'])) . '</p>'
-            . '<p>' . ($inStock ? 'In stock' : 'Out of stock') . ' · ' . $e($catName) . '</p>'
+            . '<p>' . $e($catName) . '</p>'
             . '<p style="color:var(--text-muted); line-height:1.7;">' . nl2br($e($row['description'])) . '</p></div></div>'
         );
     } else {
@@ -168,7 +166,7 @@ if ($route === 'product') {
         $content = $wrap('<h1 class="section-title">Category not found</h1><p><a href="/products">Browse all products</a>.</p>');
     } else {
         $seo['title'] = $name . ' | Velorex Design';
-        $seo['description'] = 'Shop handcrafted ' . $name . ' from Velorex Design. Made by hand in India, free shipping above ₹999.';
+        $seo['description'] = 'Shop handcrafted ' . $name . ' from Velorex Design. Made by hand in India, sold on Amazon.';
         // An empty shelf is not worth a place in search results until it is stocked.
         if (!$rows) $seo['robots'] = 'noindex, follow';
         if ($rows) {

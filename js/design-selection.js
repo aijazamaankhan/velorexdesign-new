@@ -62,6 +62,11 @@
     }
 
     function bootstrap(win) {
+        // Splash shows once per visit; later pages in the same tab skip it before paint.
+        try {
+            if (win.sessionStorage && win.sessionStorage.getItem('vx_splash')) win.document.documentElement.classList.add('splash-seen');
+            else if (win.sessionStorage) win.sessionStorage.setItem('vx_splash', '1');
+        } catch (_) { /* storage blocked: show the splash */ }
         const preview = getPreviewDesign(win.location ? win.location.search : '');
         const saved = ALTERNATE_DESIGN_ENABLED ? readSavedDesign(win.localStorage) : null;
         if (!ALTERNATE_DESIGN_ENABLED) win.document.documentElement.setAttribute('data-design-switch', 'off');

@@ -50,7 +50,7 @@ if (!function_exists('velorex_slugify')) {
     /** Title and description for the fixed pages. Keep in step with SEO_VIEWS in js/index.js. */
     function velorex_page_meta() {
         return [
-            'products' => ['Shop All Handcrafted Products | Velorex Design', 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Free shipping above ₹999.'],
+            'products' => ['Shop All Handcrafted Products | Velorex Design', 'Browse every Velorex Design product: wood serveware, MDF racks and shelves, resin art, handmade soap, candles and wellness pieces. Buy on Amazon.'],
             'wellness' => ['Velorex Wellness | Vijaysar Glass, Neem Comb & Acupressure', 'Traditional Ayurvedic wood products made by hand: Vijaysar wood glass, neem wood comb and acupressure tools. 100% natural, no paint or polish.'],
             'services' => ['Graphic Design Services | Velorex Design', 'Logo, branding, social media and print design from Velorex Design. Pick a package and message us on WhatsApp.'],
             'about'    => ['About Us | Velorex Design', 'Velorex Design is an Indian workshop making handcrafted wood items, resin art and wellness products.'],

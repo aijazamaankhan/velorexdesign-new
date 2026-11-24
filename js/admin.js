@@ -122,7 +122,11 @@ async function checkAuth() {
     if (res.ok && res.data && res.data.success) {
         localStorage.setItem('velorex_admin_logged', 'true');
         localStorage.setItem('velorex_admin_email', res.data.admin.email);
+        { const nameEl = document.getElementById('adminName'); if (nameEl) nameEl.textContent = res.data.admin.name || res.data.admin.email || 'Admin'; }
         showToast('Login successful', 'success');
+        if (res.data.weakPassword) {
+            setTimeout(() => showToast('Your password is easy to guess. Please change it in Settings (10+ characters).', 'error'), 1200);
+        }
         setTimeout(() => showApp(), 400);
         return;
     }
@@ -133,6 +137,8 @@ async function checkAuth() {
 async function checkSession() {
     const res = await apiCall('api/session-check.php');
     if (res.ok && res.data && res.data.authenticated) {
+        const nameEl = document.getElementById('adminName');
+        if (nameEl && res.data.admin) nameEl.textContent = res.data.admin.name || res.data.admin.email || 'Admin';
         localStorage.setItem('velorex_admin_logged', 'true');
         showApp();
     } else {
@@ -163,6 +169,8 @@ async function showApp() {
     loadCategories();
     loadSettings();
     render();
+    // Dashboard & P&L is the first screen after login.
+    switchTab('analytics', document.querySelector('.nav-link[data-tab="analytics"]'));
 }
 
 async function loadSettings() {
@@ -199,7 +207,10 @@ async function loadData() {
                     img: cover,
                     images: imagesArr.length ? imagesArr : (cover ? [cover] : []),
                     desc: p.description || p.desc || '',
-                    featured: p.featured === '1' || p.featured === 1 || p.featured === true
+                    featured: p.featured === '1' || p.featured === 1 || p.featured === true,
+                    amazonUrl: p.amazon_url || '',
+                    badge: p.badge || '',
+                    costPrice: p.cost_price != null ? parseFloat(p.cost_price) : null
                 };
             });
         }
@@ -213,7 +224,12 @@ async function loadData() {
                 items: o.items || [],
                 userName: o.customer_name || 'Guest',
                 userEmail: o.customer_email || '',
-                userPhone: o.customer_phone || '',
+                userPhone: o.order_phone || o.customer_phone || '',
+                orderEmail: o.order_email || o.customer_email || '',
+                subtotal: o.subtotal,
+                shipping: o.shipping,
+                couponCode: o.coupon_code || '',
+                discount: parseFloat(o.discount) || 0,
                 address: {
                     street: o.shipping_address || '',
                     city: o.shipping_city || '',
@@ -223,7 +239,7 @@ async function loadData() {
                 adminNote: o.admin_note || '',
                 statusHistory: o.status_history || [],
                 createdAt: o.created_at || null,
-                date: o.created_at ? new Date(o.created_at).toLocaleDateString() : ''
+                date: o.created_at ? new Date(String(o.created_at).replace(' ', 'T')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
             }));
         }
     } catch (error) {
@@ -334,8 +350,13 @@ async function saveProduct(e) {
         showToast('Product title is too long (max 200 chars)', 'error');
         return;
     }
-    if (!VALIDATORS.positiveNumber(price) || parseFloat(price) <= 0) {
-        showToast('Price must be a positive number', 'error');
+    if (price !== '' && (!VALIDATORS.positiveNumber(price) && parseFloat(price) !== 0)) {
+        showToast('Price must be a number (or leave it empty)', 'error');
+        return;
+    }
+    const amazonUrl = document.getElementById('pAmazon').value.trim();
+    if (amazonUrl && !/^https:\/\/([a-z0-9-]+\.)*(amazon\.in|amzn\.in|amzn\.to)\//i.test(amazonUrl)) {
+        showToast('Amazon link must start with https://www.amazon.in/ (or amzn.in)', 'error');
         return;
     }
     if (!VALIDATORS.positiveNumber(stock)) {
@@ -362,7 +383,10 @@ async function saveProduct(e) {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('category', category);
-    formData.append('price', price);
+    formData.append('price', price === '' ? '0' : price);
+    formData.append('amazon_url', amazonUrl);
+    formData.append('badge', document.getElementById('pBadge').value);
+    formData.append('cost_price', document.getElementById('pCost').value.trim());
     formData.append('stock', stock);
     formData.append('image_url', cover);
     formData.append('images', JSON.stringify(currentImages));
@@ -472,25 +496,28 @@ function deleteCategory(id) {
     showToast('Category removed', 'info');
 }
 
+const CATEGORY_IMAGES = {
+    wood: 'images/categories/wood.webp', rack: 'images/products/rack-2tier-14-1.webp', wellness: 'images/products/combo/category-wellness.webp',
+    resin: 'images/categories/resin.webp', soap: 'images/categories/soap.svg', candle: 'images/categories/candle.webp', raw_material: 'images/categories/raw.webp'
+};
+
 function renderCategories() {
     const list = document.getElementById('categoriesList');
     if (!list) return;
+    const count = document.getElementById('catCount');
+    if (count) count.textContent = categories.length + ' total';
     list.innerHTML = categories.map(c => {
-        const safeImg = safeUrl(c.image);
-        const thumb = safeImg
-            ? `<img src="${escapeAttr(safeImg)}" alt="" style="width:38px; height:38px; border-radius:8px; object-fit:cover; flex:none;">`
-            : `<div style="width:38px; height:38px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; color:var(--text-muted); flex:none;"><i class="${escapeAttr(c.icon || 'fas fa-tag')}"></i></div>`;
+        const img = safeUrl(c.image) || CATEGORY_IMAGES[c.id] || '';
+        const n = products.filter(p => p.cat === c.id).length;
         return `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:0.9rem 1.1rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.5rem;">
-            <div style="display:flex; align-items:center; gap:0.85rem;">
-                ${thumb}
-                <div>
-                    <span style="font-weight:600;">${escapeHtml(c.name)}</span>
-                    <span style="font-size:0.73rem; color:var(--text-muted); margin-left:0.6rem;">/ ${escapeHtml(c.id)}</span>
-                    ${c.isDefault ? '<span style="font-size:0.68rem; background:rgba(255,107,53,0.12); color:var(--secondary); padding:2px 8px; border-radius:10px; margin-left:0.5rem; font-weight:600;">Default</span>' : ''}
-                </div>
+        <div class="cat-card">
+            <div class="cat-card-img">${img ? `<img src="${escapeAttr(img)}" alt="" loading="lazy">` : `<i class="${escapeAttr(c.icon || 'fas fa-tag')}"></i>`}
+                <span class="cat-card-state ${n ? 'live' : 'soon'}">${n ? 'Live' : 'Coming soon'}</span></div>
+            <div class="cat-card-body">
+                <div class="cat-card-title"><i class="${escapeAttr(c.icon || 'fas fa-tag')}"></i> ${escapeHtml(c.name)}</div>
+                <div class="cat-card-meta"><span>/${escapeHtml(c.id)}</span><span>${n} product${n === 1 ? '' : 's'}</span>${c.isDefault ? '<span class="msg-pill done">Default</span>' : ''}</div>
             </div>
-            ${c.isDefault ? '' : `<button type="button" data-action="delete-category" data-id="${escapeAttr(c.id)}" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:0.82rem; padding:0.3rem 0.6rem;"><i class="fas fa-trash"></i></button>`}
+            ${c.isDefault ? '' : `<button type="button" class="cat-card-del" data-action="delete-category" data-id="${escapeAttr(c.id)}" title="Delete category"><i class="fas fa-trash"></i></button>`}
         </div>`;
     }).join('');
 }
@@ -554,9 +581,19 @@ function renderFeatured() {
 
 function render() {
     document.getElementById('statProducts').textContent = products.length;
-    document.getElementById('statOrders').textContent = allOrders.filter(o => o.status === 'Pending').length;
-    const revenue = allOrders.reduce((sum, o) => sum + o.total, 0);
-    document.getElementById('statRevenue').textContent = `₹${revenue.toLocaleString()}`;
+    const setText = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+    const featuredCount = products.filter(p => p.featured).length;
+    const onAmazon = products.filter(p => p.amazonUrl).length;
+    const low = products.filter(p => (p.stock || 0) <= 3);
+    const out = low.filter(p => (p.stock || 0) <= 0).length;
+    const pending = allOrders.filter(o => o.status === 'Pending').length;
+    setText('statProductsNote', featuredCount + ' featured on the home page');
+    setText('statAmazon', onAmazon);
+    setText('statAmazonNote', products.length - onAmazon ? (products.length - onAmazon) + ' still need an Amazon link' : 'Every product has a link');
+    setText('statLowStock', low.length);
+    setText('statLowStockNote', out ? out + ' out of stock' : 'Nothing out of stock');
+    setText('statOrders', pending);
+    setText('statOrdersNote', allOrders.length + ' in total');
 
     const invQuery = document.getElementById('inventorySearch').value.toLowerCase();
     const catFilter = document.getElementById('categoryFilter').value;
@@ -575,11 +612,11 @@ function render() {
                 <td>
                     <div class="prod-cell">
                         <img src="${img}" class="prod-img" alt="">
-                        <div style="font-weight: 600;">${escapeHtml(p.name)}</div>
+                        <div><div style="font-weight: 600;">${escapeHtml(p.name)}</div>${p.amazonUrl ? '<a class="badge-amazon" href="' + escapeAttr(p.amazonUrl) + '" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> On Amazon</a>' : '<span class="badge-muted">No Amazon link</span>'}</div>
                     </div>
                 </td>
                 <td><span style="color: var(--text-muted); text-transform: capitalize;">${escapeHtml((p.cat || '').replace('_', ' '))}</span></td>
-                <td>₹${p.price.toLocaleString()}</td>
+                <td>${p.price ? '₹' + p.price.toLocaleString() : '<span style="color:var(--text-muted)">—</span>'}</td>
                 <td>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <input type="number" min="0" value="${escapeAttr(p.stock || 0)}" data-action="update-stock" data-id="${escapeAttr(p.id)}" style="width: 60px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 4px; border-radius: 4px;">
@@ -599,23 +636,32 @@ function render() {
 }
 
 function switchTab(tab, el) {
+    // The sidebar logo also opens a tab; highlight the matching menu link instead.
+    if (el && !el.classList.contains('nav-link')) el = document.querySelector('.nav-link[data-tab="' + tab + '"]');
     document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
     document.getElementById(tab + '-tab').style.display = 'block';
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
-    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Sales Insights', settings: 'Store Settings' };
+    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Dashboard & Profit', settings: 'Store Settings', coupons: 'Coupons and Offers', chat: 'Chat & Messages', loyalty: 'Loyalty Points' };
     document.getElementById('tabTitle').textContent = titles[tab] || tab;
     if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
     if (tab === 'customers') loadCustomers();
     if (tab === 'featured') { loadData(); renderFeatured(); }
     if (tab === 'categories') renderCategories();
+    // The summary cards belong to the dashboard (Inventory) only.
+    const statsGrid = document.querySelector('#adminApp > .stats-grid');
+    if (statsGrid) statsGrid.style.display = (tab === 'inventory' || tab === 'analytics') ? '' : 'none';
+    if (tab === 'coupons' && typeof loadCoupons === 'function') loadCoupons();
+    if (tab === 'analytics' && typeof loadAnalytics === 'function') loadAnalytics();
+    if (tab === 'chat' && typeof loadMessages === 'function') loadMessages();
+    if (tab === 'loyalty' && typeof loadLoyalty === 'function') loadLoyalty();
 }
 
 function showModal(edit = false) {
     if (!edit) {
         document.getElementById('productForm').reset();
         document.getElementById('editingId').value = '';
-        document.getElementById('modalTitle').textContent = 'Add Premium Item';
+        document.getElementById('modalTitle').textContent = 'Add product';
         document.getElementById('submitBtn').textContent = 'Create Listing';
         currentImages = [];
         renderImagesGallery();
@@ -879,14 +925,18 @@ function renderCustomers() {
             <td>${c.phone ? escapeHtml(c.phone) : '<span style="color:var(--text-muted);">—</span>'}</td>
             <td>${c.has_account
                 ? '<span style="font-size:0.72rem; background:rgba(0,212,170,0.12); color:var(--success); padding:2px 8px; border-radius:10px; font-weight:600;">Registered</span>'
-                : '<span style="font-size:0.72rem; background:rgba(152,144,176,0.12); color:var(--text-muted); padding:2px 8px; border-radius:10px; font-weight:600;">Guest</span>'}</td>
+                : '<span style="font-size:0.72rem; background:rgba(152,144,176,0.12); color:var(--text-muted); padding:2px 8px; border-radius:10px; font-weight:600;">Guest</span>'}${c.is_blocked ? ' <span class="cust-blocked">Blocked</span>' : ''}</td>
             <td style="text-align:right;">${escapeHtml(String(c.orders_count || 0))}</td>
             <td style="text-align:right;">₹${Number(c.total_spent || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
             <td style="white-space:nowrap;">${escapeHtml(formatDate(c.created_at))}</td>
             <td style="text-align:center; white-space:nowrap;">
-                <button type="button" class="btn btn-secondary" data-action="open-customer" data-id="${escapeAttr(c.id)}" style="padding:0.35rem 0.7rem; font-size:0.78rem;">
-                    <i class="fas fa-eye"></i> View / Edit
-                </button>
+                <div class="cust-actions">
+                <button type="button" class="btn btn-secondary" data-action="open-customer" data-id="${escapeAttr(c.id)}" title="View and edit"><i class="fas fa-pen"></i> Edit</button>
+                ${c.phone && String(c.phone).replace(/\D/g, '').length >= 10 ? `<a class="btn btn-secondary cust-wa" href="https://wa.me/${escapeAttr((String(c.phone).replace(/\D/g, '').length === 10 ? '91' : '') + String(c.phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>` : ''}
+                ${c.email ? `<a class="btn btn-secondary" href="mailto:${escapeAttr(c.email)}" title="Email"><i class="fas fa-envelope"></i></a>` : ''}
+                ${c.has_account ? `<button type="button" class="btn btn-secondary ${c.is_blocked ? 'cust-unblock' : 'cust-block'}" data-action="toggle-block" data-id="${escapeAttr(c.id)}" data-blocked="${c.is_blocked ? '1' : '0'}" title="${c.is_blocked ? 'Allow sign-in again' : 'Stop this customer signing in'}"><i class="fas ${c.is_blocked ? 'fa-unlock' : 'fa-ban'}"></i></button>` : ''}
+                <button type="button" class="btn btn-secondary cust-del" data-action="quick-delete-customer" data-id="${escapeAttr(c.id)}" title="Delete"><i class="fas fa-trash"></i></button>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -1037,7 +1087,10 @@ function editProduct(id) {
     document.getElementById('editingId').value = p.id;
     document.getElementById('pName').value = p.name;
     document.getElementById('pCat').value = p.cat;
-    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pPrice').value = p.price || '';
+    document.getElementById('pAmazon').value = p.amazonUrl || '';
+    document.getElementById('pBadge').value = p.badge || '';
+    document.getElementById('pCost').value = p.costPrice != null ? p.costPrice : '';
     document.getElementById('pStock').value = p.stock || 0;
     document.getElementById('pImg').value = p.img;
     document.getElementById('pDesc').value = p.desc || '';
@@ -1160,7 +1213,7 @@ async function offlinePreviewFallback(files, reasonToast) {
 }
 
 async function uploadProductImages(event) {
-    const files = Array.from(event.target.files || []);
+    let files = Array.from(event.target.files || []);
     event.target.value = '';
     if (files.length === 0) return;
 
@@ -1173,6 +1226,12 @@ async function uploadProductImages(event) {
     if (wrongType) {
         showToast(`"${wrongType.name}" is not an image`, 'error');
         return;
+    }
+
+    // Frame each image first (auto-crop pre-applied); only the result is uploaded.
+    if (typeof ImageCropper !== 'undefined') {
+        files = await ImageCropper.runBatch(files);
+        if (files.length === 0) { showToast('No images uploaded', 'info'); return; }
     }
 
     const formData = new FormData();
@@ -1265,7 +1324,7 @@ function renderOrders() {
     }
 
     oList.innerHTML = filtered.map(o => {
-        const itemsSummary = (o.items || []).slice(0, 2).map(i => `${parseInt(i.qty, 10) || 0}× ${escapeHtml(i.name)}`).join(', ') + ((o.items || []).length > 2 ? ` +${o.items.length - 2} more` : '');
+        const itemsSummary = (o.items || []).slice(0, 2).map(i => `${parseInt(i.qty ?? i.quantity, 10) || 0}× ${escapeHtml(i.name)}`).join(', ') + ((o.items || []).length > 2 ? ` +${o.items.length - 2} more` : '');
         const isExpanded = expandedOrderId === o.id.toString();
         const expandHtml = isExpanded ? buildExpandRow(o) : '';
         const statusKey = (o.status || 'pending').toLowerCase();
@@ -1308,8 +1367,8 @@ function renderOrders() {
 function buildExpandRow(o) {
     const items = (o.items || []).map(i =>
         `<div style="display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem;">
-            <span>${parseInt(i.qty, 10) || 0}× ${escapeHtml(i.name)}</span>
-            <span style="color:var(--accent); font-weight:600;">₹${((parseFloat(i.price) || 0) * (parseInt(i.qty, 10) || 0)).toLocaleString()}</span>
+            <span>${parseInt(i.qty ?? i.quantity, 10) || 0}× ${escapeHtml(i.name)}</span>
+            <span style="color:var(--accent); font-weight:600;">₹${((parseFloat(i.price ?? i.unit_price) || 0) * (parseInt(i.qty ?? i.quantity, 10) || 0)).toLocaleString()}</span>
         </div>`
     ).join('');
 
@@ -1354,6 +1413,10 @@ function buildExpandRow(o) {
                             <div class="expand-section-title" style="margin-top:1rem;"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Admin Note (visible to customer)</div>
                             <textarea id="note-${escapeAttr(o.id)}" class="form-control" style="min-height:70px; font-size:0.82rem; resize:vertical;" placeholder="e.g. Dispatched via DTDC, expect delivery in 3-5 days">${escapeHtml(o.adminNote || '')}</textarea>
                             <button type="button" class="btn btn-secondary" data-action="save-note" data-id="${escapeAttr(o.id)}" style="margin-top:0.5rem; font-size:0.8rem; padding:0.4rem 1rem;"><i class="fas fa-save"></i> Save Note</button>
+                            <div class="order-print-actions">
+                                <button type="button" class="btn btn-secondary" data-action="print-bill" data-id="${escapeAttr(o.id)}"><i class="fas fa-file-invoice"></i> Print bill</button>
+                                <button type="button" class="btn btn-secondary" data-action="print-label" data-id="${escapeAttr(o.id)}"><i class="fas fa-tag"></i> Address label</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1604,4 +1667,35 @@ function wireUpDelegatedEvents() {
 document.addEventListener('DOMContentLoaded', () => {
     wireUpDelegatedEvents();
     checkSession();
+});
+
+
+/* ───────── Customer quick actions: block / unblock, delete, CSV ───────── */
+Object.assign(ACTION_HANDLERS, {
+    'toggle-block': async (e, el) => {
+        const block = el.dataset.blocked !== '1';
+        if (block && !confirm('Block this customer? They will not be able to sign in. Their orders are kept.')) return;
+        const res = await apiCall('api/admin-customer-block.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: el.dataset.id, blocked: block }) });
+        if (!res.ok) { showToast(explainApiFailure(res, 'Could not update'), 'error'); return; }
+        showToast(block ? 'Customer blocked' : 'Customer can sign in again', 'success');
+        loadCustomers();
+    },
+    'quick-delete-customer': async (e, el) => {
+        const c = customers.find(x => String(x.id) === String(el.dataset.id));
+        if (!confirm(`Delete ${c ? c.name : 'this customer'}? Their account and addresses are removed. Orders stay on record.`)) return;
+        const res = await apiCall('api/admin-delete-customer.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: el.dataset.id }) });
+        if (!res.ok) { showToast(explainApiFailure(res, 'Could not delete'), 'error'); return; }
+        showToast('Customer deleted', 'success');
+        loadCustomers();
+    },
+    'export-customers': () => {
+        const rows = [['ID', 'Name', 'Email', 'Phone', 'Account', 'Blocked', 'Orders', 'Total spent', 'Joined']].concat(
+            customers.map(c => [c.id, c.name, c.email || '', c.phone || '', c.has_account ? 'Registered' : 'Guest', c.is_blocked ? 'Yes' : 'No', c.orders_count || 0, c.total_spent || 0, c.created_at || '']));
+        const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'velorex-customers.csv';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
 });

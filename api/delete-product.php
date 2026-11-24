@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendResponse(['error' => 'Invalid request method'], 405);
 }
 
-if (empty($_SESSION['admin_id'])) {
+if (!admin_session_ok()) {
     sendResponse(['error' => 'Unauthorized'], 401);
 }
 
