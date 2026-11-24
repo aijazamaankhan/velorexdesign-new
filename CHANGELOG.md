@@ -2,6 +2,17 @@
 
 This file records repository development. Entries under **Unreleased** describe the current local working tree and are not proof of production deployment.
 
+## product-images-2026-11-25, 25 November 2026 (deployed)
+
+- New product photos: brass-inlay tray (new shoot, side-carving and corner close-ups, 3D gift box), 3D box images for the Floral, Handle and Combo neem combs, new 3D box mockups for the Vijaysar glass.
+- Living Craft home: the mango tray picture now opens the Mango-Shaped Sheesham Wood Tray page.
+
+## mobile-polish branch, 24 November 2026 (deployed later the same day)
+
+- New products: Hand-Carved Wooden Tray with Brass Inlay (with detail page), Premium Floral / Handle Neem Combs and the Neem Comb Combo.
+- Splash screen stays 2.5–4 seconds. Product photos open in a full-screen viewer with zoom, previous / next and close.
+- "Buy online coming soon" note on product pages and a band under the home banner.
+
 ## mobile-polish branch, 24 November 2026 (live)
 
 ### Later the same day
