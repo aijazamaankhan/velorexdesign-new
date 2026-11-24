@@ -177,6 +177,9 @@ Please share the price, payment and delivery details.`;
 
 /* Amazon listings, matched by product name so database rows pick them up too. */
 const AMAZON_LINKS = [
+    // Premium combs and the carved tray are not on Amazon yet: stop here so they
+    // don't borrow the regular comb / wellness kit links (empty url = no link).
+    { match: /premium.*neem|hand-carved wooden tray/i, url: '' },
     { match: /combo/i, url: 'https://www.amazon.in/dp/B0H1KJ7Z8F' },
     { match: /vijaysar/i, url: 'https://www.amazon.in/dp/B0H3QK8K7S' },
     { match: /neem.*comb/i, url: 'https://www.amazon.in/dp/B0H8NDDTVH' },
@@ -432,6 +435,45 @@ const STATIC_WELLNESS_PRODUCTS = [
         stock: 50,
         featured: false,
         extra: 'combo'
+    },
+    {
+        id: 'w-neem-comb-floral',
+        name: 'Premium Floral Neem Comb',
+        tagline: 'Natural neem wood with a hand-finished flower engraving, packed in a premium gift box.',
+        price: 299,
+        img: 'images/products/comb-floral/hero.webp',
+        images: ['images/products/comb-floral/hero.webp', 'images/products/comb-floral/cutout.webp', 'images/products/comb-floral/detail.webp', 'images/products/comb-floral/size.webp'],
+        cat: 'wellness',
+        desc: 'From the Velorex Premium Collection. A neem wood comb with a delicate flower sprig engraved on it, finished by hand. Wide, smooth teeth glide through hair, and the wood does not build up static the way plastic does, so there is less frizz. Gentle on hair and scalp, plastic-free, and packed in a premium gift box. Size: approx. 16.5 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing, so each piece is one of a kind.',
+        stock: 50,
+        featured: false,
+        extra: 'neem'
+    },
+    {
+        id: 'w-neem-comb-handle',
+        name: 'Premium Handle Neem Comb',
+        tagline: 'A long, rounded easy-grip handle in natural neem wood, finished by hand.',
+        price: 299,
+        img: 'images/products/comb-handle/hero.webp',
+        images: ['images/products/comb-handle/hero.webp', 'images/products/comb-handle/cutout.webp', 'images/products/comb-handle/detail.webp', 'images/products/comb-handle/size.webp'],
+        cat: 'wellness',
+        desc: 'From the Velorex Premium Collection. A long, rounded handle that sits comfortably in your hand, with smooth, evenly spaced teeth for slow, gentle combing. Natural neem wood, anti-static so there is less frizz, gentle on the scalp and plastic-free. Comes in a premium gift box. Size: approx. 18.2 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing.',
+        stock: 50,
+        featured: false,
+        extra: 'neem'
+    },
+    {
+        id: 'w-neem-comb-combo',
+        name: 'Premium Neem Comb Combo (Handle + Regular)',
+        tagline: 'Two neem wood combs in one premium gift box: the Handle Comb for home, the Regular Comb for your bag.',
+        price: 329,
+        img: 'images/products/comb-combo/main.webp',
+        images: ['images/products/comb-combo/main.webp', 'images/products/comb-combo/gift-box.webp', 'images/products/comb-combo/detail.webp', 'images/products/comb-combo/sizes.webp', 'images/products/comb-combo/box.webp'],
+        cat: 'wellness',
+        desc: 'A set of two natural neem wood combs. The Handle Comb (approx. 18.2 × 5.1 cm) has a long, rounded handle for everyday combing at home; the compact Regular Comb (approx. 16 × 5.7 cm) fits in a bag, desk drawer or travel kit. Both are shaped and finished by hand in India, with smooth rounded teeth that glide through hair without pulling. How to use: comb slowly from scalp to ends on dry or slightly damp hair, wipe with a dry cloth after use, do not soak in water, and rub in a drop of hair oil now and then to nourish the wood. In the box: 1 Handle Comb, 1 Regular Comb, premium gift box, care leaflet.',
+        stock: 50,
+        featured: false,
+        extra: 'neem'
     }
 ];
 
@@ -465,6 +507,29 @@ const STATIC_CATALOG_PRODUCTS = [
         stock: 25,
         featured: false,
         extra: 'mango-tray'
+    },
+    {
+        id: 'wd-carved-tray',
+        name: 'Hand-Carved Wooden Tray with Brass Inlay — 12" × 8"',
+        tagline: 'The Heritage Collection: a hand-carved floral border around a brass-inlaid centre, with cut-out handles.',
+        price: 899,
+        img: 'images/products/tray/front.webp',
+        images: [
+            'images/products/tray/front.webp',
+            'images/products/tray/features.webp',
+            'images/products/tray/detail-inlay.webp',
+            'images/products/tray/detail-flower.webp',
+            'images/products/tray/detail-border.webp',
+            'images/products/tray/back.webp',
+            'images/products/tray/front-back.webp',
+            'images/products/tray/size-guide.webp',
+            'images/products/tray/front-dark.webp'
+        ],
+        cat: 'wood',
+        desc: 'A solid wood serving tray from the Velorex Heritage Collection. The border of flowers and vines is cut by hand, and the centre carries a brass inlay of petals and leaves set by hand into the grain. Cut-out handles on both ends give an easy, steady grip. Size: 12 × 8 inches (30.5 × 20.3 cm), 4.5 cm high. Use it for tea and snacks, as a dressing-table or puja tray, or as a gift. Ships in a printed gift box with a thank-you card and care leaflet. Wipe with a dry cloth; do not soak. Natural wood grain and tone vary from piece to piece.',
+        stock: 20,
+        featured: true,
+        extra: 'carved-tray'
     },
     {
         id: 'rk-4tier-24',
@@ -694,6 +759,44 @@ const PRODUCT_DETAILS = {
             { icon: 'fas fa-gift', title: 'Gifting Piece', text: 'A ready housewarming, wedding or festival gift that reads as craft rather than mass production.' }
         ],
         disclaimer: 'Natural wood: grain, tone and carving detail vary slightly from piece to piece. Not dishwasher safe — hand wipe only, and avoid soaking or prolonged contact with water.'
+    },
+
+    'carved-tray': {
+        badge: 'Heritage Collection · Hand-Carved · Brass Inlay',
+        icon: 'fas fa-crown',
+        introHeading: 'Carved by Hand, Inlaid with Brass',
+        introText: 'Part of the Velorex <strong>Heritage Collection</strong>. Each tray starts as a solid wood frame with deep walls and two cut-out handles. A craftsman then carves a border of flowers and vines around the base by hand, and sets thin brass wire and brass petals and leaves into the centre panel one piece at a time. It is the same inlay craft found in old Indian chests and jewellery boxes, sized for everyday use: tea, snacks, a dressing table or the puja shelf.',
+        points: [
+            'Hand-carved floral and vine border around the base',
+            'Brass inlay of petals, leaves and a central flower, set by hand',
+            'Cut-out handles on both ends for an easy, steady grip',
+            'Arrives in a printed gift box with a thank-you card and care leaflet'
+        ],
+        specs: [
+            { label: 'Size', value: '12 × 8 inches (30.5 × 20.3 cm)' },
+            { label: 'Height', value: '4.5 cm, deep raised walls' },
+            { label: 'Material', value: 'Solid wood with brass inlay' },
+            { label: 'Work', value: 'Hand-carved border, hand-set brass inlay' },
+            { label: 'Handles', value: '2 cut-out handles' },
+            { label: 'Finish', value: 'Natural wood, hand-polished' },
+            { label: 'Packaging', value: 'Gift box (green with gold foil), tissue wrap, thank-you card, care leaflet' },
+            { label: 'Made in', value: 'India, by Velorex Design' },
+            { label: 'Care', value: 'Wipe with a soft dry cloth; do not soak or wash' }
+        ],
+        stepsHeading: 'The Craft Up Close',
+        steps: [
+            { icon: 'fas fa-leaf', img: 'images/products/tray/detail-border.webp', title: 'Carved Border', text: 'Flowers and vines are <strong>cut by hand</strong> into the base, so every curve is slightly different from the next tray.' },
+            { icon: 'fas fa-gem', img: 'images/products/tray/detail-flower.webp', title: 'Brass Flower', text: 'The centre flower and leaves are <strong>brass pieces set into the wood</strong> and polished flush with the surface.' },
+            { icon: 'fas fa-pen-nib', img: 'images/products/tray/detail-inlay.webp', title: 'Fine Brass Lines', text: 'Thin brass wire traces the <strong>vine outline</strong> between the petals, catching the light as you turn the tray.' }
+        ],
+        benefitsHeading: 'Where It Fits',
+        benefits: [
+            { icon: 'fas fa-mug-hot', title: 'Tea & Serving', text: 'Carry cups, a kettle or a plate of snacks; the deep walls keep things from sliding off.' },
+            { icon: 'fas fa-spa', title: 'Puja & Dressing Table', text: 'Holds a diya, incense and flowers, or perfume, jewellery and keys in one tidy place.' },
+            { icon: 'fas fa-couch', title: 'Home Décor', text: 'Lay it on a coffee table or ottoman with candles and a small plant as a centrepiece.' },
+            { icon: 'fas fa-gift', title: 'Ready to Gift', text: 'Packed in a premium box for housewarmings, weddings, Diwali, Eid and anniversaries.' }
+        ],
+        disclaimer: 'Handmade from natural wood: grain, tone and carving detail vary from piece to piece, and small marks from hand tools are part of the craft. Not food-safe for wet or oily food placed directly on the wood; use a plate or napkin. Not dishwasher safe. Wipe dry, keep away from standing water and direct heat, and rub in a drop of wood or coconut oil every few months to keep the finish rich. Brass may darken over time; a soft dry cloth brings back the shine.'
     },
 
     'rack-4tier': {
