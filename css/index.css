@@ -4080,6 +4080,29 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
 .pd-soon i { color: #ffb347; margin-top: 3px; }
 .pd-soon strong { color: #ffb347; }
 
+/* "Buy online coming soon" band, directly under the home banner */
+.soon-band {
+  position: relative; z-index: 2;
+  background: linear-gradient(90deg, rgba(255,107,53,.16), rgba(255,179,71,.12) 50%, rgba(255,107,53,.16));
+  border-top: 1px solid rgba(255,179,71,.45); border-bottom: 1px solid rgba(255,179,71,.25);
+}
+.soon-band-inner { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px 16px; text-align: left; }
+.soon-band-icon {
+  flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  background: #ff6b35; color: #fff; font-size: .95rem;
+}
+.soon-band-text { margin: 0; font-size: .98rem; line-height: 1.45; color: var(--text-primary, #f0eaf8); }
+.soon-band-text strong { color: #ffb347; }
+.soon-band-note {
+  flex: none; font-size: .78rem; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid rgba(255,179,71,.45); color: #ffb347; white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .soon-band-inner { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
+  .soon-band-text { flex: 1 1 0; min-width: 0; font-size: .9rem; }
+  .soon-band-note { flex-basis: 100%; text-align: center; white-space: normal; }
+}
+
 /* ───────────── Product image viewer (lightbox) ───────────── */
 #detailMainImage { cursor: zoom-in; }
 .vx-lb-lock, .vx-lb-lock body { overflow: hidden; }
