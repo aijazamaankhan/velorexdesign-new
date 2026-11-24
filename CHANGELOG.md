@@ -6,6 +6,9 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- Chat assistant phase 2: order tracking, Leave a message, admin Chat & Messages tab (inbox with unread badge, answer editor, what people ask). Floating WhatsApp button brought back on the right.
+- Admin redesign of Categories (image cards with live/coming-soon state and product counts, sticky add form) and Settings (Store details and Admin account side by side).
+
 - Chat assistant (phase 1): chat bubble on every page with quick replies, product browsing and search, approved answers that match the policy pages, Hinglish keywords, safe wording for health questions, and WhatsApp handoff with the conversation pre-filled. Replaces the floating WhatsApp button.
 - Hotfix: a bulk edit made the new admin session check call itself, which broke the product list and admin for a few minutes after the analytics deploy and filled `api/error.log` (about 27 MB). Fixed and redeployed.
 

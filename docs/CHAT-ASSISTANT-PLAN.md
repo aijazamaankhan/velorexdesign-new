@@ -4,7 +4,12 @@ Status: **phase 1 built and live** (24 November 2026), in `js/chat.js`.
 
 Phase 1 includes the chat bubble (replaces the floating WhatsApp button), greeting, quick-reply buttons, product browsing by collection, product search, approved answers (how to buy, price, shipping, returns, Vijaysar use and care, health questions, materials, bulk/gift orders, contact, order status), English and Hinglish keywords, and WhatsApp handoff with the last messages pre-filled. Answers match the Shipping and Returns pages and the Vijaysar product page word for word in substance; update `ANSWERS` in `js/chat.js` if a policy changes.
 
-Phase 2 (not built yet): order tracking from the site's own orders, the "Leave a message" inbox, the admin reply editor and question stats.
+**Phase 2 built** (24 November 2026):
+
+- Track my order: order number + the email or phone used; `api/chat-order-status.php` answers only when both match and gives the same reply for "no such order" and "wrong contact". Rate limited (10 per 10 minutes per IP).
+- Leave a message: name, phone or email, message, plus the recent chat; `api/chat-message.php` (honeypot, 5 per hour per IP), stored in `chat_messages`.
+- Admin → Chat & Messages: Inbox (Reply on WhatsApp / email, Mark done, unread badge in the menu), Chat answers editor (overrides stored in `chat_replies`, served by `api/chat-replies.php`, cached 5 minutes; only b, i, br, lists and safe links are kept), What people ask (topics for 30 days and unanswered questions from `chat_events`; email addresses and phone numbers are blanked before saving).
+- The floating WhatsApp button stays on the right; the chat bubble is on the left.
 
 ## Goal
 

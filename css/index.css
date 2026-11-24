@@ -3969,3 +3969,11 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
   .wa-float { left: auto; right: 14px; bottom: calc(78px + env(safe-area-inset-bottom)); }
   .back-to-top { bottom: calc(142px + env(safe-area-inset-bottom)) !important; right: 18px !important; }
 }
+
+.vx-form { display: flex; flex-direction: column; gap: .5rem; margin-top: .2rem; min-width: 230px; }
+.vx-form label { display: flex; flex-direction: column; gap: .25rem; font-size: .78rem; font-weight: 600; color: var(--text-muted); }
+.vx-form input, .vx-form textarea { font: inherit; font-size: .88rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: .5rem .65rem; resize: vertical; }
+.vx-form input:focus, .vx-form textarea:focus { outline: none; border-color: var(--secondary); }
+.vx-submit { align-self: flex-start; border: 0; cursor: pointer; background: var(--orange-gradient); color: #fff; padding: .45rem 1rem; font-size: .82rem; }
+.vx-submit:disabled { opacity: .6; cursor: default; }
+.vx-hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }

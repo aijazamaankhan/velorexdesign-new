@@ -494,25 +494,28 @@ function deleteCategory(id) {
     showToast('Category removed', 'info');
 }
 
+const CATEGORY_IMAGES = {
+    wood: 'images/categories/wood.webp', rack: 'images/products/rack-2tier-14-1.webp', wellness: 'images/products/combo/category-wellness.webp',
+    resin: 'images/categories/resin.webp', soap: 'images/categories/soap.svg', candle: 'images/categories/candle.webp', raw_material: 'images/categories/raw.webp'
+};
+
 function renderCategories() {
     const list = document.getElementById('categoriesList');
     if (!list) return;
+    const count = document.getElementById('catCount');
+    if (count) count.textContent = categories.length + ' total';
     list.innerHTML = categories.map(c => {
-        const safeImg = safeUrl(c.image);
-        const thumb = safeImg
-            ? `<img src="${escapeAttr(safeImg)}" alt="" style="width:38px; height:38px; border-radius:8px; object-fit:cover; flex:none;">`
-            : `<div style="width:38px; height:38px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; color:var(--text-muted); flex:none;"><i class="${escapeAttr(c.icon || 'fas fa-tag')}"></i></div>`;
+        const img = safeUrl(c.image) || CATEGORY_IMAGES[c.id] || '';
+        const n = products.filter(p => p.cat === c.id).length;
         return `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:0.9rem 1.1rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.5rem;">
-            <div style="display:flex; align-items:center; gap:0.85rem;">
-                ${thumb}
-                <div>
-                    <span style="font-weight:600;">${escapeHtml(c.name)}</span>
-                    <span style="font-size:0.73rem; color:var(--text-muted); margin-left:0.6rem;">/ ${escapeHtml(c.id)}</span>
-                    ${c.isDefault ? '<span style="font-size:0.68rem; background:rgba(255,107,53,0.12); color:var(--secondary); padding:2px 8px; border-radius:10px; margin-left:0.5rem; font-weight:600;">Default</span>' : ''}
-                </div>
+        <div class="cat-card">
+            <div class="cat-card-img">${img ? `<img src="${escapeAttr(img)}" alt="" loading="lazy">` : `<i class="${escapeAttr(c.icon || 'fas fa-tag')}"></i>`}
+                <span class="cat-card-state ${n ? 'live' : 'soon'}">${n ? 'Live' : 'Coming soon'}</span></div>
+            <div class="cat-card-body">
+                <div class="cat-card-title"><i class="${escapeAttr(c.icon || 'fas fa-tag')}"></i> ${escapeHtml(c.name)}</div>
+                <div class="cat-card-meta"><span>/${escapeHtml(c.id)}</span><span>${n} product${n === 1 ? '' : 's'}</span>${c.isDefault ? '<span class="msg-pill done">Default</span>' : ''}</div>
             </div>
-            ${c.isDefault ? '' : `<button type="button" data-action="delete-category" data-id="${escapeAttr(c.id)}" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:0.82rem; padding:0.3rem 0.6rem;"><i class="fas fa-trash"></i></button>`}
+            ${c.isDefault ? '' : `<button type="button" class="cat-card-del" data-action="delete-category" data-id="${escapeAttr(c.id)}" title="Delete category"><i class="fas fa-trash"></i></button>`}
         </div>`;
     }).join('');
 }
@@ -637,7 +640,7 @@ function switchTab(tab, el) {
     document.getElementById(tab + '-tab').style.display = 'block';
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
-    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Analytics & Profit', settings: 'Store Settings', coupons: 'Coupons and Offers', loyalty: 'Loyalty Points' };
+    const titles = { inventory: 'Inventory Management', orders: 'Orders Tracking', customers: 'Customer Management', featured: 'Featured Creations', categories: 'Category Management', analytics: 'Analytics & Profit', settings: 'Store Settings', coupons: 'Coupons and Offers', chat: 'Chat & Messages', loyalty: 'Loyalty Points' };
     document.getElementById('tabTitle').textContent = titles[tab] || tab;
     if (tab === 'orders') { currentOrderFilter = 'all'; document.querySelectorAll('.order-chip').forEach((c,i) => c.classList.toggle('active', i===0)); renderOrders(); }
     if (tab === 'customers') loadCustomers();
@@ -648,6 +651,7 @@ function switchTab(tab, el) {
     if (statsGrid) statsGrid.style.display = tab === 'inventory' ? '' : 'none';
     if (tab === 'coupons' && typeof loadCoupons === 'function') loadCoupons();
     if (tab === 'analytics' && typeof loadAnalytics === 'function') loadAnalytics();
+    if (tab === 'chat' && typeof loadMessages === 'function') loadMessages();
     if (tab === 'loyalty' && typeof loadLoyalty === 'function') loadLoyalty();
 }
 

@@ -734,3 +734,63 @@ th { position: static; }
 .an-controls { flex: 0 1 auto; align-items: center; }
 .an-controls select.form-control { width: auto; min-width: 170px; min-height: 42px; }
 #anTop td:first-child { min-width: 160px; }
+
+/* ───────────── Chat & Messages ───────────── */
+.nav-badge { margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #ff5a1f; color: #fff; font-size: .72rem; display: inline-grid; place-items: center; }
+.chat-tabs { display: flex; gap: .4rem; flex-wrap: wrap; }
+.chat-tab { border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text); font: inherit; font-weight: 600; font-size: .88rem; padding: .55rem .95rem; border-radius: 999px; cursor: pointer; display: inline-flex; gap: .45rem; align-items: center; }
+.chat-tab.is-active { background: linear-gradient(135deg,#ff6b35,#ff3a00); border-color: transparent; color: #fff; }
+.msg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
+.msg-card { border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.1rem; background: var(--card); display: flex; flex-direction: column; gap: .7rem; }
+.msg-card.is-new { border-color: rgba(255,107,53,.55); box-shadow: 0 0 0 3px rgba(255,107,53,.08); }
+.msg-card header { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; }
+.msg-card header strong { display: block; font-size: 1rem; }
+.msg-card header span { font-size: .78rem; color: var(--text-muted); }
+.msg-pill { font-size: .7rem; font-weight: 700; padding: .18rem .6rem; border-radius: 999px; background: rgba(255,107,53,.15); color: #ff8a5c; white-space: nowrap; }
+.msg-pill.done { background: rgba(148,163,184,.15); color: var(--text-muted); }
+.msg-body { white-space: pre-wrap; line-height: 1.55; }
+.msg-trans summary { cursor: pointer; font-size: .8rem; color: var(--text-muted); }
+.msg-trans pre { white-space: pre-wrap; font: inherit; font-size: .8rem; color: var(--text-muted); background: rgba(0,0,0,.2); padding: .6rem; border-radius: 8px; margin-top: .4rem; }
+.msg-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+.msg-actions .btn { min-height: 36px; padding: .4rem .8rem; font-size: .82rem; }
+.msg-wa { color: #25d366 !important; border-color: rgba(37,211,102,.4) !important; }
+.msg-del { color: #ef4444 !important; margin-left: auto; }
+.answer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; }
+.answer-card { border: 1px solid var(--border); border-radius: 14px; padding: 1rem; background: var(--card); display: flex; flex-direction: column; gap: .6rem; }
+.answer-head { display: flex; justify-content: space-between; gap: .5rem; align-items: center; }
+.answer-card textarea { font-size: .85rem; line-height: 1.5; min-height: 140px; }
+.answer-actions { display: flex; gap: .5rem; }
+.unmatched { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .4rem; }
+.unmatched li { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem .75rem; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); font-size: .88rem; }
+@media (max-width: 768px) { .msg-grid, .answer-grid { grid-template-columns: 1fr; } .nav-link .nav-badge { position: absolute; top: 2px; right: 6px; } }
+
+/* ───────────── Categories and Settings layouts ───────────── */
+.pane-title { display: flex; align-items: center; gap: .6rem; font-weight: 700; margin-bottom: 1rem; }
+.pane-title i { color: #ff8a5c; }
+.cat-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1.5rem; align-items: start; }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.cat-card { position: relative; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--card); transition: transform .2s, border-color .2s; }
+.cat-card:hover { transform: translateY(-3px); border-color: rgba(255,107,53,.4); }
+.cat-card-img { position: relative; aspect-ratio: 16 / 10; background: rgba(255,255,255,.04); display: grid; place-items: center; font-size: 2rem; color: var(--text-muted); }
+.cat-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.cat-card-state { position: absolute; top: 10px; left: 10px; font-size: .7rem; font-weight: 700; padding: .2rem .6rem; border-radius: 999px; backdrop-filter: blur(6px); }
+.cat-card-state.live { background: rgba(16,185,129,.85); color: #fff; }
+.cat-card-state.soon { background: rgba(0,0,0,.6); color: #fff; }
+.cat-card-body { padding: .85rem 1rem 1rem; }
+.cat-card-title { font-weight: 700; display: flex; gap: .5rem; align-items: center; }
+.cat-card-title i { color: #ff8a5c; font-size: .9rem; }
+.cat-card-meta { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin-top: .35rem; font-size: .78rem; color: var(--text-muted); }
+.cat-card-del { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #ef4444; cursor: pointer; }
+.cat-form { position: sticky; top: 1.5rem; }
+.settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
+.settings-card { border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.4rem 1.5rem; background: var(--card); }
+.settings-card-head { display: flex; gap: .85rem; align-items: flex-start; padding-bottom: 1rem; margin-bottom: 1.1rem; border-bottom: 1px solid var(--border); }
+.settings-card-head h3 { font-size: 1.05rem; margin: 0 0 .2rem; }
+.settings-card-head p { font-size: .8rem; color: var(--text-muted); margin: 0; line-height: 1.45; }
+.sc-icon { flex: 0 0 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,107,53,.12); color: #ff8a5c; }
+.sc-lock { background: rgba(99,102,241,.15); color: #a5b4fc; }
+.settings-card .btn { margin-top: .25rem; }
+.hint { color: var(--text-muted); font-weight: 400; font-size: .78rem; }
+@media (max-width: 1100px) { .cat-layout, .settings-grid { grid-template-columns: 1fr; } .cat-form { position: static; } }
+.cat-card-img img { position: absolute; inset: 0; }
+.cat-card { display: flex; flex-direction: column; }
