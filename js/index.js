@@ -2345,6 +2345,7 @@ const app = {
                     ${buyButtonHtml(product, 'btn-lg pd-buy-main')}
                     ${amazon && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
                     <p class="pd-buy-note">${amazon ? 'Buy on Amazon.in, or order directly from us on WhatsApp (' + WA_DISPLAY + ').' : 'Message us on WhatsApp (' + WA_DISPLAY + ') and we will share the price, payment and delivery details.'}</p>
+                    <p class="pd-soon"><i class="fas fa-cart-shopping"></i> <span><strong>Coming soon:</strong> you will be able to buy online directly from this website, with secure payment and delivery across India.</span></p>
                 </div>
 
                 <ul class="pd-trust">
@@ -3584,8 +3585,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 })();
 
-/* Splash screen: lift it once the page is ready (min 700ms so the animation
-   lands, max 2.5s so a slow network never holds the visitor). */
+/* Splash screen: lift it once the page is ready (min 2.5s so visitors see the
+   brand, max 4s so a slow network never holds the visitor). */
 (function () {
     const splash = document.getElementById('splash');
     if (!splash || document.documentElement.classList.contains('splash-seen')) { if (splash) splash.remove(); return; }
@@ -3593,12 +3594,128 @@ document.addEventListener('DOMContentLoaded', () => {
     let done = false;
     const hide = () => {
         if (done) return; done = true;
-        const wait = Math.max(0, 700 - (performance.now() - started));
+        const wait = Math.max(0, 2500 - (performance.now() - started));
         setTimeout(() => {
             splash.classList.add('is-out');
             setTimeout(() => splash.remove(), 650);
         }, wait);
     };
     if (document.readyState === 'complete') hide(); else window.addEventListener('load', hide, { once: true });
-    setTimeout(hide, 2500);
+    setTimeout(hide, 4000);
+})();
+
+/* Product image viewer: click the main product photo to open it full screen with
+   zoom (buttons, mouse wheel, double-click, drag to pan), previous / next, a
+   counter and a close button. Esc closes, arrow keys move, + and - zoom. */
+(function () {
+    let box, img, counter, list = [], idx = 0, scale = 1, tx = 0, ty = 0, drag = null, touchX = null, lastFocus = null;
+    const MIN = 1, MAX = 4;
+
+    function build() {
+        box = document.createElement('div');
+        box.className = 'vx-lb';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+        box.setAttribute('aria-label', 'Product image viewer');
+        box.innerHTML = `
+            <div class="vx-lb-top">
+                <span class="vx-lb-count" aria-live="polite"></span>
+                <div class="vx-lb-tools">
+                    <button type="button" data-lb="out" aria-label="Zoom out"><i class="fas fa-magnifying-glass-minus"></i></button>
+                    <button type="button" data-lb="reset" aria-label="Reset zoom"><i class="fas fa-expand"></i></button>
+                    <button type="button" data-lb="in" aria-label="Zoom in"><i class="fas fa-magnifying-glass-plus"></i></button>
+                    <button type="button" data-lb="close" class="vx-lb-close" aria-label="Close"><i class="fas fa-xmark"></i></button>
+                </div>
+            </div>
+            <button type="button" data-lb="prev" class="vx-lb-nav vx-lb-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+            <div class="vx-lb-stage"><img alt="" draggable="false"></div>
+            <button type="button" data-lb="next" class="vx-lb-nav vx-lb-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>`;
+        document.body.appendChild(box);
+        img = box.querySelector('img');
+        counter = box.querySelector('.vx-lb-count');
+        const stage = box.querySelector('.vx-lb-stage');
+
+        box.addEventListener('click', (e) => {
+            const b = e.target.closest('[data-lb]');
+            if (b) {
+                const a = b.dataset.lb;
+                if (a === 'close') close();
+                else if (a === 'prev') go(-1);
+                else if (a === 'next') go(1);
+                else if (a === 'in') zoom(scale + 0.5);
+                else if (a === 'out') zoom(scale - 0.5);
+                else if (a === 'reset') zoom(1);
+                return;
+            }
+            if (e.target === stage && scale === 1) close(); // click on the dark area around the photo
+        });
+        img.addEventListener('dblclick', () => zoom(scale > 1 ? 1 : 2.5));
+        stage.addEventListener('wheel', (e) => { e.preventDefault(); zoom(scale + (e.deltaY < 0 ? 0.25 : -0.25)); }, { passive: false });
+        img.addEventListener('pointerdown', (e) => {
+            if (scale === 1) return;
+            drag = { x: e.clientX - tx, y: e.clientY - ty };
+            img.setPointerCapture(e.pointerId);
+            img.classList.add('is-dragging');
+        });
+        img.addEventListener('pointermove', (e) => { if (drag) { tx = e.clientX - drag.x; ty = e.clientY - drag.y; apply(); } });
+        const endDrag = () => { drag = null; img.classList.remove('is-dragging'); };
+        img.addEventListener('pointerup', endDrag);
+        img.addEventListener('pointercancel', endDrag);
+        stage.addEventListener('touchstart', (e) => { touchX = e.touches.length === 1 && scale === 1 ? e.touches[0].clientX : null; }, { passive: true });
+        stage.addEventListener('touchend', (e) => {
+            if (touchX === null) return;
+            const dx = e.changedTouches[0].clientX - touchX;
+            if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+            touchX = null;
+        });
+        document.addEventListener('keydown', (e) => {
+            if (!box.classList.contains('is-open')) return;
+            if (e.key === 'Escape') close();
+            else if (e.key === 'ArrowLeft') go(-1);
+            else if (e.key === 'ArrowRight') go(1);
+            else if (e.key === '+' || e.key === '=') zoom(scale + 0.5);
+            else if (e.key === '-') zoom(scale - 0.5);
+        });
+    }
+
+    function apply() {
+        if (scale === 1) { tx = 0; ty = 0; }
+        img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+        img.classList.toggle('is-zoomed', scale > 1);
+        box.querySelector('[data-lb="out"]').disabled = scale <= MIN;
+        box.querySelector('[data-lb="in"]').disabled = scale >= MAX;
+    }
+    function zoom(s) { scale = Math.min(MAX, Math.max(MIN, s)); apply(); }
+    function show(i) {
+        idx = (i + list.length) % list.length;
+        img.src = list[idx];
+        counter.textContent = `${idx + 1} / ${list.length}`;
+        box.classList.toggle('is-single', list.length < 2);
+        zoom(1);
+    }
+    function go(d) { if (list.length > 1) show(idx + d); }
+    function open(images, start) {
+        if (!box) build();
+        list = images;
+        lastFocus = document.activeElement;
+        show(start);
+        box.classList.add('is-open');
+        document.documentElement.classList.add('vx-lb-lock');
+        box.querySelector('.vx-lb-close').focus();
+    }
+    function close() {
+        box.classList.remove('is-open');
+        document.documentElement.classList.remove('vx-lb-lock');
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    document.addEventListener('click', (e) => {
+        const main = e.target.closest('#detailMainImage');
+        if (!main) return;
+        const thumbs = [...document.querySelectorAll('.pd-thumb img')].map(t => t.getAttribute('src'));
+        const images = thumbs.length ? thumbs : [main.getAttribute('src')];
+        const active = document.querySelector('.pd-thumb.is-active');
+        const start = active ? Math.max(0, Number(active.dataset.idx) || 0) : 0;
+        open(images, start);
+    });
 })();
