@@ -1,6 +1,10 @@
 # Chat assistant: plan
 
-Status: proposed, not built (24 November 2026).
+Status: **phase 1 built and live** (24 November 2026), in `js/chat.js`.
+
+Phase 1 includes the chat bubble (replaces the floating WhatsApp button), greeting, quick-reply buttons, product browsing by collection, product search, approved answers (how to buy, price, shipping, returns, Vijaysar use and care, health questions, materials, bulk/gift orders, contact, order status), English and Hinglish keywords, and WhatsApp handoff with the last messages pre-filled. Answers match the Shipping and Returns pages and the Vijaysar product page word for word in substance; update `ANSWERS` in `js/chat.js` if a policy changes.
+
+Phase 2 (not built yet): order tracking from the site's own orders, the "Leave a message" inbox, the admin reply editor and question stats.
 
 ## Goal
 

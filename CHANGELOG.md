@@ -6,6 +6,9 @@ This file records repository development. Entries under **Unreleased** describe 
 
 ### Later the same day
 
+- Chat assistant (phase 1): chat bubble on every page with quick replies, product browsing and search, approved answers that match the policy pages, Hinglish keywords, safe wording for health questions, and WhatsApp handoff with the conversation pre-filled. Replaces the floating WhatsApp button.
+- Hotfix: a bulk edit made the new admin session check call itself, which broke the product list and admin for a few minutes after the analytics deploy and filled `api/error.log` (about 27 MB). Fixed and redeployed.
+
 - Admin Analytics & P&L: income (website/WhatsApp orders + ledger income such as Amazon payouts), cost of goods from a new admin-only product cost price, expenses from a new ledger, net profit and margin, monthly chart, top products, costs by category, CSV export, period picker.
 - Admin sessions now end 8 hours after login (as on velorexmusic.com); a weak admin password shows a warning after login.
 - Admin fixes: popups scroll instead of being cut off, item quantities (no more "0×"), Indian date format, real contact details in Settings, summary cards only on the Inventory dashboard, tables become labelled cards on phones.
