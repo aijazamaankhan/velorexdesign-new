@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const ANSWER_LABELS = {
     buy: 'How to buy', price: 'Prices and offers', shipping: 'Shipping and delivery', returns: 'Returns and refunds',
     vijaysar: 'Vijaysar glass: how to use', health: 'Health questions (keep: not a medicine)', material: 'Materials and making',
-    bulk: 'Bulk and gift orders', contact: 'Contact details', order: 'My order'
+    bulk: 'Bulk and gift orders', contact: 'Contact details', order: 'My order',
+    custom: 'Custom orders', payment: 'Payment', care: 'Wood care', story: 'Our story', ventures: 'Velorex family'
 };
 const htmlToEdit = h => String(h || '').replace(/<br\s*\/?>(\n)?/gi, '\n');
 
@@ -87,10 +88,11 @@ function renderAnswers(saved) {
 const TOPIC_LABELS = {
     buy: 'How to buy', price: 'Prices', shipping: 'Shipping', returns: 'Returns', vijaysar: 'Vijaysar glass', health: 'Health questions',
     material: 'Materials', bulk: 'Bulk and gifts', contact: 'Contact', track: 'Order tracking', message: 'Leave a message',
-    hello: 'Greetings', thanks: 'Thanks', product_search: 'Product search', unmatched: 'Not answered'
+    hello: 'Greetings', thanks: 'Thanks', custom: 'Custom orders', payment: 'Payment', care: 'Wood care', story: 'Our story', ventures: 'Velorex family', gifts: 'Gift ideas', gifts: 'Gift ideas', product_search: 'Product search', unmatched: 'Not answered'
 };
 function topicName(t) {
     if (t.startsWith('chip_')) return 'Button: ' + (TOPIC_LABELS[t.slice(5)] || t.slice(5));
+    if (t.startsWith('menu_')) return 'Menu: ' + (TOPIC_LABELS[t.slice(5)] || t.slice(5));
     return TOPIC_LABELS[t] || t;
 }
 function renderStats(topics, unmatched) {

@@ -3977,3 +3977,50 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
 .vx-submit { align-self: flex-start; border: 0; cursor: pointer; background: var(--orange-gradient); color: #fff; padding: .45rem 1rem; font-size: .82rem; }
 .vx-submit:disabled { opacity: .6; cursor: default; }
 .vx-hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
+
+/* ───────────── Chat as a movable phone ───────────── */
+.vx-chat {
+  width: 360px; height: min(700px, calc(100vh - 120px)); border-radius: 44px; padding: 10px 10px 12px;
+  background: linear-gradient(160deg, #1d1a26, #0b0a10); border: 1px solid #2c2838;
+  box-shadow: 0 40px 90px rgba(0,0,0,.55), inset 0 0 0 2px #3a3548, inset 0 0 0 6px #0b0a10;
+}
+.vx-chat.is-dragging { transition: none; cursor: grabbing; box-shadow: 0 50px 110px rgba(0,0,0,.65), inset 0 0 0 2px #ff6b35, inset 0 0 0 6px #0b0a10; }
+.vx-chat > * { position: relative; }
+.vx-chat .vx-status, .vx-chat .vx-chat-head, .vx-chat .vx-menu, .vx-chat .vx-chat-log, .vx-chat .vx-chat-chips, .vx-chat .vx-chat-form { background-color: var(--surface); }
+.vx-status { display: flex; justify-content: space-between; align-items: center; padding: 10px 22px 4px; border-radius: 34px 34px 0 0; font-size: .72rem; font-weight: 700; color: var(--text); }
+.vx-notch { position: absolute; left: 50%; top: 6px; transform: translateX(-50%); width: 92px; height: 22px; border-radius: 14px; background: #0b0a10; }
+.vx-icons { display: flex; gap: 5px; font-size: .68rem; }
+.vx-chat-head { cursor: grab; touch-action: none; user-select: none; gap: .55rem; padding: .7rem .8rem; border-radius: 0; }
+.vx-chat-head:focus-visible { outline: 2px solid #ff6b35; outline-offset: -2px; }
+.vx-grip { position: absolute; top: 3px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(255,255,255,.35); }
+.vx-head-text { min-width: 0; flex: 1; }
+.vx-head-text strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vx-head-btn { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,.1); color: #fff; display: grid; place-items: center; cursor: pointer; font-size: .9rem; text-decoration: none; transition: background .2s; }
+.vx-head-btn:hover, .vx-head-btn.is-on { background: rgba(255,107,53,.35); }
+.vx-head-wa { background: #25d366; }
+.vx-head-wa:hover { background: #1ebe5a; }
+.vx-menu { position: absolute; z-index: 3; left: 10px; right: 10px; top: 104px; bottom: 12px; padding: 1rem; overflow-y: auto; border-radius: 0 0 34px 34px; background: var(--surface); animation: vxIn .2s ease; }
+.vx-menu-title { font-weight: 800; margin-bottom: .8rem; }
+.vx-menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+.vx-tile { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .75rem .35rem; border-radius: 14px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; font-size: .72rem; font-weight: 600; line-height: 1.2; cursor: pointer; text-align: center; transition: transform .15s, border-color .2s; }
+.vx-tile span { font-size: 1.35rem; }
+.vx-tile:hover { transform: translateY(-2px); border-color: var(--secondary); }
+.vx-chat-log { border-radius: 0; }
+.vx-chat-form { border-radius: 0 0 34px 34px; padding: .7rem .8rem 1.4rem; }
+.vx-chat-form.is-readonly { opacity: .55; }
+.vx-home-bar { position: absolute !important; left: 50%; bottom: 18px; transform: translateX(-50%); width: 110px; height: 5px; border-radius: 5px; background: rgba(255,255,255,.35); pointer-events: none; }
+.vx-sys { align-self: center; background: transparent; border: 0; padding: .2rem; text-align: center; font-size: .75rem; color: var(--text-muted); display: flex; flex-direction: column; gap: .3rem; align-items: center; }
+.vx-sep { padding: .2rem .7rem; border-radius: 999px; background: rgba(255,255,255,.06); }
+.vx-hist { display: flex; flex-direction: column; gap: .4rem; margin: .55rem 0 .4rem; }
+.vx-hist-item { text-align: left; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; padding: .55rem .7rem; cursor: pointer; font: inherit; display: flex; flex-direction: column; gap: .15rem; }
+.vx-hist-item:hover { border-color: var(--secondary); }
+.vx-hist-item b { font-size: .84rem; } .vx-hist-item span { font-size: .72rem; color: var(--text-muted); }
+.vx-link-btn { border: 0; background: none; color: var(--secondary); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; padding: .2rem 0; }
+@media (max-width: 768px) {
+  .vx-chat { width: min(360px, calc(100vw - 16px)); left: 8px; right: auto; height: min(640px, calc(100vh - 170px)); border-radius: 36px; }
+  .vx-menu { top: 100px; }
+}
+.vx-menu { top: 96px; } .vx-head-text strong { font-size: .95rem; }
+.vx-menu { top: 96px; } .vx-head-text strong { font-size: .95rem; }
+.vx-chat { z-index: 1150; }
+@media (max-width: 768px) { .vx-chat { height: min(600px, calc(100vh - 250px)); } }

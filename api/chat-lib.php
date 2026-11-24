@@ -37,7 +37,7 @@ function chat_ensure_tables(mysqli $conn): bool {
 }
 
 /** Answer keys the admin may edit; must match ANSWERS in js/chat.js. */
-const CHAT_REPLY_KEYS = ['buy', 'price', 'shipping', 'returns', 'vijaysar', 'health', 'material', 'bulk', 'contact', 'order'];
+const CHAT_REPLY_KEYS = ['buy', 'price', 'shipping', 'returns', 'vijaysar', 'health', 'material', 'bulk', 'contact', 'order', 'custom', 'payment', 'care', 'story', 'ventures'];
 
 /**
  * Keeps admin-written answers safe to show: only simple formatting tags and

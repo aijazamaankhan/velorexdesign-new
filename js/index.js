@@ -1573,10 +1573,6 @@ const app = {
 
         /* The main banner: who Velorex Design is, plus the two ways in. */
         const paintBrand = () => {
-            const collage = products.slice(0, 4).map(p => `
-                <img src="${escapeAttr(safeUrl(p.img))}" alt="${escapeAttr(p.name)}"
-                     data-action="open-product" data-id="${escapeAttr(p.id)}"
-                     data-fallback="https://placehold.co/400x400/1a1a2e/9890b0?text=Velorex">`).join('');
             content.innerHTML = `
                 <span class="hero-eyebrow"><i class="fas fa-gem"></i> Velorex Design</span>
                 <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art &amp; Design</span></h1>
@@ -1595,9 +1591,14 @@ const app = {
                     <li><i class="fas fa-layer-group"></i> ${CATEGORIES.length} collections</li>
                     <li><i class="fas fa-pen-nib"></i> Design services</li>
                 </ul>`;
-            showcase.innerHTML = collage
-                ? `<div class="hero-collage">${collage}</div>`
-                : '';
+            // Same single framed card as the other slides (the 4-image collage looked out of place).
+            const lead = products[0];
+            showcase.innerHTML = lead ? `
+                <div class="hero-card" data-action="open-product" data-id="${escapeAttr(lead.id)}">
+                    <img src="${escapeAttr(safeUrl(lead.img))}" alt="${escapeAttr(lead.name)}" data-fallback="https://placehold.co/800x800/1a1a2e/9890b0?text=Velorex">
+                    <span class="hero-card-tag">Velorex Design</span>
+                    <span class="hero-card-tag hero-card-badge">Handmade</span>
+                </div>` : '';
         };
 
         const paintProduct = (p) => {
