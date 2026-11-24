@@ -532,6 +532,8 @@ const STATIC_CATALOG_PRODUCTS = [
         desc: 'A solid wood serving tray from the Velorex Heritage Collection. The border of flowers and vines is cut by hand, and the centre carries a brass inlay of petals and leaves set by hand into the grain. Cut-out handles on both ends give an easy, steady grip. Size: 12 × 8 inches (30.5 × 20.3 cm), 4.5 cm high. Use it for tea and snacks, as a dressing-table or puja tray, or as a gift. Ships in a printed gift box with a thank-you card and care leaflet. Wipe with a dry cloth; do not soak. Natural wood grain and tone vary from piece to piece.',
         stock: 20,
         featured: true,
+            'images/products/tray/detail-side.webp',
+            'images/products/tray/detail-corner.webp',
         extra: 'carved-tray'
     },
     {
