@@ -3810,6 +3810,76 @@ a.footer-store:hover { transform: translateX(4px); border-color: #8b5cf6; backgr
 .fs-studio { background: linear-gradient(135deg, #ff6b35, #e8440f); }
 a.footer-store.fs-studio-card:hover { border-color: #ff6b35; background: rgba(255,107,53,.08); }
 
+/* ───────────── Footer redesign: brand column helpers ───────────── */
+.footer-brand-desc { color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.65; }
+
+/* Amazon button — brand column */
+.footer-amazon-btn {
+  display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.1rem;
+  padding: .55rem 1.1rem; border-radius: 999px;
+  background: #ff9900; color: #111; font-weight: 700; font-size: .85rem;
+  text-decoration: none; transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 14px rgba(255,153,0,.35);
+}
+.footer-amazon-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,153,0,.5); color: #111; }
+.footer-amazon-btn i { font-size: 1.1rem; }
+
+/* ───────────── Our Other Stores — horizontal section ───────────── */
+.footer-family {
+  margin: 2.5rem 0 0;
+  padding: 2rem 2rem 1.75rem;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(140% 180% at 100% 0%, rgba(139,92,246,.1), transparent 60%), var(--surface);
+  border: 1px solid var(--border);
+}
+.footer-family h4 {
+  margin: 0 0 1.25rem;
+  font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text-muted); display: flex; align-items: center; gap: .5rem;
+}
+.footer-family-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.family-card {
+  display: flex; align-items: center; gap: .9rem;
+  padding: .9rem 1rem; border-radius: 16px;
+  background: rgba(255,255,255,.03); border: 1px solid var(--border);
+  color: var(--text); text-decoration: none;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), border-color .25s, background .25s, box-shadow .25s;
+}
+a.family-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+}
+.family-card.is-soon { opacity: .55; cursor: default; }
+.family-icon {
+  flex: 0 0 44px; height: 44px; border-radius: 13px;
+  display: grid; place-items: center; color: #fff; font-size: 1.1rem;
+}
+.family-music .family-icon   { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.family-studio .family-icon  { background: linear-gradient(135deg, #ff6b35, #e8440f); }
+.family-fashion .family-icon { background: linear-gradient(135deg, #db2777, #9d174d); }
+a.family-card.family-music:hover  { border-color: #8b5cf6; background: rgba(139,92,246,.1); }
+a.family-card.family-studio:hover { border-color: #ff6b35; background: rgba(255,107,53,.1); }
+.family-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; flex: 1; }
+.family-text strong { font-size: .95rem; }
+.family-text small  { font-size: .78rem; color: var(--text-muted); margin-top: .15rem; }
+.family-go { margin-left: auto; font-size: .75rem; color: var(--text-muted); flex-shrink: 0; }
+/* social icons — always show brand colour tint */
+.social-icon.social-yt  { color: #ff0000; }
+.social-icon.social-ig  { color: #d6249f; }
+.social-icon.social-wa  { color: #25d366; }
+@media (max-width: 900px) {
+  .footer-family-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .footer-family { padding: 1.4rem 1.25rem; }
+  .footer-family-grid { grid-template-columns: 1fr; }
+  .footer-amazon-btn { width: 100%; justify-content: center; }
+}
+
 /* ───────────── Splash screen ───────────── */
 .splash {
   position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; overflow: hidden;
@@ -4079,6 +4149,61 @@ html:not([data-design="living-craft"]) .row-header .section-title::after { margi
 }
 .pd-soon i { color: #ffb347; margin-top: 3px; }
 .pd-soon strong { color: #ffb347; }
+
+/* ───────────── Languages (js/i18n.js, docs/I18N.md) ───────────── */
+.lang-switch { position: relative; }
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px;
+  border-radius: 999px; border: 1px solid var(--border, rgba(255,255,255,.15));
+  background: transparent; color: var(--text); cursor: pointer; font: inherit; font-size: .85rem;
+}
+.lang-btn:hover, .lang-btn:focus-visible { border-color: #ffb347; outline: none; }
+.lang-btn .fa-globe { font-size: 1rem; }
+.lang-menu {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 1200; min-width: 190px;
+  margin: 0; padding: 6px; list-style: none; border-radius: 12px;
+  background: var(--surface, #1a1426); border: 1px solid var(--border, rgba(255,255,255,.15));
+  box-shadow: 0 14px 40px rgba(0,0,0,.4);
+}
+.lang-menu li {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  padding: 9px 12px; border-radius: 8px; cursor: pointer; color: var(--text);
+}
+.lang-menu li:hover, .lang-menu li:focus { background: rgba(255,179,71,.12); outline: none; }
+.lang-menu li[aria-selected="true"] { background: rgba(255,107,53,.18); }
+.lang-native { font-size: 1rem; font-weight: 600; }
+.lang-english { font-size: .75rem; color: var(--text-muted, #9890b0); }
+@media (max-width: 480px) {
+  .lang-btn { padding: 0 8px; height: 34px; }
+  .lang-btn-code { display: none; } /* globe only on phones, header stays one line */
+}
+/* English name under a local product name */
+.i18n-en-sub {
+  display: block; margin-top: .2em; font-family: 'DM Sans', sans-serif; font-size: .62em;
+  font-weight: 500; letter-spacing: 0; color: var(--text-muted, #9890b0); line-height: 1.3;
+}
+.product-title .i18n-en-sub { font-size: .72em; }
+/* Indic scripts: the site fonts have no Indic letters, so pair each with Noto. */
+html[data-lang="hi"] body { font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif; }
+html[data-lang="hi"] :is(h1, h2, h3, h4, .hero-title, .section-title, .pd-title) { font-family: 'Playfair Display', 'Noto Serif Devanagari', serif; }
+html[data-lang="bn"] body { font-family: 'DM Sans', 'Noto Sans Bengali', sans-serif; }
+html[data-lang="bn"] :is(h1, h2, h3, h4, .hero-title, .section-title, .pd-title) { font-family: 'Playfair Display', 'Noto Serif Bengali', serif; }
+html[data-lang="ta"] body { font-family: 'DM Sans', 'Noto Sans Tamil', sans-serif; }
+html[data-lang="ta"] :is(h1, h2, h3, h4, .hero-title, .section-title, .pd-title) { font-family: 'Playfair Display', 'Noto Serif Tamil', serif; }
+/* Indic letters need more line height; Tamil words are long, so shrink big titles a little. */
+html[data-lang] body { line-height: 1.7; }
+html[data-lang] :is(.hero-title, .section-title, .pd-title) { line-height: 1.35; overflow-wrap: anywhere; }
+html[data-lang="ta"] .hero-title { font-size: clamp(1.9rem, 4.2vw, 3.6rem); }
+html[data-lang="ta"] .nav-link, html[data-lang="ta"] .btn { font-size: .92em; }
+/* First-visit language offer */
+.lang-suggest {
+  position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 1300;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+  max-width: calc(100vw - 32px); padding: 10px 14px; border-radius: 14px;
+  background: var(--surface, #1a1426); border: 1px solid rgba(255,179,71,.5); box-shadow: 0 12px 34px rgba(0,0,0,.45);
+}
+.lang-suggest .fa-globe { color: #ffb347; }
+.lang-suggest-x { background: none; border: 0; color: var(--text-muted, #9890b0); cursor: pointer; text-decoration: underline; font: inherit; }
 
 /* "Buy online coming soon" band, directly under the home banner */
 .soon-band {
