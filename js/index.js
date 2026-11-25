@@ -495,12 +495,14 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Mango-Shaped Sheesham Wood Tray',
         tagline: 'Hand-carved solid Sheesham in a mango silhouette — three screw-in legs turn a platter into a serving stand.',
         price: PLACEHOLDER_PRICES['wd-mango-tray'],
-        img: 'images/products/mango-tray-1.jpg',
+        img: 'images/products/mango-tray/1.webp',
         images: [
-            'images/products/mango-tray-1.jpg',
-            'images/products/mango-tray-2.jpg',
-            'images/products/mango-tray-3.jpg',
-            'images/products/mango-tray-4.jpg'
+            'images/products/mango-tray/1.webp',
+            'images/products/mango-tray/2.webp',
+            'images/products/mango-tray/3.webp',
+            'images/products/mango-tray/4.webp',
+            'images/products/mango-tray/listing_1_-_tray_or_basket_2000x2000.webp',
+            'images/products/mango-tray/listing_2_-_in_the_box_2000x2000.webp'
         ],
         cat: 'wood',
         desc: 'A hand-carved serving tray in solid Sheesham (Indian rosewood), shaped like a mango / paisley motif. Concentric hand-cut grooves ripple out from a deep scooped well, and the whole edge is finished with a scalloped, hand-chiselled border. Three turned legs screw in and out, so the same piece works as a footed serving stand, a flat platter or a wall display piece. Natural wood grain and tone vary from piece to piece — no two trays are identical.',
@@ -528,7 +530,10 @@ const STATIC_CATALOG_PRODUCTS = [
             'images/products/tray/front-dark.webp',
             'images/products/tray/gift-box-open.webp',
             'images/products/tray/gift-box.webp',
-            'images/products/tray/gift-box-closed.webp'
+            'images/products/tray/gift-box-closed.webp',
+            'images/products/tray/gift-box-whats-inside.webp',
+            'images/products/tray/gift-box-marble.webp',
+            'images/products/tray/gift-box-marble-open.webp'
         ],
         cat: 'wood',
         desc: 'A solid wood serving tray from the Velorex Heritage Collection. The border of flowers and vines is cut by hand, and the centre carries a brass inlay of petals and leaves set by hand into the grain. Cut-out handles on both ends give an easy, steady grip. Size: 12 × 8 inches (30.5 × 20.3 cm), 4.5 cm high. Use it for tea and snacks, as a dressing-table or puja tray, or as a gift. Ships in a printed gift box with a thank-you card and care leaflet. Wipe with a dry cloth; do not soak. Natural wood grain and tone vary from piece to piece.',
@@ -950,6 +955,7 @@ function ensureCatalogSeed() {
    (works for database rows too, without editing them). */
 const IMAGE_VERSIONS = [
     ['images/products/tray/', '20261125'],
+    ['images/products/mango-tray/', '20261125'],
     ['images/products/vijaysar/box-', '20261125'],
     ['images/products/comb-floral/box-3d', '20261125'],
     ['images/products/comb-handle/box-3d', '20261125'],
@@ -960,8 +966,20 @@ function versionedImage(src) {
     const hit = IMAGE_VERSIONS.find(([prefix]) => src.startsWith(prefix));
     return hit ? src + '?v=' + hit[1] : src;
 }
+/* Galleries limited to the latest photo set (25 Nov 2026), matched by name so
+   database rows (Vijaysar) follow too without editing the database. */
+const LATEST_GALLERIES = [
+    [/mango.*tray/i, ['images/products/mango-tray/1.webp', 'images/products/mango-tray/2.webp', 'images/products/mango-tray/3.webp', 'images/products/mango-tray/4.webp', 'images/products/mango-tray/listing_1_-_tray_or_basket_2000x2000.webp', 'images/products/mango-tray/listing_2_-_in_the_box_2000x2000.webp']],
+    [/vijaysar.*glass/i, ['images/products/vijaysar/box-front.webp', 'images/products/vijaysar/box-open.webp', 'images/products/vijaysar/box-side.webp', 'images/products/vijaysar/box-back.webp']],
+    [/premium floral neem comb/i, ['images/products/comb-floral/box-3d-open.webp', 'images/products/comb-floral/box-3d.webp']],
+    [/premium handle neem comb/i, ['images/products/comb-handle/box-3d-open.webp', 'images/products/comb-handle/box-3d.webp']],
+    [/neem comb combo/i, ['images/products/comb-combo/box-3d-open.webp', 'images/products/comb-combo/box-3d.webp']]
+];
+
 function bustReplacedImages() {
     PRODUCTS.forEach(p => {
+        const latest = LATEST_GALLERIES.find(([re]) => re.test(p.name || ''));
+        if (latest) { p.images = latest[1].slice(); p.img = p.images[0]; }
         p.img = versionedImage(p.img);
         if (Array.isArray(p.images)) p.images = p.images.map(versionedImage);
     });
