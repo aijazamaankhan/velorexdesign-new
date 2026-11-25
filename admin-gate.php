@@ -1,4 +1,5 @@
 <?php
+// v2
 /**
  * Secret entrance to the admin portal.
  *
