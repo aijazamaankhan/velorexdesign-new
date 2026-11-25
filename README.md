@@ -92,6 +92,7 @@ Orders are stored before the WhatsApp handoff and reserve stock. The application
 | `admin.html`, `js/admin.js` | Admin portal for products, orders, customers, and settings |
 | `api/` | PHP JSON endpoints, database connection, uploads, enquiries, and SEO feeds |
 | `docs/API.md` | Request methods, authentication boundaries, and endpoint responsibilities |
+| `docs/I18N.md` | Indian-language versions (Hindi, Bengali, Tamil…): rules, files, how to add text or a language, what is done and what is next |
 | `seo-render.php` | Server-rendered metadata and indexable content for public routes |
 | `.htaccess` | Apache routing, access restrictions, canonical redirects, and security headers |
 | `manifest.webmanifest` | Installable standalone browser experience; no service worker or offline cache is provided |

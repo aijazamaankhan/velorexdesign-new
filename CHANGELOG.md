@@ -2,10 +2,21 @@
 
 This file records repository development. Entries under **Unreleased** describe the current local working tree and are not proof of production deployment.
 
-## product-images-2026-11-25, 25 November 2026 (deployed)
+## Unreleased (local only, not committed)
 
-- New product photos: brass-inlay tray (new shoot, side-carving and corner close-ups, 3D gift box), 3D box images for the Floral, Handle and Combo neem combs, new 3D box mockups for the Vijaysar glass.
-- Living Craft home: the mango tray picture now opens the Mango-Shaped Sheesham Wood Tray page.
+- Indian languages, Phase 1: globe language switcher in the header; Hindi, Bengali and Tamil (all `draft`, written natively, not machine-translated). Product names show the local name with the English name underneath. New `js/i18n.js`, `lang/*.json`, `docs/I18N.md`; text hooks in `index.html` (`data-i18n`) and `js/index.js` (`tr()`, `lp()`). See docs/I18N.md for what is done and what is next.
+- Footer redesign (in progress): "Our Other Stores" pulled out of Support & Legal into its own horizontal card row (`footer-family`), Amazon button moved to the brand column, cleaner grid.
+
+## product-images-nov25-v2, 25 November 2026 (deployed)
+
+- **Product images refreshed from `Z:\Velorex`:**
+  - Brass-inlay tray: new shoot photos (front, back, details, features, size guide) + 6 gift-box 3D renders (closed, open, with tray, what's inside, marble, marble open) + 2 new detail close-ups (side carving, solid wood corner).
+  - Premium Floral / Handle / Combo neem combs: 3D box mockups (open with comb, closed) for each.
+  - Vijaysar glass: 3D box mockups (front, back, open, side) replaced with latest renders.
+  - Mango-shaped Sheesham tray: 4 new product photos + 2 Amazon listing images; gallery switched from old `mango-tray-*.jpg` to new `images/products/mango-tray/` folder.
+- Galleries for Vijaysar, Floral, Handle, Combo combs now show only the latest photos (old product shots removed via `LATEST_GALLERIES`).
+- Image cache-busting: `IMAGE_VERSIONS` table appends `?v=20261125` to replaced images so browsers fetch the new files despite the 1-year cache header.
+- Living Craft home hero: clicking the mango tray picture now opens its product page (`open-product-match` action).
 
 ## mobile-polish branch, 24 November 2026 (deployed later the same day)
 

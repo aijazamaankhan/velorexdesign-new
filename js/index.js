@@ -175,6 +175,18 @@ Please share the price, payment and delivery details.`;
     return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
 }
 
+/* Language helpers (see js/i18n.js and docs/I18N.md). tr() returns the current
+   language's text for a key, or the English given here. lp() returns a copy of
+   a product with name/tagline/desc in the current language plus nameEn. Use lp()
+   only for DISPLAY: links, search, Amazon and WhatsApp keep the English name. */
+const tr = (key, en) => (window.VXI18N ? window.VXI18N.T(key, en) : en);
+const lp = (p) => (window.VXI18N ? window.VXI18N.localizeProduct(p) : Object.assign({}, p, { nameEn: p && p.name, localized: false }));
+/* Local name with the English name underneath, so the product is still
+   recognisable (Amazon, WhatsApp, the box itself all say it in English). */
+const bilingualName = (L) => L.localized
+    ? `${escapeHtml(L.name)}<span class="i18n-en-sub" lang="en">${escapeHtml(L.nameEn)}</span>`
+    : escapeHtml(L.name);
+
 /* Amazon listings, matched by product name so database rows pick them up too. */
 const AMAZON_LINKS = [
     // Premium combs and the carved tray are not on Amazon yet: stop here so they
@@ -194,14 +206,14 @@ const WA_DISPLAY = '+91 79060 27807';
 function buyButtonHtml(product, extraClass = '') {
     const amazon = amazonUrlFor(product);
     if (amazon) {
-        return `<a class="btn btn-amazon ${extraClass}" href="${escapeAttr(amazon)}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> Buy on Amazon</a>`;
+        return `<a class="btn btn-amazon ${extraClass}" href="${escapeAttr(amazon)}" target="_blank" rel="noopener noreferrer sponsored"><i class="fab fa-amazon"></i> ${tr('btn.buyAmazon', 'Buy on Amazon')}</a>`;
     }
     const wa = whatsAppOrderUrl(product);
     if (wa) {
-        return `<a class="btn btn-whatsapp ${extraClass}" href="${escapeAttr(wa)}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>`;
+        return `<a class="btn btn-whatsapp ${extraClass}" href="${escapeAttr(wa)}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> ${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</a>`;
     }
     const mail = `mailto:${STORE_EMAIL}?subject=${encodeURIComponent('Enquiry: ' + (product.name || 'Velorex product'))}`;
-    return `<a class="btn btn-secondary ${extraClass}" href="${escapeAttr(mail)}"><i class="fas fa-envelope"></i> Ask about this</a>`;
+    return `<a class="btn btn-secondary ${extraClass}" href="${escapeAttr(mail)}"><i class="fas fa-envelope"></i> ${tr('btn.ask', 'Ask about this')}</a>`;
 }
 
 /* Hero campaign banners. Each one can point at a product (by name match), the
@@ -211,7 +223,7 @@ const HERO_PROMOS = [
         key: 'vijaysar', eyebrow: 'Ayurvedic wellness', icon: 'fas fa-leaf',
         title: 'Fill it at night.<br><span class="text-gradient">Drink it at dawn.</span>',
         desc: 'The Vijaysar heartwood glass, hand-turned in Meerut. Natural wood, no polish, packed in a Velorex gift box.',
-        bg: 'images/products/vijaysar/banner.webp', art: 'images/products/vijaysar/box-front.webp?v=20261125',
+        bg: 'images/products/vijaysar/banner.webp', art: 'images/products/vijaysar/box-front.webp',
         product: /vijaysar/i, badge: 'Bestseller'
     },
     {
@@ -495,14 +507,12 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Mango-Shaped Sheesham Wood Tray',
         tagline: 'Hand-carved solid Sheesham in a mango silhouette — three screw-in legs turn a platter into a serving stand.',
         price: PLACEHOLDER_PRICES['wd-mango-tray'],
-        img: 'images/products/mango-tray/1.webp',
+        img: 'images/products/mango-tray-1.jpg',
         images: [
-            'images/products/mango-tray/1.webp',
-            'images/products/mango-tray/2.webp',
-            'images/products/mango-tray/3.webp',
-            'images/products/mango-tray/4.webp',
-            'images/products/mango-tray/listing_1_-_tray_or_basket_2000x2000.webp',
-            'images/products/mango-tray/listing_2_-_in_the_box_2000x2000.webp'
+            'images/products/mango-tray-1.jpg',
+            'images/products/mango-tray-2.jpg',
+            'images/products/mango-tray-3.jpg',
+            'images/products/mango-tray-4.jpg'
         ],
         cat: 'wood',
         desc: 'A hand-carved serving tray in solid Sheesham (Indian rosewood), shaped like a mango / paisley motif. Concentric hand-cut grooves ripple out from a deep scooped well, and the whole edge is finished with a scalloped, hand-chiselled border. Three turned legs screw in and out, so the same piece works as a footed serving stand, a flat platter or a wall display piece. Natural wood grain and tone vary from piece to piece — no two trays are identical.',
@@ -530,10 +540,7 @@ const STATIC_CATALOG_PRODUCTS = [
             'images/products/tray/front-dark.webp',
             'images/products/tray/gift-box-open.webp',
             'images/products/tray/gift-box.webp',
-            'images/products/tray/gift-box-closed.webp',
-            'images/products/tray/gift-box-whats-inside.webp',
-            'images/products/tray/gift-box-marble.webp',
-            'images/products/tray/gift-box-marble-open.webp'
+            'images/products/tray/gift-box-closed.webp'
         ],
         cat: 'wood',
         desc: 'A solid wood serving tray from the Velorex Heritage Collection. The border of flowers and vines is cut by hand, and the centre carries a brass inlay of petals and leaves set by hand into the grain. Cut-out handles on both ends give an easy, steady grip. Size: 12 × 8 inches (30.5 × 20.3 cm), 4.5 cm high. Use it for tea and snacks, as a dressing-table or puja tray, or as a gift. Ships in a printed gift box with a thank-you card and care leaflet. Wipe with a dry cloth; do not soak. Natural wood grain and tone vary from piece to piece.',
@@ -795,9 +802,9 @@ const PRODUCT_DETAILS = {
         ],
         stepsHeading: 'The Craft Up Close',
         steps: [
-            { icon: 'fas fa-leaf', img: 'images/products/tray/detail-border.webp?v=20261125', title: 'Carved Border', text: 'Flowers and vines are <strong>cut by hand</strong> into the base, so every curve is slightly different from the next tray.' },
-            { icon: 'fas fa-gem', img: 'images/products/tray/detail-flower.webp?v=20261125', title: 'Brass Flower', text: 'The centre flower and leaves are <strong>brass pieces set into the wood</strong> and polished flush with the surface.' },
-            { icon: 'fas fa-pen-nib', img: 'images/products/tray/detail-inlay.webp?v=20261125', title: 'Fine Brass Lines', text: 'Thin brass wire traces the <strong>vine outline</strong> between the petals, catching the light as you turn the tray.' }
+            { icon: 'fas fa-leaf', img: 'images/products/tray/detail-border.webp', title: 'Carved Border', text: 'Flowers and vines are <strong>cut by hand</strong> into the base, so every curve is slightly different from the next tray.' },
+            { icon: 'fas fa-gem', img: 'images/products/tray/detail-flower.webp', title: 'Brass Flower', text: 'The centre flower and leaves are <strong>brass pieces set into the wood</strong> and polished flush with the surface.' },
+            { icon: 'fas fa-pen-nib', img: 'images/products/tray/detail-inlay.webp', title: 'Fine Brass Lines', text: 'Thin brass wire traces the <strong>vine outline</strong> between the petals, catching the light as you turn the tray.' }
         ],
         benefitsHeading: 'Where It Fits',
         benefits: [
@@ -950,45 +957,10 @@ function ensureCatalogSeed() {
     });
 }
 
-/* Images are cached for a year under the same name. When a photo is replaced
-   in place, list its path prefix here with a new tag so browsers fetch it again
-   (works for database rows too, without editing them). */
-const IMAGE_VERSIONS = [
-    ['images/products/tray/', '20261125'],
-    ['images/products/mango-tray/', '20261125'],
-    ['images/products/vijaysar/box-', '20261125'],
-    ['images/products/comb-floral/box-3d', '20261125'],
-    ['images/products/comb-handle/box-3d', '20261125'],
-    ['images/products/comb-combo/box-3d', '20261125']
-];
-function versionedImage(src) {
-    if (typeof src !== 'string' || src.includes('?')) return src;
-    const hit = IMAGE_VERSIONS.find(([prefix]) => src.startsWith(prefix));
-    return hit ? src + '?v=' + hit[1] : src;
-}
-/* Galleries limited to the latest photo set (25 Nov 2026), matched by name so
-   database rows (Vijaysar) follow too without editing the database. */
-const LATEST_GALLERIES = [
-    [/mango.*tray/i, ['images/products/mango-tray/1.webp', 'images/products/mango-tray/2.webp', 'images/products/mango-tray/3.webp', 'images/products/mango-tray/4.webp', 'images/products/mango-tray/listing_1_-_tray_or_basket_2000x2000.webp', 'images/products/mango-tray/listing_2_-_in_the_box_2000x2000.webp']],
-    [/vijaysar.*glass/i, ['images/products/vijaysar/box-front.webp', 'images/products/vijaysar/box-open.webp', 'images/products/vijaysar/box-side.webp', 'images/products/vijaysar/box-back.webp']],
-    [/premium floral neem comb/i, ['images/products/comb-floral/box-3d-open.webp', 'images/products/comb-floral/box-3d.webp']],
-    [/premium handle neem comb/i, ['images/products/comb-handle/box-3d-open.webp', 'images/products/comb-handle/box-3d.webp']],
-    [/neem comb combo/i, ['images/products/comb-combo/box-3d-open.webp', 'images/products/comb-combo/box-3d.webp']]
-];
-
-function bustReplacedImages() {
-    PRODUCTS.forEach(p => {
-        const latest = LATEST_GALLERIES.find(([re]) => re.test(p.name || ''));
-        if (latest) { p.images = latest[1].slice(); p.img = p.images[0]; }
-        p.img = versionedImage(p.img);
-        if (Array.isArray(p.images)) p.images = p.images.map(versionedImage);
-    });
-}
-
 /* One-line blurb for the hero: an explicit `tagline` if the product has one,
    otherwise the opening sentence of its description, trimmed to fit. */
 function craftLabel(product) {
-    return product && product.cat === 'rack' ? 'Precision-cut, hand-finished' : '100% Handcrafted';
+    return product && product.cat === 'rack' ? tr('meta.precisionCut', 'Precision-cut, hand-finished') : tr('meta.handcrafted', '100% Handcrafted');
 }
 
 function shortDetail(product, max = 150) {
@@ -1025,7 +997,7 @@ function getCategories() {
 let CATEGORIES = getCategories();
 function getCatName(id) {
     const c = CATEGORIES.find(x => x.id === id);
-    return c ? c.name : id;
+    return tr('cat.' + id, c ? c.name : id);
 }
 
 async function loadProducts() {
@@ -1059,7 +1031,6 @@ async function loadProducts() {
     // Catalog starters first, so the newest range leads the hero rotation.
     ensureCatalogSeed();
     ensureWellnessSeed();
-    bustReplacedImages();
 
     // Product counts and the featured column in the Catalog mega menu need the product list.
     app.renderNavCategories();
@@ -1155,7 +1126,21 @@ const app = {
         this.renderFooterCategories();
         loadProducts();
         initRouting();
-        this.handleRoute();
+        // Wait for a saved language (js/i18n.js) so the first paint is already in it.
+        const i18n = window.VXI18N;
+        (i18n ? i18n.ready : Promise.resolve()).catch(() => {}).then(() => {
+            this.renderNavCategories();
+            this.renderFooterCategories();
+            this.handleRoute();
+        });
+        if (i18n) i18n.onChange(() => {
+            // Re-render everything built in JS; static HTML is swapped by i18n.js itself.
+            const y = window.scrollY;
+            this.renderNavCategories();
+            this.renderFooterCategories();
+            this.handleRoute();
+            window.scrollTo(0, y);
+        });
 
         window.addEventListener('storage', (e) => {
             if (e.key === 'velorex_store_categories') {
@@ -1520,21 +1505,21 @@ const app = {
 
     createProductCard(product) {
         const img = escapeAttr(safeUrl(product.img));
-        const name = escapeHtml(product.name);
+        const name = bilingualName(lp(product));
         const cat = escapeHtml(getCatName(product.cat));
         return `
             <div class="product-card">
                 <div class="product-img" data-action="open-product" data-id="${escapeAttr(product.id)}" style="cursor:pointer;">
                     <img src="${img}" alt="${escapeAttr(product.name)}" loading="lazy" decoding="async" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
                     ${productBadgeHtml(product)}
-                    ${amazonUrlFor(product) ? '<span class="amazon-chip"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
+                    ${amazonUrlFor(product) ? `<span class="amazon-chip"><i class="fab fa-amazon"></i> ${tr('chip.onAmazon', 'On Amazon')}</span>` : ''}
                 </div>
                 <div class="product-info">
                     <div class="product-cat">${cat}</div>
                     <h3 class="product-title"><a href="${escapeAttr(routeToPath('product-detail', { id: product.id }))}">${name}</a></h3>
                     <div class="card-buy">
                         ${buyButtonHtml(product, 'btn-block')}
-                        ${amazonUrlFor(product) && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-block btn-sm" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
+                        ${amazonUrlFor(product) && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-block btn-sm" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> ${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</a>` : ''}
                     </div>
                 </div>
             </div>
@@ -1599,7 +1584,7 @@ const app = {
                 <div class="soon-card">
                     <div class="soon-img"><img src="${escapeAttr(safeUrl(c.image))}" alt="${escapeAttr(c.name)}" loading="lazy"><span class="soon-tag"><i class="fas fa-clock"></i> Coming soon</span></div>
                     <div class="soon-body">
-                        <h3>${escapeHtml(c.name)}</h3>
+                        <h3>${escapeHtml(tr('cat.' + c.id, c.name))}</h3>
                         <p>New pieces are being made in our Meerut studio.</p>
                         ${wa ? `<a class="btn btn-secondary btn-sm" href="https://wa.me/${wa}?text=${encodeURIComponent('Hi Velorex Design! Please tell me when ' + c.name + ' is available.')}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Notify me</a>` : ''}
                     </div>
@@ -1724,21 +1709,20 @@ const app = {
         const paintBrand = () => {
             content.innerHTML = `
                 <span class="hero-eyebrow"><i class="fas fa-gem"></i> Velorex Design</span>
-                <h1 class="hero-title">Handcrafted <br><span class="text-gradient">Art &amp; Design</span></h1>
-                <p class="hero-desc">Solid-wood serveware, MDF racks and shelves, resin art and Ayurvedic wellness
-                    pieces — made by hand in our own workshop, alongside professional graphic design services.</p>
+                <h1 class="hero-title">${tr('hero.brand.title', 'Handcrafted <br><span class="text-gradient">Art &amp; Design</span>')}</h1>
+                <p class="hero-desc">${tr('hero.brand.desc', 'Solid-wood serveware, MDF racks and shelves, resin art and Ayurvedic wellness pieces — made by hand in our own workshop, alongside professional graphic design services.')}</p>
                 <div class="hero-buttons">
                     <button type="button" class="btn btn-primary" data-action="goto-categories">
-                        <i class="fas fa-th-large"></i> Shop by Category
+                        <i class="fas fa-th-large"></i> ${tr('btn.shopByCategory', 'Shop by Category')}
                     </button>
                     <button type="button" class="btn btn-secondary" data-action="goto-products">
-                        <i class="fas fa-store"></i> All Products
+                        <i class="fas fa-store"></i> ${tr('btn.allProducts', 'All Products')}
                     </button>
                 </div>
                 <ul class="hero-meta">
-                    <li><i class="fas fa-hammer"></i> Handmade in India</li>
-                    <li><i class="fas fa-layer-group"></i> ${CATEGORIES.length} collections</li>
-                    <li><i class="fas fa-pen-nib"></i> Design services</li>
+                    <li><i class="fas fa-hammer"></i> ${tr('meta.handmadeIndia', 'Handmade in India')}</li>
+                    <li><i class="fas fa-layer-group"></i> ${tr('meta.collections', '{n} collections').replace('{n}', CATEGORIES.length)}</li>
+                    <li><i class="fas fa-pen-nib"></i> ${tr('meta.designServices', 'Design services')}</li>
                 </ul>`;
             // Same single framed card as the other slides (the 4-image collage looked out of place).
             const lead = products[0];
@@ -1746,27 +1730,28 @@ const app = {
                 <div class="hero-card" data-action="open-product" data-id="${escapeAttr(lead.id)}">
                     <img src="${escapeAttr(safeUrl(lead.img))}" alt="${escapeAttr(lead.name)}" data-fallback="https://placehold.co/800x800/1a1a2e/9890b0?text=Velorex">
                     <span class="hero-card-tag">Velorex Design</span>
-                    <span class="hero-card-tag hero-card-badge">Handmade</span>
+                    <span class="hero-card-tag hero-card-badge">${tr('tag.handmade', 'Handmade')}</span>
                 </div>` : '';
         };
 
         const paintProduct = (p) => {
             const cover = escapeAttr(safeUrl(p.img));
             const fallback = `https://placehold.co/800x800/1a1a2e/9890b0?text=${encodeURIComponent(p.name || 'Product')}`;
+            const L = lp(p);
             content.innerHTML = `
                 <span class="hero-eyebrow"><i class="fas fa-certificate"></i> ${escapeHtml(getCatName(p.cat))}</span>
-                <h1 class="hero-title hero-title--product">${escapeHtml(p.name)}</h1>
-                <p class="hero-desc">${escapeHtml(shortDetail(p))}</p>
+                <h1 class="hero-title hero-title--product">${bilingualName(L)}</h1>
+                <p class="hero-desc">${escapeHtml(shortDetail(L))}</p>
                 <div class="hero-buttons">
                     <button type="button" class="btn btn-primary" data-action="open-product" data-id="${escapeAttr(p.id)}">
-                        <i class="fas fa-eye"></i> View Details
+                        <i class="fas fa-eye"></i> ${tr('btn.viewDetails', 'View Details')}
                     </button>
                     ${buyButtonHtml(p)}
                 </div>
                 <ul class="hero-meta">
                     <li><i class="fas fa-hammer"></i> ${escapeHtml(craftLabel(p))}</li>
-                    <li><i class="fas fa-truck"></i> Ships in 3&ndash;5 days</li>
-                    ${amazonUrlFor(p) ? '<li><i class="fab fa-amazon"></i> Sold on Amazon</li>' : '<li><i class="fab fa-whatsapp"></i> Order on WhatsApp</li>'}
+                    <li><i class="fas fa-truck"></i> ${tr('meta.ships', 'Ships in 3&ndash;5 days')}</li>
+                    ${amazonUrlFor(p) ? `<li><i class="fab fa-amazon"></i> ${tr('meta.soldAmazon', 'Sold on Amazon')}</li>` : `<li><i class="fab fa-whatsapp"></i> ${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</li>`}
                 </ul>`;
             showcase.innerHTML = `
                 <div class="hero-card" data-action="open-product" data-id="${escapeAttr(p.id)}">
@@ -1781,28 +1766,30 @@ const app = {
             let buttons = '';
             if (product) {
                 buttons = `${buyButtonHtml(product)}
-                    <button type="button" class="btn btn-secondary" data-action="open-product" data-id="${escapeAttr(product.id)}"><i class="fas fa-eye"></i> View Details</button>`;
+                    <button type="button" class="btn btn-secondary" data-action="open-product" data-id="${escapeAttr(product.id)}"><i class="fas fa-eye"></i> ${tr('btn.viewDetails', 'View Details')}</button>`;
             } else if (p.category) {
-                buttons = `<button type="button" class="btn btn-primary" data-action="open-category" data-cat="${escapeAttr(p.category)}"><i class="fas fa-layer-group"></i> See the collection</button>`;
+                buttons = `<button type="button" class="btn btn-primary" data-action="open-category" data-cat="${escapeAttr(p.category)}"><i class="fas fa-layer-group"></i> ${tr('btn.seeCollection', 'See the collection')}</button>`;
             } else if (p.buy) {
                 const wa = storeWhatsAppNumber();
-                buttons = `<a class="btn btn-amazon" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> Amazon store</a>
-                    ${wa ? `<a class="btn btn-whatsapp" href="https://wa.me/${wa}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp us</a>` : ''}`;
+                buttons = `<a class="btn btn-amazon" href="https://www.amazon.in/l/27943762031?me=A23A7Y0AFUIEBT" target="_blank" rel="noopener noreferrer"><i class="fab fa-amazon"></i> ${tr('btn.amazonStore', 'Amazon store')}</a>
+                    ${wa ? `<a class="btn btn-whatsapp" href="https://wa.me/${wa}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> ${tr('btn.whatsappUs', 'WhatsApp us')}</a>` : ''}`;
             }
+            // Promo text is keyed by the promo's key: promo.<key>.eyebrow / .title / .desc
+            const pk = 'promo.' + p.key + '.';
             content.innerHTML = `
-                <span class="hero-eyebrow"><i class="${escapeAttr(p.icon)}"></i> ${escapeHtml(p.eyebrow)}</span>
-                <h1 class="hero-title hero-title--product">${p.title}</h1>
-                <p class="hero-desc">${escapeHtml(p.desc)}</p>
+                <span class="hero-eyebrow"><i class="${escapeAttr(p.icon)}"></i> ${escapeHtml(tr(pk + 'eyebrow', p.eyebrow))}</span>
+                <h1 class="hero-title hero-title--product">${tr(pk + 'title', p.title)}</h1>
+                <p class="hero-desc">${escapeHtml(tr(pk + 'desc', p.desc))}</p>
                 <div class="hero-buttons">${buttons}</div>
                 <ul class="hero-meta">
-                    <li><i class="fas fa-hammer"></i> Handmade in India</li>
-                    <li><i class="fab fa-amazon"></i> On Amazon</li>
-                    <li><i class="fab fa-whatsapp"></i> WhatsApp orders</li>
+                    <li><i class="fas fa-hammer"></i> ${tr('meta.handmadeIndia', 'Handmade in India')}</li>
+                    <li><i class="fab fa-amazon"></i> ${tr('chip.onAmazon', 'On Amazon')}</li>
+                    <li><i class="fab fa-whatsapp"></i> ${tr('meta.whatsappOrders', 'WhatsApp orders')}</li>
                 </ul>`;
             showcase.innerHTML = `
                 <div class="hero-card hero-card--promo"${product ? ` data-action="open-product" data-id="${escapeAttr(product.id)}"` : ''}>
                     <img src="${escapeAttr(safeUrl(p.art))}" alt="${escapeAttr(p.eyebrow)}">
-                    ${p.badge ? `<span class="hero-card-tag hero-card-badge">${escapeHtml(p.badge)}</span>` : ''}
+                    ${p.badge ? `<span class="hero-card-tag hero-card-badge">${escapeHtml(tr(pk + 'badge', p.badge))}</span>` : ''}
                 </div>`;
         };
 
@@ -1893,7 +1880,7 @@ const app = {
                         <i class="${escapeAttr(c.icon || DEFAULT_CAT_FALLBACK_ICON)}"></i>
                     </span>
                     <span class="mega-cat-text">
-                        <span class="mega-cat-name">${escapeHtml(c.name)}</span>
+                        <span class="mega-cat-name">${escapeHtml(tr('cat.' + c.id, c.name))}</span>
                         <span class="mega-cat-meta">${escapeHtml(meta)}</span>
                     </span>
                 </a>`;
@@ -1920,9 +1907,9 @@ const app = {
                 </a>
             </div>
             <div class="mega-foot">
-                <span><i class="fab fa-amazon"></i> Buy on Amazon</span>
-                <span><i class="fas fa-hand-sparkles"></i> Handmade in India</span>
-                <span><i class="fab fa-whatsapp"></i> Order on WhatsApp</span>
+                <span><i class="fab fa-amazon"></i> ${tr('btn.buyAmazon', 'Buy on Amazon')}</span>
+                <span><i class="fas fa-hand-sparkles"></i> ${tr('meta.handmadeIndia', 'Handmade in India')}</span>
+                <span><i class="fab fa-whatsapp"></i> ${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</span>
             </div>`;
 
         const input = document.getElementById('megaSearch');
@@ -1960,7 +1947,7 @@ const app = {
             <button type="button" class="mega-product" data-action="open-product" data-id="${escapeAttr(p.id)}">
                 <img src="${escapeAttr(safeUrl(p.img) || '')}" alt="" loading="lazy" data-fallback="https://placehold.co/120x120/1a1a2e/9890b0?text=+">
                 <span class="mega-product-text">
-                    <span class="mega-product-name">${escapeHtml(p.name)}</span>
+                    <span class="mega-product-name">${escapeHtml(lp(p).name)}</span>
                 </span>
             </button>`;
 
@@ -1997,7 +1984,7 @@ const app = {
         if (!ul) return;
         CATEGORIES = getCategories();
         const catLinks = CATEGORIES.map(c =>
-            `<li><a href="#products?cat=${encodeURIComponent(c.id)}">${escapeHtml(c.name)}</a></li>`
+            `<li><a href="#products?cat=${encodeURIComponent(c.id)}">${escapeHtml(tr('cat.' + c.id, c.name))}</a></li>`
         ).join('');
         ul.innerHTML =
             `<li><a href="#products">All Products</a></li>` +
@@ -2014,7 +2001,7 @@ const app = {
                 <div class="category-card" data-action="open-category" data-cat="${escapeAttr(c.id)}" style="cursor:pointer;"${hidden ? ' aria-hidden="true"' : ''}>
                     <img src="${img}" alt="${escapeAttr(c.name)}" data-fallback="${escapeAttr(DEFAULT_CAT_FALLBACK_IMAGE)}" style="width: 100%; height: 200px; object-fit: cover;">
                     <div class="category-overlay">
-                        <h3>${escapeHtml(c.name)}</h3>
+                        <h3>${escapeHtml(tr('cat.' + c.id, c.name))}</h3>
                     </div>
                 </div>
             `;
@@ -2349,12 +2336,12 @@ const app = {
         const bc = document.getElementById('bc-detail');
         if (bc) {
             bc.innerHTML = `
-                <li class="breadcrumb-item"><a href="#home">Home</a></li>
-                <li class="breadcrumb-item"><a href="#products">Catalog</a></li>
+                <li class="breadcrumb-item"><a href="#home">${tr('nav.home', 'Home')}</a></li>
+                <li class="breadcrumb-item"><a href="#products">${tr('nav.catalog', 'Catalog')}</a></li>
                 <li class="breadcrumb-item"><a href="#products?cat=${encodeURIComponent(product.cat)}">
                     ${escapeHtml(getCatName(product.cat))}
                 </a></li>
-                <li class="breadcrumb-item active">${escapeHtml(product.name)}</li>
+                <li class="breadcrumb-item active">${escapeHtml(lp(product).name)}</li>
             `;
         }
 
@@ -2370,40 +2357,44 @@ const app = {
             </div>` : '';
 
         const amazon = amazonUrlFor(product);
-        const descText = String(product.desc || '');
-        const firstSentence = (descText.match(/^[^.!?]+[.!?]/) || [descText])[0];
+        const L = lp(product); // display copy in the visitor's language
+        const descText = String(L.desc || '');
+        // '।' (danda) ends a sentence in Hindi and Bengali.
+        const firstSentence = (descText.match(/^[^.!?।]+[.!?।]/) || [descText])[0];
         const restText = descText.slice(firstSentence.length).trim();
         const shareUrl = window.location.origin + routeToPath('product-detail', { id: product.id });
         container.innerHTML = `
             <div class="pd-gallery">
                 <div class="pd-main">
-                    ${amazon ? '<span class="pd-flag"><i class="fab fa-amazon"></i> On Amazon</span>' : ''}
+                    ${amazon ? `<span class="pd-flag"><i class="fab fa-amazon"></i> ${tr('chip.onAmazon', 'On Amazon')}</span>` : ''}
                     <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name + ' by Velorex Design')}" width="800" height="800" fetchpriority="high" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
                 </div>
                 ${thumbsHtml}
             </div>
             <div class="pd-info">
                 <a class="pd-cat" href="#products?cat=${encodeURIComponent(product.cat)}">${escapeHtml(getCatName(product.cat))}</a>
-                <h1 class="pd-title">${escapeHtml(product.name)}</h1>
+                <h1 class="pd-title">${bilingualName(L)}</h1>
                 <p class="pd-lead">${escapeHtml(firstSentence)}</p>
 
                 <div class="pd-buy">
                     ${buyButtonHtml(product, 'btn-lg pd-buy-main')}
-                    ${amazon && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Order on WhatsApp</a>` : ''}
-                    <p class="pd-buy-note">${amazon ? 'Buy on Amazon.in, or order directly from us on WhatsApp (' + WA_DISPLAY + ').' : 'Message us on WhatsApp (' + WA_DISPLAY + ') and we will share the price, payment and delivery details.'}</p>
-                    <p class="pd-soon"><i class="fas fa-cart-shopping"></i> <span><strong>Coming soon:</strong> you will be able to buy online directly from this website, with secure payment and delivery across India.</span></p>
+                    ${amazon && whatsAppOrderUrl(product) ? `<a class="btn btn-whatsapp btn-lg" href="${escapeAttr(whatsAppOrderUrl(product))}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> ${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</a>` : ''}
+                    <p class="pd-buy-note">${amazon
+                        ? tr('pd.noteAmazon', 'Buy on Amazon.in, or order directly from us on WhatsApp ({wa}).').replace('{wa}', WA_DISPLAY)
+                        : tr('pd.noteWhatsApp', 'Message us on WhatsApp ({wa}) and we will share the price, payment and delivery details.').replace('{wa}', WA_DISPLAY)}</p>
+                    <p class="pd-soon"><i class="fas fa-cart-shopping"></i> <span>${tr('pd.soon', '<strong>Coming soon:</strong> you will be able to buy online directly from this website, with secure payment and delivery across India.')}</span></p>
                 </div>
 
                 <ul class="pd-trust">
-                    <li><i class="fas fa-hand-sparkles"></i><span><strong>Handmade</strong>${escapeHtml(craftLabel(product))}</span></li>
-                    <li><i class="fas fa-location-dot"></i><span><strong>Made in India</strong>Meerut studio</span></li>
-                    <li><i class="fab fa-whatsapp"></i><span><strong>Order on WhatsApp</strong>Quick reply, Mon–Fri</span></li>
+                    <li><i class="fas fa-hand-sparkles"></i><span><strong>${tr('tag.handmade', 'Handmade')}</strong>${escapeHtml(craftLabel(product))}</span></li>
+                    <li><i class="fas fa-location-dot"></i><span><strong>${tr('pd.madeInIndia', 'Made in India')}</strong>${tr('pd.meerutStudio', 'Meerut studio')}</span></li>
+                    <li><i class="fab fa-whatsapp"></i><span><strong>${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</strong>${tr('pd.quickReply', 'Quick reply, Mon–Fri')}</span></li>
                 </ul>
 
-                ${restText ? `<details class="pd-more" open><summary>About this piece</summary><p>${escapeHtml(restText)}</p></details>` : ''}
+                ${restText ? `<details class="pd-more" open><summary>${tr('pd.about', 'About this piece')}</summary><p>${escapeHtml(restText)}</p></details>` : ''}
 
                 <div class="pd-share">
-                    <span>Share</span>
+                    <span>${tr('pd.share', 'Share')}</span>
                     <a href="https://wa.me/?text=${encodeURIComponent(product.name + ' ' + shareUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(product.name)}" target="_blank" rel="noopener noreferrer" aria-label="Pin on Pinterest"><i class="fab fa-pinterest-p"></i></a>
@@ -2419,7 +2410,7 @@ const app = {
        PRODUCT_DETAILS. Returns '' for products without a deep-dive entry.
        Keeps the .wellness-* styles — they are the shared deep-dive skin. */
     productDeepDiveHtml(slug) {
-        const d = PRODUCT_DETAILS[slug];
+        const d = window.VXI18N ? window.VXI18N.localizeDetails(slug, PRODUCT_DETAILS[slug]) : PRODUCT_DETAILS[slug];
         if (!d) return '';
         const steps = d.steps.map((s, i) => `
             <div class="wellness-step">
@@ -2438,14 +2429,14 @@ const app = {
         const list = items => (items || []).map(t => `<li><i class="fas fa-check"></i> ${t}</li>`).join('');
         const careBlock = (d.care || d.goodToKnow) ? `
                 <div class="care-grid">
-                    ${d.care ? `<div><h4 class="care-title">Care</h4><ul class="wellness-points">${list(d.care)}</ul></div>` : ''}
-                    ${d.goodToKnow ? `<div><h4 class="care-title">Good to Know</h4><ul class="wellness-points">${list(d.goodToKnow)}</ul></div>` : ''}
+                    ${d.care ? `<div><h4 class="care-title">${tr('dd.care', 'Care')}</h4><ul class="wellness-points">${list(d.care)}</ul></div>` : ''}
+                    ${d.goodToKnow ? `<div><h4 class="care-title">${tr('dd.goodToKnow', 'Good to Know')}</h4><ul class="wellness-points">${list(d.goodToKnow)}</ul></div>` : ''}
                 </div>` : '';
         const replaceBlock = d.replaceSchedule ? `
                 <div class="replace-card">
-                    <div class="replace-card-head">When to Replace Your Glass</div>
+                    <div class="replace-card-head">${tr('dd.replaceHead', 'When to Replace Your Glass')}</div>
                     <div class="replace-card-body">
-                        ${d.replaceSchedule.map(r => `<div><strong>${r.days}</strong><span>days</span><em>${r.use}</em></div>`).join('')}
+                        ${d.replaceSchedule.map(r => `<div><strong>${r.days}</strong><span>${tr('dd.days', 'days')}</span><em>${r.use}</em></div>`).join('')}
                     </div>
                 </div>` : '';
         const specs = (d.specs || []).map(sp => `
@@ -2461,20 +2452,20 @@ const app = {
                 <ul class="wellness-points" style="margin-top:1.25rem;">${points}</ul>
 
                 ${specs ? `
-                <h3 class="wellness-subheading" style="margin-top:2.5rem;">Specifications</h3>
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${tr('dd.specs', 'Specifications')}</h3>
                 <div class="spec-table">${specs}</div>` : ''}
 
-                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.stepsHeading || 'How to Use'}</h3>
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.stepsHeading || tr('dd.howToUse', 'How to Use')}</h3>
                 <div class="grid wellness-steps">${steps}</div>
 
-                ${d.firstUse ? `<p class="first-use-note"><strong>Before first use:</strong> ${d.firstUse}</p>` : ''}
+                ${d.firstUse ? `<p class="first-use-note"><strong>${tr('dd.beforeFirstUse', 'Before first use:')}</strong> ${d.firstUse}</p>` : ''}
 
                 ${careBlock || replaceBlock ? `
-                <h3 class="wellness-subheading" style="margin-top:2.5rem;">Care &amp; Replacement</h3>
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${tr('dd.careReplace', 'Care &amp; Replacement')}</h3>
                 ${careBlock}
                 ${replaceBlock}` : ''}
 
-                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.benefitsHeading || 'Key Details &amp; Benefits'}</h3>
+                <h3 class="wellness-subheading" style="margin-top:2.5rem;">${d.benefitsHeading || tr('dd.benefits', 'Key Details &amp; Benefits')}</h3>
                 <div class="grid wellness-benefits">${benefits}</div>
 
                 ${d.disclaimer ? `<p class="wellness-disclaimer"><i class="fas fa-circle-info"></i> ${d.disclaimer}</p>` : ''}
