@@ -441,8 +441,12 @@ const STATIC_WELLNESS_PRODUCTS = [
         name: 'Acupressure Wooden Stick',
         tagline: 'A pocket-sized wooden tool for pressure points — ease knots and tension wherever you are.',
         price: 149,
-        img: 'acupressure-stick.png',
-        images: ['acupressure-stick.png'],
+        img: 'images/products/acupressure/acupressure-stick-photo-1.webp',
+        banner: 'images/products/acupressure/banner-acupressure-wooden-stick.webp',
+        images: [
+            'images/products/acupressure/acupressure-stick-photo-1.webp',
+            'images/products/acupressure/acupressure-stick-photo-2.webp'
+        ],
         cat: 'wellness',
         desc: 'Hand-held wooden acupressure tool used to stimulate pressure points across the hands, feet and body. Helps ease muscle tension, improve circulation and support everyday relaxation. Crafted from smooth, untreated natural wood.',
         stock: 100,
@@ -455,6 +459,7 @@ const STATIC_WELLNESS_PRODUCTS = [
         tagline: 'The Vijaysar glass, neem comb and acupressure stick together, a complete daily ritual and an easy gift.',
         price: 499,
         img: 'images/products/combo/combo-kit.webp',
+        banner: 'images/products/combo/banner-wellness-combo-kit.webp',
         images: ['images/products/combo/combo-kit.webp', 'images/products/combo/glass.webp', 'images/products/combo/comb.webp', 'images/products/combo/stick.webp', 'images/products/combo/leaflet-more-from-velorex.webp'],
         cat: 'wellness',
         desc: 'A 3-piece set of traditional wood wellness tools: a Vijaysar wooden glass (Pterocarpus marsupium) for overnight infused water, a neem wood comb that detangles gently and reduces static, and a ridged wooden acupressure stick for pressure points on the scalp and body. Made in India by Velorex Design.',
@@ -566,12 +571,13 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Velorex 4-Tier Wall Mounted Rack — 24" × 24"',
         tagline: 'Four tiers, 24 inches square — up to 32 spice jars off the counter and onto the wall.',
         price: PLACEHOLDER_PRICES['rk-4tier-24'],
-        img: 'images/products/rack-4tier-1.jpg',
+        img: 'images/products/rack/rack-4tier-1.webp',
+        banner: 'images/products/rack/banner-4tier-wall-rack.webp',
         images: [
-            'images/products/rack-4tier-1.jpg',
-            'images/products/rack-4tier-2.jpg',
-            'images/products/rack-4tier-3.jpg',
-            'images/products/rack-4tier-4.jpg'
+            'images/products/rack/rack-4tier-1.webp',
+            'images/products/rack/rack-4tier-2.webp',
+            'images/products/rack/rack-4tier-3.webp',
+            'images/products/rack/rack-4tier-4.webp'
         ],
         cat: 'rack',
         desc: 'A four-tier wall mounted rack in dark walnut-finish engineered wood (MDF), 24 inches wide by 24 inches tall with a 4 inch deep shelf. Holds 24–32 standard spice jars in the kitchen, or works just as well as a display shelf for books, toys, collectibles and plants. Ships flat as six pre-drilled boards and assembles in minutes.',
@@ -584,14 +590,15 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Velorex Multipurpose 2-Tier Organizer Rack — 14" × 14"',
         tagline: 'Deep 6-inch tiers with brass fittings — tall bottles, spice jars or a full row of CDs.',
         price: PLACEHOLDER_PRICES['rk-2tier-14'],
-        img: 'images/products/rack-2tier-14-1.jpg',
+        img: 'images/products/rack/rack-2tier-14-1.webp',
+        banner: 'images/products/rack/banner-organizer-rack.webp',
         images: [
-            'images/products/rack-2tier-14-1.jpg',
-            'images/products/rack-2tier-14-2.jpg',
-            'images/products/rack-2tier-14-3.jpg',
-            'images/products/rack-2tier-14-4.jpg',
-            'images/products/rack-2tier-14-5.jpg',
-            'images/products/rack-2tier-14-6.jpg'
+            'images/products/rack/rack-2tier-14-1.webp',
+            'images/products/rack/rack-2tier-14-2.webp',
+            'images/products/rack/rack-2tier-14-3.webp',
+            'images/products/rack/rack-2tier-14-4.webp',
+            'images/products/rack/rack-2tier-14-5.webp',
+            'images/products/rack/rack-2tier-14-6.webp'
         ],
         cat: 'rack',
         desc: 'A two-tier organizer rack in dark walnut-finish engineered wood (MDF), 14 inches wide by 14 inches tall with deep 6 inch trays and brass connector hardware. The extra depth takes tall spice jars, oil and sauce bottles, tea and coffee tins — or a full row of CDs, DVDs and Blu-ray cases. Sits on a counter or desk, or mounts on a wall.',
@@ -604,12 +611,13 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Velorex Compact 2-Tier Spice Rack — 14" × 8"',
         tagline: 'The compact one: 14 by 8 inches of everyday spices, on the counter or inside the cabinet.',
         price: PLACEHOLDER_PRICES['rk-2tier-8'],
-        img: 'images/products/rack-2tier-8-1.jpg',
+        img: 'images/products/rack/rack-2tier-8-1.webp',
+        banner: 'images/products/rack/banner-compact-spice-rack.webp',
         images: [
-            'images/products/rack-2tier-8-1.jpg',
-            'images/products/rack-2tier-8-2.jpg',
-            'images/products/rack-2tier-8-3.jpg',
-            'images/products/rack-2tier-8-4.jpg'
+            'images/products/rack/rack-2tier-8-1.webp',
+            'images/products/rack/rack-2tier-8-2.webp',
+            'images/products/rack/rack-2tier-8-3.webp',
+            'images/products/rack/rack-2tier-8-4.webp'
         ],
         cat: 'rack',
         desc: 'The compact two-tier rack in the same dark walnut-finish engineered wood (MDF) — 14 inches wide, 8 inches tall, 4 inches deep. Sized for a countertop, a kitchen shelf or inside a cabinet, it keeps six to twelve everyday spice jars in easy reach without taking over the worktop. Four flat boards, assembled in minutes.',
