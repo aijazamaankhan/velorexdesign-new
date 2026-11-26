@@ -3431,11 +3431,16 @@ html:not([data-design="living-craft"]) .amazon-chip { animation: badgePop .5s .2
 html[data-design-switch="off"] .design-toggle { display: none !important; }
 
 /* ───────────── Product detail page (Amazon-only storefront) ───────────── */
-#productDetailContent.detail-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3.5rem; }
+/* ── Product detail — hero card ── */
+#productDetailContent.detail-grid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 2rem;
+}
 .pd-gallery { position: sticky; top: 96px; min-width: 0; width: 100%; }
 .pd-main {
   position: relative; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden;
-  background: var(--surface); border: 1px solid var(--border);
+  background: #f5f0eb;
 }
 .pd-main #detailMainImage {
   width: 100%; height: 100%; object-fit: contain; border: 0; border-radius: 0; aspect-ratio: auto;
@@ -3455,6 +3460,7 @@ html[data-design-switch="off"] .design-toggle { display: none !important; }
 .pd-thumb.is-active { border-color: var(--secondary); }
 .pd-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
+/* ── Product detail — info panel ── */
 .pd-info { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
 .pd-cat {
   align-self: flex-start; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
@@ -3464,12 +3470,15 @@ html[data-design-switch="off"] .design-toggle { display: none !important; }
 .pd-lead { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
 .pd-buy {
   display: flex; flex-direction: column; gap: .75rem; padding: 1.25rem;
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: rgba(255,107,53,.04); border: 1px solid rgba(255,107,53,.15); border-radius: var(--radius-lg);
 }
 .pd-buy .btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: .95rem 1.2rem; }
 .pd-buy-note { font-size: .85rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
 .pd-trust { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
-.pd-trust li { display: flex; gap: .6rem; align-items: flex-start; font-size: .8rem; color: var(--text-muted); line-height: 1.35; }
+.pd-trust li {
+  display: flex; gap: .6rem; align-items: flex-start; font-size: .8rem; color: var(--text-muted); line-height: 1.35;
+  padding: .75rem; background: var(--bg, var(--surface)); border-radius: var(--radius-md); border: 1px solid var(--border);
+}
 .pd-trust i { color: var(--secondary); font-size: 1.05rem; margin-top: .1rem; }
 .pd-trust span { display: flex; flex-direction: column; min-width: 0; }
 .pd-trust strong { color: var(--text); font-size: .88rem; }
@@ -3486,21 +3495,23 @@ html[data-design-switch="off"] .design-toggle { display: none !important; }
 .pd-share a:hover { background: var(--secondary); color: #fff; transform: translateY(-2px); }
 
 @media (max-width: 900px) {
-  #productDetailContent.detail-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+  #productDetailContent.detail-grid { grid-template-columns: 1fr; gap: 1.75rem; padding: 1.25rem; }
   .pd-gallery { position: static; }
 }
 @media (max-width: 480px) {
+  #productDetailContent.detail-grid { padding: 1rem; }
   .pd-trust { grid-template-columns: 1fr; }
   .pd-thumb { flex-basis: 64px; height: 64px; }
 }
 html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-buy { border-radius: 0; }
 
-/* ── Product detail — banner + detail-image strip ── */
+/* ── Product detail — banner + image carousel ── */
 .pd-banner-wrap {
-  margin: 2.5rem 0 0;
+  margin: 2rem 0 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
   line-height: 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,.12);
 }
 .pd-banner-img {
   width: 100%;
@@ -3509,40 +3520,53 @@ html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-
   object-fit: cover;
 }
 .pd-story {
-  margin: 3rem 0 0;
-  padding: 2.5rem 0;
+  margin: 2rem 0 0;
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 .pd-story-heading {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  text-align: center;
-  margin: 0 0 2rem;
-  letter-spacing: .02em;
-  color: var(--heading, var(--text));
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 1.25rem;
 }
 .pd-story-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: .875rem;
+  padding-bottom: .5rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
+.pd-story-grid::-webkit-scrollbar { height: 5px; }
+.pd-story-grid::-webkit-scrollbar-track { background: transparent; }
+.pd-story-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 .pd-story-img {
-  width: 100%;
+  flex: 0 0 42%;
+  min-width: 260px;
+  max-width: 340px;
   aspect-ratio: 1;
   object-fit: contain;
   display: block;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   background: #f5f0eb;
-  transition: transform .25s ease, box-shadow .25s ease;
+  scroll-snap-align: start;
+  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: zoom-in;
 }
 .pd-story-img:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 32px rgba(0,0,0,.22);
+  transform: scale(1.03);
+  box-shadow: 0 6px 24px rgba(0,0,0,.18);
 }
 @media (max-width: 600px) {
-  .pd-story-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .pd-story { margin: 2rem 0 0; padding: 1.5rem 0; }
-  .pd-story-heading { font-size: 1.25rem; }
+  .pd-story-img { flex: 0 0 78%; min-width: 220px; }
+  .pd-story { margin: 1.5rem 0 0; padding: 1.25rem; }
 }
 
 /* ───────────── Catalog header (Amazon-only storefront) ───────────── */
