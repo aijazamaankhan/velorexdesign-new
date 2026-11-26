@@ -3508,24 +3508,39 @@ html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-
   display: block;
   object-fit: cover;
 }
-.pd-detail-images {
-  margin: 2.5rem 0 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: .75rem;
+.pd-story {
+  margin: 3rem 0 0;
+  padding: 2.5rem 0;
 }
-.pd-detail-img {
+.pd-story-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 2rem;
+  letter-spacing: .02em;
+  color: var(--heading, var(--text));
+}
+.pd-story-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+.pd-story-img {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
+  transition: transform .25s ease, box-shadow .25s ease;
 }
-@media (max-width: 900px) {
-  .pd-detail-images { grid-template-columns: repeat(2, 1fr); }
+.pd-story-img:hover {
+  transform: scale(1.015);
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
 }
-@media (max-width: 480px) {
-  .pd-detail-images { grid-template-columns: 1fr; }
+@media (max-width: 600px) {
+  .pd-story-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .pd-story { margin: 2rem 0 0; padding: 1.5rem 0; }
+  .pd-story-heading { font-size: 1.25rem; }
 }
 
 /* ───────────── Catalog header (Amazon-only storefront) ───────────── */

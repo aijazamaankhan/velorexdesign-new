@@ -474,7 +474,15 @@ const STATIC_WELLNESS_PRODUCTS = [
         price: 299,
         img: 'images/products/comb-floral/floral-neem-comb-main-white.webp',
         banner: 'images/products/comb-floral/banner-premium-floral-neem-comb.webp',
-        images: ['images/products/comb-floral/floral-neem-comb-main-white.webp', 'images/products/comb-floral/floral-neem-comb-design.webp', 'images/products/comb-floral/floral-neem-comb-in-the-box.webp', 'images/products/comb-floral/box-3d-open.webp', 'images/products/comb-floral/box-3d.webp'],
+        images: [
+            'images/products/comb-floral/floral-neem-comb-main-white.webp',
+            'images/products/comb-floral/floral-neem-comb-design.webp',
+            'images/products/comb-floral/floral-neem-comb-design-detail.webp',
+            'images/products/comb-floral/floral-neem-comb-features-size.webp',
+            'images/products/comb-floral/floral-neem-comb-in-the-box.webp',
+            'images/products/comb-floral/box-3d-open.webp',
+            'images/products/comb-floral/box-3d.webp'
+        ],
         cat: 'wellness',
         desc: 'From the Velorex Premium Collection. A neem wood comb with a delicate flower sprig engraved on it, finished by hand. Wide, smooth teeth glide through hair, and the wood does not build up static the way plastic does, so there is less frizz. Gentle on hair and scalp, plastic-free, and packed in a premium gift box. Size: approx. 16.5 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing, so each piece is one of a kind.',
         stock: 50,
@@ -488,7 +496,15 @@ const STATIC_WELLNESS_PRODUCTS = [
         price: 299,
         img: 'images/products/comb-handle/handle-neem-comb-main-white.webp',
         banner: 'images/products/comb-handle/banner-premium-handle-neem-comb.webp',
-        images: ['images/products/comb-handle/handle-neem-comb-main-white.webp', 'images/products/comb-handle/handle-neem-comb-design.webp', 'images/products/comb-handle/handle-neem-comb-in-the-box.webp', 'images/products/comb-handle/box-3d-open.webp', 'images/products/comb-handle/box-3d.webp'],
+        images: [
+            'images/products/comb-handle/handle-neem-comb-main-white.webp',
+            'images/products/comb-handle/handle-neem-comb-design.webp',
+            'images/products/comb-handle/handle-neem-comb-design-detail.webp',
+            'images/products/comb-handle/handle-neem-comb-features-size.webp',
+            'images/products/comb-handle/handle-neem-comb-in-the-box.webp',
+            'images/products/comb-handle/box-3d-open.webp',
+            'images/products/comb-handle/box-3d.webp'
+        ],
         cat: 'wellness',
         desc: 'From the Velorex Premium Collection. A long, rounded handle that sits comfortably in your hand, with smooth, evenly spaced teeth for slow, gentle combing. Natural neem wood, anti-static so there is less frizz, gentle on the scalp and plastic-free. Comes in a premium gift box. Size: approx. 18.2 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing.',
         stock: 50,
@@ -502,7 +518,17 @@ const STATIC_WELLNESS_PRODUCTS = [
         price: 329,
         img: 'images/products/comb-combo/neem-comb-combo-main-white.webp',
         banner: 'images/products/comb-combo/banner-neem-comb-combo.webp',
-        images: ['images/products/comb-combo/neem-comb-combo-main-white.webp', 'images/products/comb-combo/neem-comb-combo-design.webp', 'images/products/comb-combo/neem-comb-combo-in-the-box.webp', 'images/products/comb-combo/box-3d-open.webp', 'images/products/comb-combo/box-3d.webp'],
+        images: [
+            'images/products/comb-combo/neem-comb-combo-main-white.webp',
+            'images/products/comb-combo/neem-comb-combo-design.webp',
+            'images/products/comb-combo/neem-comb-combo-gift-box.webp',
+            'images/products/comb-combo/neem-comb-combo-two-combs-detail.webp',
+            'images/products/comb-combo/neem-comb-combo-features-sizes.webp',
+            'images/products/comb-combo/neem-comb-combo-premium-box.webp',
+            'images/products/comb-combo/neem-comb-combo-in-the-box.webp',
+            'images/products/comb-combo/box-3d-open.webp',
+            'images/products/comb-combo/box-3d.webp'
+        ],
         cat: 'wellness',
         desc: 'A set of two natural neem wood combs. The Handle Comb (approx. 18.2 × 5.1 cm) has a long, rounded handle for everyday combing at home; the compact Regular Comb (approx. 16 × 5.7 cm) fits in a bag, desk drawer or travel kit. Both are shaped and finished by hand in India, with smooth rounded teeth that glide through hair without pulling. How to use: comb slowly from scalp to ends on dry or slightly damp hair, wipe with a dry cloth after use, do not soak in water, and rub in a drop of hair oil now and then to nourish the wood. In the box: 1 Handle Comb, 1 Regular Comb, premium gift box, care leaflet.',
         stock: 50,
@@ -533,6 +559,7 @@ const STATIC_CATALOG_PRODUCTS = [
         banner: 'images/products/mango-tray/banner-mango-tray.webp',
         images: [
             'images/products/mango-tray/mango-sheesham-tray-main.webp',
+            'images/products/mango-tray/mango-sheesham-tray-hero.webp',
             'images/products/mango-tray/mango-sheesham-tray-in-the-box.webp'
         ],
         cat: 'wood',
@@ -2366,16 +2393,9 @@ const app = {
             `;
         }
 
-        const gallery = (product.images && product.images.length ? product.images : [product.img]).filter(Boolean);
+        const gallery = [product.img].filter(Boolean);
         this._detailGallery = gallery;
-        const thumbsHtml = gallery.length > 1 ? `
-            <div class="pd-thumbs">
-                ${gallery.map((src, i) => `
-                    <button type="button" class="pd-thumb${i === 0 ? ' is-active' : ''}" data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" aria-label="Show image ${i + 1}">
-                        <img src="${escapeAttr(safeUrl(src))}" data-broken-opacity="1" alt="${escapeAttr(product.name + ' - view ' + (i + 1))}" loading="lazy" width="76" height="76">
-                    </button>
-                `).join('')}
-            </div>` : '';
+        const thumbsHtml = '';
 
         const amazon = amazonUrlFor(product);
         const L = lp(product); // display copy in the visitor's language
@@ -2434,9 +2454,12 @@ const app = {
         const detailImagesEl = document.getElementById('productDetailImages');
         if (detailImagesEl) {
             const detailImgs = (product.images || []).slice(1).filter(Boolean);
-            detailImagesEl.innerHTML = detailImgs.length > 1 ? `
-                <div class="pd-detail-images">
-                    ${detailImgs.map((src, i) => `<img class="pd-detail-img" src="${escapeAttr(safeUrl(src))}" alt="${escapeAttr(product.name + ' — detail ' + (i + 2))}" loading="lazy">`).join('')}
+            detailImagesEl.innerHTML = detailImgs.length ? `
+                <div class="pd-story">
+                    <h2 class="pd-story-heading">Product Details</h2>
+                    <div class="pd-story-grid">
+                        ${detailImgs.map((src, i) => `<img class="pd-story-img" src="${escapeAttr(safeUrl(src))}" alt="${escapeAttr(product.name + ' — detail ' + (i + 2))}" loading="lazy">`).join('')}
+                    </div>
                 </div>` : '';
         }
 
