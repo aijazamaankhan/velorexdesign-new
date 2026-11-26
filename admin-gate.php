@@ -21,19 +21,17 @@ foreach ([__DIR__ . '/.env', __DIR__ . '/api/.env'] as $envFile) {
 }
 if ($key === '') $key = (string) getenv('ADMIN_PATH_KEY');
 
-$given = isset($_GET['k']) && is_string($_GET['k']) ? $_GET['k'] : '';
-// /velorex-admin reaches this script only through the rewrite in .htaccess
-// (direct requests for admin-gate.php are refused there), so it is let in;
-// the admin login and its rate limit protect the data.
-if (isset($_GET['easy']) && $key !== '') $given = $key;
-
-// A short key is too easy to guess, so the gate stays shut until a long one is set.
-if (strlen($key) < 24 || !hash_equals($key, $given)) {
-    usleep(300000); // slows down anyone trying keys
-    http_response_code(404);
-    header('Content-Type: text/html; charset=utf-8');
-    echo '<!doctype html><title>Not found</title><h1>Not found</h1>';
-    exit;
+// /velorex-admin is always allowed — the login form is the security gate.
+// /manage/<key> still requires a matching ADMIN_PATH_KEY.
+if (!isset($_GET['easy'])) {
+    $given = isset($_GET['k']) && is_string($_GET['k']) ? $_GET['k'] : '';
+    if (strlen($key) < 24 || !hash_equals($key, $given)) {
+        usleep(300000);
+        http_response_code(404);
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!doctype html><title>Not found</title><h1>Not found</h1>';
+        exit;
+    }
 }
 
 header('Content-Type: text/html; charset=utf-8');
