@@ -3527,15 +3527,17 @@ html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-
 }
 .pd-story-img {
   width: 100%;
-  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
   display: block;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
+  background: #f5f0eb;
   transition: transform .25s ease, box-shadow .25s ease;
 }
 .pd-story-img:hover {
-  transform: scale(1.015);
-  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(0,0,0,.22);
 }
 @media (max-width: 600px) {
   .pd-story-grid { grid-template-columns: 1fr; gap: 1rem; }
