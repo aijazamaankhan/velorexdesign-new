@@ -401,8 +401,17 @@ const STATIC_WELLNESS_PRODUCTS = [
         name: 'Vijaysar Wood Wellness Glass',
         tagline: 'Fill it at night, drink it at dawn — the Ayurvedic wooden tumbler that infuses your water while you sleep.',
         price: 399,
-        img: 'vijaysar-glass.png',
-        images: ['vijaysar-glass.png', 'images/products/vijaysar/box-front.webp', 'images/products/vijaysar/box-open.webp', 'images/products/vijaysar/box-side.webp', 'images/products/vijaysar/box-back.webp', 'images/products/vijaysar/infographic.webp', 'images/products/vijaysar/leaflet-how-to-use.webp', 'vijaysar-glass-2.png'],
+        img: 'images/products/vijaysar/vijaysar-wood-glass-main-white.webp',
+        banner: 'images/products/vijaysar/banner-vijaysar-wood-glass.webp',
+        images: [
+            'images/products/vijaysar/vijaysar-wood-glass-main-white.webp',
+            'images/products/vijaysar/vijaysar-wood-glass-features.webp',
+            'images/products/vijaysar/vijaysar-wood-glass-how-to-use.webp',
+            'images/products/vijaysar/vijaysar-wood-glass-how-long-it-lasts.webp',
+            'images/products/vijaysar/vijaysar-wood-glass-size-details.webp',
+            'images/products/vijaysar/vijaysar-wood-glass-whats-in-the-box.webp',
+            'images/products/vijaysar/vijaysar-wood-glass-care-guide.webp'
+        ],
         cat: 'wellness',
         desc: 'A traditional Ayurvedic tumbler hand-turned from the heartwood of the Vijaysar tree (Pterocarpus marsupium, the Indian Kino tree). Fill it with drinking water at night and let it sit for 8–10 hours; by morning the water turns light brown as the wood’s natural bioactive compounds infuse into it. Drink on an empty stomach to support healthy metabolism and blood sugar balance. 100% natural wood — no paints, chemicals or polishes. Replace after 30 to 90 days, depending on how often you use it. (Traditional wellness product, not a medicine.)',
         stock: 50,
@@ -414,8 +423,13 @@ const STATIC_WELLNESS_PRODUCTS = [
         name: 'Neem Wood Comb',
         tagline: 'Anti-bacterial neem wood that calms the scalp and tames frizz — no plastic, no static.',
         price: 169,
-        img: 'neem-comb.png',
-        images: ['neem-comb.png', 'neem-comb-detailes.png'],
+        img: 'images/products/comb-basic/neem-wood-comb-main.webp',
+        banner: 'images/products/comb-basic/banner-neem-wood-comb.webp',
+        images: [
+            'images/products/comb-basic/neem-wood-comb-main.webp',
+            'images/products/comb-basic/neem-wood-comb-photo-1.webp',
+            'images/products/comb-basic/neem-wood-comb-photo-2.webp'
+        ],
         cat: 'wellness',
         desc: 'Hand-finished comb made from anti-bacterial neem wood. Helps reduce dandruff, soothes an itchy scalp, controls frizz and distributes natural oils through the hair — a chemical-free, static-free alternative to plastic combs.',
         stock: 100,
@@ -453,8 +467,9 @@ const STATIC_WELLNESS_PRODUCTS = [
         name: 'Premium Floral Neem Comb',
         tagline: 'Natural neem wood with a hand-finished flower engraving, packed in a premium gift box.',
         price: 299,
-        img: 'images/products/comb-floral/hero.webp',
-        images: ['images/products/comb-floral/hero.webp', 'images/products/comb-floral/cutout.webp', 'images/products/comb-floral/detail.webp', 'images/products/comb-floral/size.webp', 'images/products/comb-floral/box-3d-open.webp', 'images/products/comb-floral/box-3d.webp'],
+        img: 'images/products/comb-floral/floral-neem-comb-main-white.webp',
+        banner: 'images/products/comb-floral/banner-premium-floral-neem-comb.webp',
+        images: ['images/products/comb-floral/floral-neem-comb-main-white.webp', 'images/products/comb-floral/floral-neem-comb-design.webp', 'images/products/comb-floral/floral-neem-comb-in-the-box.webp', 'images/products/comb-floral/box-3d-open.webp', 'images/products/comb-floral/box-3d.webp'],
         cat: 'wellness',
         desc: 'From the Velorex Premium Collection. A neem wood comb with a delicate flower sprig engraved on it, finished by hand. Wide, smooth teeth glide through hair, and the wood does not build up static the way plastic does, so there is less frizz. Gentle on hair and scalp, plastic-free, and packed in a premium gift box. Size: approx. 16.5 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing, so each piece is one of a kind.',
         stock: 50,
@@ -466,8 +481,9 @@ const STATIC_WELLNESS_PRODUCTS = [
         name: 'Premium Handle Neem Comb',
         tagline: 'A long, rounded easy-grip handle in natural neem wood, finished by hand.',
         price: 299,
-        img: 'images/products/comb-handle/hero.webp',
-        images: ['images/products/comb-handle/hero.webp', 'images/products/comb-handle/cutout.webp', 'images/products/comb-handle/detail.webp', 'images/products/comb-handle/size.webp', 'images/products/comb-handle/box-3d-open.webp', 'images/products/comb-handle/box-3d.webp'],
+        img: 'images/products/comb-handle/handle-neem-comb-main-white.webp',
+        banner: 'images/products/comb-handle/banner-premium-handle-neem-comb.webp',
+        images: ['images/products/comb-handle/handle-neem-comb-main-white.webp', 'images/products/comb-handle/handle-neem-comb-design.webp', 'images/products/comb-handle/handle-neem-comb-in-the-box.webp', 'images/products/comb-handle/box-3d-open.webp', 'images/products/comb-handle/box-3d.webp'],
         cat: 'wellness',
         desc: 'From the Velorex Premium Collection. A long, rounded handle that sits comfortably in your hand, with smooth, evenly spaced teeth for slow, gentle combing. Natural neem wood, anti-static so there is less frizz, gentle on the scalp and plastic-free. Comes in a premium gift box. Size: approx. 18.2 × 5.1 cm. Colour, grain and finish vary with natural wood and hand finishing.',
         stock: 50,
@@ -479,8 +495,9 @@ const STATIC_WELLNESS_PRODUCTS = [
         name: 'Premium Neem Comb Combo (Handle + Regular)',
         tagline: 'Two neem wood combs in one premium gift box: the Handle Comb for home, the Regular Comb for your bag.',
         price: 329,
-        img: 'images/products/comb-combo/main.webp',
-        images: ['images/products/comb-combo/main.webp', 'images/products/comb-combo/gift-box.webp', 'images/products/comb-combo/detail.webp', 'images/products/comb-combo/sizes.webp', 'images/products/comb-combo/box.webp', 'images/products/comb-combo/box-3d-open.webp', 'images/products/comb-combo/box-3d.webp'],
+        img: 'images/products/comb-combo/neem-comb-combo-main-white.webp',
+        banner: 'images/products/comb-combo/banner-neem-comb-combo.webp',
+        images: ['images/products/comb-combo/neem-comb-combo-main-white.webp', 'images/products/comb-combo/neem-comb-combo-design.webp', 'images/products/comb-combo/neem-comb-combo-in-the-box.webp', 'images/products/comb-combo/box-3d-open.webp', 'images/products/comb-combo/box-3d.webp'],
         cat: 'wellness',
         desc: 'A set of two natural neem wood combs. The Handle Comb (approx. 18.2 × 5.1 cm) has a long, rounded handle for everyday combing at home; the compact Regular Comb (approx. 16 × 5.7 cm) fits in a bag, desk drawer or travel kit. Both are shaped and finished by hand in India, with smooth rounded teeth that glide through hair without pulling. How to use: comb slowly from scalp to ends on dry or slightly damp hair, wipe with a dry cloth after use, do not soak in water, and rub in a drop of hair oil now and then to nourish the wood. In the box: 1 Handle Comb, 1 Regular Comb, premium gift box, care leaflet.',
         stock: 50,
@@ -507,12 +524,11 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Mango-Shaped Sheesham Wood Tray',
         tagline: 'Hand-carved solid Sheesham in a mango silhouette — three screw-in legs turn a platter into a serving stand.',
         price: PLACEHOLDER_PRICES['wd-mango-tray'],
-        img: 'images/products/mango-tray-1.jpg',
+        img: 'images/products/mango-tray/mango-sheesham-tray-main.webp',
+        banner: 'images/products/mango-tray/banner-mango-tray.webp',
         images: [
-            'images/products/mango-tray-1.jpg',
-            'images/products/mango-tray-2.jpg',
-            'images/products/mango-tray-3.jpg',
-            'images/products/mango-tray-4.jpg'
+            'images/products/mango-tray/mango-sheesham-tray-main.webp',
+            'images/products/mango-tray/mango-sheesham-tray-in-the-box.webp'
         ],
         cat: 'wood',
         desc: 'A hand-carved serving tray in solid Sheesham (Indian rosewood), shaped like a mango / paisley motif. Concentric hand-cut grooves ripple out from a deep scooped well, and the whole edge is finished with a scalloped, hand-chiselled border. Three turned legs screw in and out, so the same piece works as a footed serving stand, a flat platter or a wall display piece. Natural wood grain and tone vary from piece to piece — no two trays are identical.',
@@ -525,22 +541,19 @@ const STATIC_CATALOG_PRODUCTS = [
         name: 'Hand-Carved Wooden Tray with Brass Inlay — 12" × 8"',
         tagline: 'The Heritage Collection: a hand-carved floral border around a brass-inlaid centre, with cut-out handles.',
         price: 899,
-        img: 'images/products/tray/front.webp',
+        img: 'images/products/tray/brass-inlay-tray-main-white.webp',
+        banner: 'images/products/tray/banner-hand-carved-tray-open-gift-box.webp',
         images: [
-            'images/products/tray/front.webp',
-            'images/products/tray/features.webp',
-            'images/products/tray/detail-inlay.webp',
-            'images/products/tray/detail-flower.webp',
-            'images/products/tray/detail-border.webp',
-            'images/products/tray/detail-side.webp',
-            'images/products/tray/detail-corner.webp',
-            'images/products/tray/back.webp',
-            'images/products/tray/front-back.webp',
-            'images/products/tray/size-guide.webp',
-            'images/products/tray/front-dark.webp',
-            'images/products/tray/gift-box-open.webp',
-            'images/products/tray/gift-box.webp',
-            'images/products/tray/gift-box-closed.webp'
+            'images/products/tray/brass-inlay-tray-main-white.webp',
+            'images/products/tray/brass-inlay-tray-hero.webp',
+            'images/products/tray/brass-inlay-tray-product-views.webp',
+            'images/products/tray/brass-inlay-tray-features.webp',
+            'images/products/tray/brass-inlay-tray-dimensions.webp',
+            'images/products/tray/brass-inlay-tray-closeup.webp',
+            'images/products/tray/brass-inlay-tray-hand-carving.webp',
+            'images/products/tray/brass-inlay-tray-perfect-for.webp',
+            'images/products/tray/brass-inlay-tray-care-details.webp',
+            'images/products/tray/gift-box-open.webp'
         ],
         cat: 'wood',
         desc: 'A solid wood serving tray from the Velorex Heritage Collection. The border of flowers and vines is cut by hand, and the centre carries a brass inlay of petals and leaves set by hand into the grain. Cut-out handles on both ends give an easy, steady grip. Size: 12 × 8 inches (30.5 × 20.3 cm), 4.5 cm high. Use it for tea and snacks, as a dressing-table or puja tray, or as a gift. Ships in a printed gift box with a thank-you card and care leaflet. Wipe with a dry cloth; do not soak. Natural wood grain and tone vary from piece to piece.',
@@ -2401,6 +2414,23 @@ const app = {
                 </div>
             </div>
         `;
+
+        const bannerEl = document.getElementById('productBannerContent');
+        if (bannerEl) {
+            bannerEl.innerHTML = product.banner ? `
+                <div class="pd-banner-wrap">
+                    <img class="pd-banner-img" src="${escapeAttr(safeUrl(product.banner))}" alt="${escapeAttr(product.name + ' — banner')}" loading="lazy">
+                </div>` : '';
+        }
+
+        const detailImagesEl = document.getElementById('productDetailImages');
+        if (detailImagesEl) {
+            const detailImgs = (product.images || []).slice(1).filter(Boolean);
+            detailImagesEl.innerHTML = detailImgs.length > 1 ? `
+                <div class="pd-detail-images">
+                    ${detailImgs.map((src, i) => `<img class="pd-detail-img" src="${escapeAttr(safeUrl(src))}" alt="${escapeAttr(product.name + ' — detail ' + (i + 2))}" loading="lazy">`).join('')}
+                </div>` : '';
+        }
 
         const extra = document.getElementById('productExtraContent');
         if (extra) extra.innerHTML = this.productDeepDiveHtml(resolveDetailSlug(product));

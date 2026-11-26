@@ -3495,6 +3495,39 @@ html[data-design-switch="off"] .design-toggle { display: none !important; }
 }
 html[data-design="living-craft"] .pd-main, html[data-design="living-craft"] .pd-buy { border-radius: 0; }
 
+/* ── Product detail — banner + detail-image strip ── */
+.pd-banner-wrap {
+  margin: 2.5rem 0 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  line-height: 0;
+}
+.pd-banner-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+.pd-detail-images {
+  margin: 2.5rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .75rem;
+}
+.pd-detail-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+@media (max-width: 900px) {
+  .pd-detail-images { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .pd-detail-images { grid-template-columns: 1fr; }
+}
+
 /* ───────────── Catalog header (Amazon-only storefront) ───────────── */
 .catalog-hero {
   display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
