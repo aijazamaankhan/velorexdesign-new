@@ -3447,6 +3447,18 @@ html[data-design-switch="off"] .design-toggle { display: none !important; }
   transition: transform .6s cubic-bezier(.2,.7,.2,1);
 }
 .pd-main:hover #detailMainImage { transform: scale(1.04); }
+.pd-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,.92); color: #1a1a2e;
+  display: grid; place-items: center; font-size: .95rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+  transition: background .18s, transform .18s;
+  backdrop-filter: blur(4px);
+}
+.pd-nav:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
+.pd-nav-prev { left: 10px; }
+.pd-nav-next { right: 10px; }
 .pd-flag {
   position: absolute; top: 14px; left: 14px; z-index: 1; display: inline-flex; align-items: center; gap: .4rem;
   background: #ffd814; color: #0f1111; font-weight: 700; font-size: .78rem; padding: .35rem .7rem; border-radius: 999px;

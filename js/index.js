@@ -2393,22 +2393,37 @@ const app = {
             `;
         }
 
-        const gallery = [product.img].filter(Boolean);
+        // Gallery: only clean product photos (images[0..2] max, no text-overlay listing images)
+        const allImgs = (product.images && product.images.length ? product.images : [product.img]).filter(Boolean);
+        // Use at most 3 clean shots for the main slider (listing/social images go in the detail carousel below)
+        const gallery = allImgs.slice(0, Math.min(3, allImgs.length));
         this._detailGallery = gallery;
-        const thumbsHtml = '';
+        this._detailGalleryIdx = 0;
+
+        const thumbsHtml = gallery.length > 1 ? `
+            <div class="pd-thumbs">
+                ${gallery.map((src, i) => `
+                    <button type="button" class="pd-thumb${i === 0 ? ' is-active' : ''}" data-action="select-detail-img" data-idx="${i}" id="detail-thumb-${i}" aria-label="View image ${i + 1}">
+                        <img src="${escapeAttr(safeUrl(src))}" alt="${escapeAttr(product.name + ' — view ' + (i + 1))}" loading="lazy" width="76" height="76">
+                    </button>
+                `).join('')}
+            </div>` : '';
 
         const amazon = amazonUrlFor(product);
-        const L = lp(product); // display copy in the visitor's language
+        const L = lp(product);
         const descText = String(L.desc || '');
-        // '।' (danda) ends a sentence in Hindi and Bengali.
         const firstSentence = (descText.match(/^[^.!?।]+[.!?।]/) || [descText])[0];
         const restText = descText.slice(firstSentence.length).trim();
         const shareUrl = window.location.origin + routeToPath('product-detail', { id: product.id });
+        const hasNav = gallery.length > 1;
         container.innerHTML = `
             <div class="pd-gallery">
                 <div class="pd-main">
                     ${amazon ? `<span class="pd-flag"><i class="fab fa-amazon"></i> ${tr('chip.onAmazon', 'On Amazon')}</span>` : ''}
                     <img id="detailMainImage" src="${escapeAttr(safeUrl(gallery[0] || ''))}" alt="${escapeAttr(product.name + ' by Velorex Design')}" width="800" height="800" fetchpriority="high" data-fallback="https://placehold.co/600x600/1a1a2e/9890b0?text=${encodeURIComponent(product.name || 'Product')}">
+                    ${hasNav ? `
+                    <button class="pd-nav pd-nav-prev" data-action="select-detail-img" data-idx="prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+                    <button class="pd-nav pd-nav-next" data-action="select-detail-img" data-idx="next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>` : ''}
                 </div>
                 ${thumbsHtml}
             </div>
@@ -2432,7 +2447,7 @@ const app = {
                     <li><i class="fab fa-whatsapp"></i><span><strong>${tr('btn.orderWhatsApp', 'Order on WhatsApp')}</strong>${tr('pd.quickReply', 'Quick reply, Mon–Fri')}</span></li>
                 </ul>
 
-                ${restText ? `<details class="pd-more" open><summary>${tr('pd.about', 'About this piece')}</summary><p>${escapeHtml(restText)}</p></details>` : ''}
+                ${restText ? `<details class="pd-more"><summary>${tr('pd.about', 'About this piece')}</summary><p>${escapeHtml(restText)}</p></details>` : ''}
 
                 <div class="pd-share">
                     <span>${tr('pd.share', 'Share')}</span>
@@ -2535,9 +2550,22 @@ const app = {
     },
 
     selectDetailImage(i) {
-        if (!Array.isArray(this._detailGallery) || !this._detailGallery[i]) return;
+        if (!Array.isArray(this._detailGallery)) return;
+        const len = this._detailGallery.length;
+        if (!len) return;
+        // support 'prev' / 'next' strings from arrow buttons
+        if (i === 'prev') i = ((this._detailGalleryIdx || 0) - 1 + len) % len;
+        else if (i === 'next') i = ((this._detailGalleryIdx || 0) + 1) % len;
+        else i = Number(i);
+        if (!this._detailGallery[i]) return;
+        this._detailGalleryIdx = i;
         const main = document.getElementById('detailMainImage');
-        if (main) main.src = safeUrl(this._detailGallery[i]);
+        if (main) {
+            main.classList.remove('swap');
+            void main.offsetWidth;
+            main.src = safeUrl(this._detailGallery[i]);
+            main.classList.add('swap');
+        }
         this._detailGallery.forEach((_, idx) => {
             const t = document.getElementById('detail-thumb-' + idx);
             if (t) t.classList.toggle('is-active', idx === i);
@@ -3360,7 +3388,7 @@ const ACTION_HANDLERS = {
     'select-service':      (e, el) => app.selectServiceType(el.dataset.svc),
     'select-package':      (e, el) => app.selectPackage(el.dataset.svc, parseInt(el.dataset.idx, 10)),
     'proceed-service':     (e, el) => app.proceedService(el.dataset.svc, parseInt(el.dataset.idx, 10)),
-    'select-detail-img':   (e, el) => app.selectDetailImage(parseInt(el.dataset.idx, 10)),
+    'select-detail-img':   (e, el) => app.selectDetailImage(el.dataset.idx === 'prev' || el.dataset.idx === 'next' ? el.dataset.idx : parseInt(el.dataset.idx, 10)),
     'show-register':       () => app.showAuthForm('register'),
     'show-login':          () => app.showAuthForm('login'),
     'faq-toggle':          (e, el) => el.classList.toggle('active'),
